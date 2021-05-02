@@ -1,0 +1,174 @@
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_panel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:gravity="bottom"
+    app:umanoDragView="@id/cl_drawer"
+    app:umanoScrollableView="@id/rv_album_list"
+    app:umanoPanelHeight="0dp"
+    app:umanoOverlay="true"
+    app:umanoFadeColor="@android:color/transparent"
+    app:umanoShadowHeight="0dp">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity"
+        android:background="@color/home_background"
+        >
+
+        <!--    app title   -->
+        <Space
+            android:id="@+id/sp_app_title_top"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.06"/>
+
+
+        <TextView
+            android:id="@+id/tv_app_title"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.0656"
+            android:text="@string/app_title"
+            android:textAppearance="@style/AppTitle"
+            android:textAlignment="center"
+            android:autoSizeTextType="uniform"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sp_app_title_top" />
+
+
+        <!--    underline   -->
+        <Space
+            android:id="@+id/sp_underline_top"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_app_title"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.014"/>
+
+        <View
+            android:id="@+id/v_app_title_underline"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.036"
+            android:layout_height="1dp"
+            android:orientation="horizontal"
+            android:background="@color/app_title_underline"
+            app:layout_constraintTop_toBottomOf="@id/sp_underline_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        <!--    subtitle    -->
+
+        <Space
+            android:id="@+id/sp_app_subtitle_top"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.023"
+            app:layout_constraintTop_toBottomOf="@+id/v_app_title_underline"/>
+
+        <TextView
+            android:id="@+id/tv_app_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.0265"
+
+            android:text="@string/app_subtitle"
+            android:autoSizeTextType="uniform"
+            android:textAppearance="@style/AppSubtitle"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_app_subtitle_top" />
+
+
+        <!--    album card  -->
+        <Space
+            android:id="@+id/sp_album_card_top"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.103"
+            app:layout_constraintTop_toBottomOf="@id/tv_app_subtitle"/>
+
+
+        <include
+            android:id="@+id/l_home_add_first"
+            layout="@layout/item_add_album_card"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="210:343"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.48"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_album_card_top" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_album_card"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:scrollbars="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/layout_bottom_menu_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/sp_album_card_top">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+
+
+        <!--    bottom menu -->
+
+        <include
+            android:id="@+id/layout_bottom_menu_bar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.078"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            layout="@layout/layout_bottom_menu_bar"/>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_fake_fade"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="false"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="316dp"
+        android:background="@drawable/drawer_background">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_album_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

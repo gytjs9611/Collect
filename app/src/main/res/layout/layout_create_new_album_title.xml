@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tv_album_name_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:text="@string/album_name_title"
+        android:textColor="@color/album_name_frame_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <EditText
+        android:id="@+id/et_album_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:hint="@string/album_title_hint"
+        android:textSize="18dp"
+        android:paddingHorizontal="0dp"
+        android:background="@null"
+        android:layout_marginTop="3dp"
+        android:maxLines="1"
+        app:layout_constraintStart_toStartOf="@id/tv_album_name_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_album_name_title"/>
+    <View
+        android:id="@+id/v_et_underline"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/edit_text_underline"
+        android:layout_marginTop="6dp"
+        app:layout_constraintStart_toStartOf="@id/et_album_name"
+        app:layout_constraintEnd_toEndOf="@id/et_album_name"
+        app:layout_constraintTop_toBottomOf="@id/et_album_name"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

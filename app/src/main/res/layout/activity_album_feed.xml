@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/album_color_pink"
+    android:id="@+id/cl_album_feed"
+    >
+
+<!--    top menu    -->
+
+    <include
+        android:id="@+id/layout_top_menu_album_feed"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.078"
+        layout="@layout/layout_top_menu_bar"/>
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/g_init_text_top"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.455"/>
+
+
+
+    <TextView
+        android:id="@+id/tv_init"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/g_init_text_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/white"
+        android:text="@string/album_feed_init_text"
+        android:textAlignment="center"
+        android:lineSpacingExtra="5dp"
+        android:visibility="gone"
+        />
+
+
+
+
+
+<!--    contents    -->
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/layout_bottom_menu_bar"
+        app:layout_constraintHeight_percent="0.844"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_top_menu_album_feed">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/g_layout_start"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.056" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/g_layout_end"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.944" />
+
+
+
+
+            <LinearLayout
+                android:id="@+id/ll_left_side"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="@id/g_layout_start"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.408">
+
+                <Space
+                    android:id="@+id/sp_left_top_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"/>
+
+
+                <!-- item to add-->
+
+                <!-- item to add-->
+
+                <!-- item to add-->
+
+
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_right_side"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="@id/g_layout_end"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.408">
+
+                <Space
+                    android:id="@+id/sp_right_top_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"/>
+
+                <!-- item to add-->
+
+                <!-- item to add-->
+
+                <!-- item to add-->
+
+
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+
+
+    <!--    bottom menu -->
+   <include
+       android:id="@+id/layout_bottom_menu_bar"
+       android:layout_width="match_parent"
+       android:layout_height="0dp"
+       app:layout_constraintHeight_percent="0.078"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       layout="@layout/layout_bottom_menu_bar"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

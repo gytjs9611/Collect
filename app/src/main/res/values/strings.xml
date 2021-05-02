@@ -1,0 +1,109 @@
+<resources>
+    <string name="app_name">Collect</string>
+    <string name="app_title">collect</string>
+    <string name="app_subtitle">취향의 기록</string>
+    <string name="home_add_text">나만의 컬렉션을\n만들어 보세요.</string>
+    <string name="album_feed_init_text">어떤 것이든 좋아요.\n기록으로 나에 대해\n한걸음 가까워 질 수 있습니다.</string>
+
+
+    <string name="edit_album">앨범 수정</string>
+    <string name="delete_album">앨범 삭제</string>
+    <string name="delte_album_description">
+        정말로 해당 앨범을 삭제하실 건가요?\n
+        삭제 시 안에 작성된\n
+        게시물까지 전부 삭제됩니다.
+    </string>
+
+    <string name="delete_contents">작성 글 삭제</string>
+    <string name="delte_contents_description">
+        정말로 해당 글을 삭제하실 건가요?\n
+        삭제된 글은 복구가 불가능합니다.
+    </string>
+
+    <string name="cancel">취소</string>
+    <string name="edit">수정</string>
+    <string name="share">공유</string>
+    <string name="delete">삭제</string>
+
+    <string name="album_title_hint">제목</string>
+    <string name="create_new_album_top_title">새 앨범</string>
+    <string name="album_name_title">제목</string>
+    <string name="frame_title">프레임</string>
+    <string name="frame_subtitle">앨범 생성 시 수정 불가능</string>
+    <string name="color_title">컬러</string>
+
+    <string name="set_cover_image">커버 설정</string>
+    <string name="contents_image_title">게시물 이미지</string>
+
+    <string name="contents_title_hint">제목</string>
+    <string name="contents_sentences_hint">당신의 취향을 기록해보세요.</string>
+
+
+    <string name="create_new_album">앨범 만들기</string>
+
+    <!--    frame0  -->
+    <string name="frame0_fill">
+
+    </string>
+
+    <string name="frame0_stroke">
+        M57,0.5L57,0.5A56.5,56.5 0,0 1,113.5 57L113.5,177A56.5,56.5 0,0 1,57 233.5L57,233.5A56.5,56.5 0,0 1,0.5 177L0.5,57A56.5,56.5 0,0 1,57 0.5z
+    </string>
+
+
+    <!--    frame1  -->
+    <string name="frame1_fill">
+
+    </string>
+
+    <string name="frame1_stroke">
+        M0.5,0.5h113v233h-113z
+    </string>
+
+
+    <!--    frame2  -->
+    <string name="frame2_fill">
+
+    </string>
+
+    <string name="frame2_stroke">
+        M0.5,57C0.5,25.796 25.796,0.5 57,0.5C88.204,0.5 113.5,25.796 113.5,57V233.5H0.5V57Z
+    </string>
+
+
+    <!--    frame3  -->
+    <string name="frame3_fill">
+
+    </string>
+
+    <string name="frame3_stroke">
+        M24.495,0.5H89.505C89.768,13.634 100.366,24.232 113.5,24.495V209.505C100.366,209.768 89.768,220.366 89.505,233.5H24.495C24.232,220.366 13.634,209.768 0.5,209.505L0.5,24.495C13.634,24.232 24.232,13.634 24.495,0.5Z
+    </string>
+
+
+    <!--    frame4  -->
+    <string name="frame4_fill">
+
+    </string>
+
+    <string name="frame4_stroke">
+        M0,42.265L57,0L114,42.265V187.735L57,230L0,187.735V42.265Z
+    </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+<!--        date(day of week)   -->
+    <string name="sunday">일</string>
+    <string name="monday">월</string>
+    <string name="tuesday">화</string>
+    <string name="wednesday">수</string>
+    <string name="thursday">목</string>
+    <string name="friday">금</string>
+    <string name="saturday">토</string>
+
+
+    <string name="backpressed_finish">앱을 종료하려면 한 번 더 누르세요</string>
+
+
+</resources>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    android:id="@+id/cv_album_card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@android:color/darker_gray"
+    app:cardCornerRadius="8dp"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/g_menu_top"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintGuide_percent="0.029"
+            android:orientation="horizontal"/>
+
+
+        <ImageView
+            android:id="@+id/iv_album_card_menu"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.087"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/g_menu_top"
+            android:src="@drawable/ic_album_card_menu"/>
+
+
+<!--        image   -->
+
+        <Space
+            android:id="@+id/sp_album_cover_top"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.038"
+            app:layout_constraintTop_toBottomOf="@id/iv_album_card_menu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_album_cover"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/image"
+            android:scaleType="centerCrop"
+            app:layout_constraintHeight_percent="0.682"
+            app:layout_constraintDimensionRatio="114:234"
+            app:layout_constraintTop_toBottomOf="@id/sp_album_cover_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/g_title_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.948"/>
+
+        <TextView
+            android:id="@+id/tv_album_title"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="Cooking"
+            android:autoSizeTextType="uniform"
+            android:gravity="center"
+            android:textAppearance="@style/AlbumCardTitle"
+            app:layout_constraintHeight_percent="0.064"
+            app:layout_constraintBottom_toBottomOf="@+id/g_title_bottom"/>
+
+
+        <!--        add icon    -->
+
+        <ImageView
+            android:id="@+id/iv_add_icon_last"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_add"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHeight_percent="0.076"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="invisible"/>
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
