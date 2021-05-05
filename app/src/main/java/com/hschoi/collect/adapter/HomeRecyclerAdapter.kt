@@ -7,6 +7,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.hschoi.collect.*
@@ -22,7 +25,7 @@ class HomeRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<H
 
     // 1. 홀더의 생성
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {
-        Log.d("TAG", "onCreateViewHolder")
+        Log.d("TAG", "onCreateViewHolder item size=${items.size}")
         val v = LayoutInflater.from(parent.context).inflate(R.layout.item_album_card, parent, false)
         mContext = parent.context
 
@@ -43,7 +46,13 @@ class HomeRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<H
     override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
 
         if(items[position].id==(-1).toLong()){
-            holder.bindLastItem()
+            if(itemCount==1){
+                holder.bindDefaultAddItem()
+            }
+            else{
+                holder.bindLastItem()
+            }
+
             holder.itemView.setOnClickListener {
                 val intent = Intent(mContext, CreateNewAlbumActivity::class.java)
                 mContext.startActivity(intent)
@@ -88,14 +97,33 @@ class HomeRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<H
     inner class HomeViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
         var index : Int? = null
 
-        fun bindLastItem(){
+        private fun setAlbumToAddButton(){
             itemView.cv_album_card.setCardBackgroundColor(mContext.getColor(R.color.white))
             itemView.tv_album_title.visibility = View.INVISIBLE
             itemView.iv_album_card_menu.visibility = View.INVISIBLE
             itemView.iv_album_cover.visibility = View.INVISIBLE
             itemView.tv_album_title.visibility = View.INVISIBLE
             itemView.iv_add_icon_last.visibility = View.VISIBLE
+        }
 
+        fun bindDefaultAddItem(){
+            setAlbumToAddButton()
+            itemView.tv_description.visibility = View.VISIBLE
+            val constraintSet = ConstraintSet()
+            constraintSet.clear(itemView.iv_add_icon_last.id, ConstraintSet.BOTTOM)
+            constraintSet.applyTo(itemView.cl_layout)
+            itemView.iv_add_icon_last.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                topToTop = itemView.g_add_icon_top.id
+            }
+        }
+
+        fun bindLastItem(){
+            setAlbumToAddButton()
+            itemView.tv_description.visibility = View.INVISIBLE
+            itemView.iv_add_icon_last.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                topToTop = itemView.cl_layout.id
+                bottomToBottom = itemView.cl_layout.id
+            }
         }
 
         fun bindNormal(album : Albums, position : Int){
@@ -104,6 +132,8 @@ class HomeRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<H
             itemView.iv_album_cover.visibility = View.VISIBLE
             itemView.tv_album_title.visibility = View.VISIBLE
             itemView.iv_add_icon_last.visibility = View.INVISIBLE
+            itemView.tv_description.visibility = View.INVISIBLE
+
 
             val albumColor = album.color
             val albumTitle = album.title

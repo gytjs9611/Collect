@@ -27,13 +27,14 @@ class AddContentsRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Ad
         val vWidth = LayoutParamsUtils.getItemWidthByPercent(mContext, 328f/360f)
         LayoutParamsUtils.setItemSize(v, vWidth, vHeight)
 
+
         return HomeViewHolder(v)
     }
 
     // 2. 홀더의 바인딩
     override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
 
-        if(items[position].title==""){
+        if(items[position].id==(-1).toLong()){
             holder.bindLastItem()
             holder.itemView.setOnClickListener {
                 val intent = Intent(mContext, CreateNewAlbumActivity::class.java)
