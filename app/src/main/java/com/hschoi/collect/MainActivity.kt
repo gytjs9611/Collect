@@ -46,15 +46,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         albumList = ArrayList()
-
-        // 디폴트 앨범추가 카드 초기화
-        defaultAddAlbum = l_home_add_first
-        defaultAddAlbum.elevation = UnitConversion.dpToPx(applicationContext, 30f)
-        defaultAddAlbum.setOnClickListener {
-            // 새 앨범 추가 액티비티 실행
-            val intent = Intent(this, CreateNewAlbumActivity::class.java)
-            startActivity(intent)
-        }
+        albumList.add(Albums(-1, "", -1, "", -1))   // dummy
 
         homeRecyclerAdapter = HomeRecyclerAdapter(albumList)
         addContentsRecyclerAdapter = AddContentsRecyclerAdapter(albumList)
@@ -66,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         val decoration = HomeRecyclerDecoration(applicationContext)
         rv_album_card.addItemDecoration(decoration)
+
 
         // 하단 슬라이딩뷰 내의 리사이클러뷰 초기화
         rv_album_list.adapter = addContentsRecyclerAdapter
@@ -80,13 +73,6 @@ class MainActivity : AppCompatActivity() {
         Thread.sleep(100)
 
 
-        // 앨범 데이터 존재 유무에 따라 디폴트 앨범추가 카드 visibility 설정
-        if(albumList.size==0){
-            defaultAddAlbum.visibility = View.VISIBLE
-        }
-        else{
-            l_home_add_first.visibility = View.INVISIBLE
-        }
 
         // 하단 메뉴 관련
         list_panel.panelHeight = UnitConversion.dpToPx(applicationContext, 170f).toInt()
@@ -100,7 +86,6 @@ class MainActivity : AppCompatActivity() {
             cl_fake_fade.isClickable = false
         }
         cl_fake_fade.isClickable = false    // setonclicklistener 설정해주면 자동으로 clickable true로 설정되므로 바로 뒤에 false 로 설정해줌
-
 
 
         list_panel.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
@@ -145,7 +130,6 @@ class MainActivity : AppCompatActivity() {
             list_panel.panelState = PanelState.COLLAPSED
             cl_fake_fade.setBackgroundColor(getColor(R.color.fade))
             cl_fake_fade.isClickable = true
-
         }
 
         rv_album_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -168,9 +152,10 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if(albumList.size>0){
-            defaultAddAlbum.visibility = View.INVISIBLE
-        }
+//        if(albumList.size>1){
+//            defaultAddAlbum.visibility = View.INVISIBLE
+//        }
+
 
     }
 
@@ -227,9 +212,6 @@ class GetAlbum(val context : Context) : Thread() {
             val coverImagePath = album.coverImageFileName
             val albumsItem = Albums(id, title, albumColor, coverImagePath, frameType)
             MainActivity.albumList.add(albumsItem)
-        }
-        if(items.isNotEmpty()){
-            MainActivity.albumList.add(Albums(-1, "", -1, "", -1))   // dumm
         }
     }
 }

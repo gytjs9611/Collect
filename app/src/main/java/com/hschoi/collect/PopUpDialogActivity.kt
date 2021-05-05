@@ -2,6 +2,7 @@ package com.hschoi.collect
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.hschoi.collect.database.AlbumDatabase
@@ -51,6 +52,7 @@ class PopUpDialogActivity: AppCompatActivity() {
         for(album in MainActivity.albumList) {
                if (album.id == id) {
                    MainActivity.albumList.remove(album)
+                   Log.d("home", "size=${MainActivity.albumList.size}")
 
                    val deleteThread = DeleteAlbum(applicationContext, id)
                    deleteThread.start()
@@ -73,13 +75,6 @@ class PopUpDialogActivity: AppCompatActivity() {
             }
         }
 
-
-
-        // 모든 앨범 삭제될 경우, 더미 앨범 객체 삭제, 디폴트 앨범 추가 카드 보이게 설정
-        if(MainActivity.albumList.size==1){
-            MainActivity.albumList.removeAt(0)
-            MainActivity.defaultAddAlbum.visibility = View.VISIBLE
-        }
 
         // 리사이클러뷰 업데이트하기
         MainActivity.homeRecyclerAdapter.notifyDataSetChanged()

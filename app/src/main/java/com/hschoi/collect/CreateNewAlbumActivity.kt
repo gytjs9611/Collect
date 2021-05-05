@@ -242,13 +242,15 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
             // 메인 앨범 리스트에 객체 추가
             val album = Albums(albumId, title, selectedColor, fileName, selectedFrameType)
-            if(MainActivity.albumList.size==0){
-                MainActivity.albumList.add(album)
-                MainActivity.albumList.add(Albums(-1, "", -1,"",0))   // dummy
-            }
-            else{
-                MainActivity.albumList.add(MainActivity.albumList.size-1, album)
-            }
+//            if(MainActivity.albumList.size==0){
+//                MainActivity.albumList.add(album)
+//                MainActivity.albumList.add(Albums(-1, "", -1,"",0))   // dummy
+//            }
+//            else{
+//                MainActivity.albumList.add(MainActivity.albumList.size-1, album)
+//            }
+            MainActivity.albumList.add(MainActivity.albumList.size-1, album)
+
             MainActivity.homeRecyclerAdapter.notifyDataSetChanged()
             MainActivity.addContentsRecyclerAdapter.notifyDataSetChanged()
 
