@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         albumList = ArrayList()
-        albumList.add(Albums(-1, "", -1, "", -1))   // dummy
 
         homeRecyclerAdapter = HomeRecyclerAdapter(albumList)
         addContentsRecyclerAdapter = AddContentsRecyclerAdapter(albumList)
@@ -213,5 +212,7 @@ class GetAlbum(val context : Context) : Thread() {
             val albumsItem = Albums(id, title, albumColor, coverImagePath, frameType)
             MainActivity.albumList.add(albumsItem)
         }
+        MainActivity.albumList.add(Albums(-1, "", -1, "", -1))   // dummy
+
     }
 }
