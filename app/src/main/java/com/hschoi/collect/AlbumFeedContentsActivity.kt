@@ -13,7 +13,9 @@ import kotlinx.android.synthetic.main.activity_album_feed_contents.*
 class AlbumFeedContentsActivity : AppCompatActivity(){
 
     private lateinit var albumTitle : String
+    private var contentsId : Long = -1
     private lateinit var contentsImage : String
+    private lateinit var contentsCoverImage : String
     private lateinit var contentsTitle : String
     private lateinit var contentsDate : String
     private lateinit var contentsSentence : String
@@ -28,11 +30,15 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
         // 앨범명, 컨텐츠 제목, 날짜, 컨텐츠 내용
         albumTitle = intent.getStringExtra("albumTitle")
+        contentsId = intent.getLongExtra("contentsId", -1)
         contentsTitle = intent.getStringExtra("contentsTitle")
         color = intent.getIntExtra("color", getColor(R.color.album_color_pink))
         contentsDate = intent.getStringExtra("contentsDate")
         contentsSentence = intent.getStringExtra("contentsSentence")
         contentsImage = intent.getStringExtra("contentsImage")
+        contentsCoverImage = intent.getStringExtra("contentsCoverImage")
+
+
 
 
         // 상태바 색상 배경색에 따라 설정
@@ -59,7 +65,8 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
         // 케밥 메뉴 버튼
         iv_album_feed_contents_more_button.setOnClickListener {
-            val bottomMenuSheet = ContentsBottomMenuSheet(applicationContext, albumTitle, contentsTitle)
+            val bottomMenuSheet = ContentsBottomMenuSheet(applicationContext, contentsId,
+                                            contentsCoverImage, contentsImage)
             bottomMenuSheet.show(supportFragmentManager, bottomMenuSheet.tag)
         }
 
@@ -84,7 +91,5 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         }
         return getColor(statusBarColor)
     }
-
-
 
 }

@@ -173,6 +173,7 @@ class AlbumFeedActivity : AppCompatActivity() {
         ll_right_side.addView(sp_right_top_margin)
 
         for((i, data) in albumItemList.withIndex()){
+            val contentsId = data.contentsId
             val coverImageName = data.coverImageName
             val contentsImageName = data.contentsImageName
             val contentsTitle = data.contentsTitle
@@ -185,9 +186,11 @@ class AlbumFeedActivity : AppCompatActivity() {
 
             item.setOnClickListener {
                 val intent = Intent(this, AlbumFeedContentsActivity::class.java)
+                intent.putExtra("contentsId", contentsId)
                 intent.putExtra("albumTitle", albumTitle)
                 intent.putExtra("color", color)
                 intent.putExtra("contentsImage", contentsImageName)
+                intent.putExtra("contentsCoverImage", coverImageName)
                 intent.putExtra("contentsTitle", contentsTitle)
                 val date = contentsDate.substringBefore("/")    // yyyy.M.d
                 val dayOfWeek = getDayOfWeekFromDate(applicationContext, date)  // E
@@ -321,7 +324,7 @@ class AlbumFeedActivity : AppCompatActivity() {
 
 
             for(item in albumFeedItems){
-                val feedItem = FeedItemInfo(item.coverImageName, item.contentsImageName,
+                val feedItem = FeedItemInfo(item.contentsId, item.coverImageName, item.contentsImageName,
                         item.contentsTitle, item.contentsDate, item.contentsSentence)
                 albumItemList.add(feedItem)
             }
@@ -337,7 +340,7 @@ class AlbumFeedActivity : AppCompatActivity() {
 
 
             for(item in albumFeedItems){
-                val feedItem = FeedItemInfo(item.coverImageName, item.contentsImageName,
+                val feedItem = FeedItemInfo(item.contentsId, item.coverImageName, item.contentsImageName,
                     item.contentsTitle, item.contentsDate, item.contentsSentence)
                 albumItemList.add(feedItem)
             }
@@ -346,7 +349,7 @@ class AlbumFeedActivity : AppCompatActivity() {
 
 }
 
-data class FeedItemInfo(val coverImageName : String, val contentsImageName : String,
+data class FeedItemInfo(val contentsId : Long, val coverImageName : String, val contentsImageName : String,
                         val contentsTitle : String, val contentsDate : String,
                         val contentsSentence : String)
 

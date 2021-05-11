@@ -12,10 +12,10 @@ interface AlbumItemDao {
     @Query("SELECT * FROM album_item WHERE albumId = :albumId")
     fun getAllAlbumItems(albumId : Long) : List<AlbumItemEntity>
 
-    @Query("SELECT coverImageName, contentsImageName, contentsTitle, contentsDate, contentsSentence FROM album_item WHERE albumId = :albumId ORDER BY contentsDate ASC")
+    @Query("SELECT contentsId, coverImageName, contentsImageName, contentsTitle, contentsDate, contentsSentence FROM album_item WHERE albumId = :albumId ORDER BY contentsDate ASC")
     fun getAlbumFeedItemInfoASC(albumId : Long) : List<FeedItemInfo>
 
-    @Query("SELECT coverImageName, contentsImageName, contentsTitle, contentsDate, contentsSentence FROM album_item WHERE albumId = :albumId ORDER BY contentsDate DESC")
+    @Query("SELECT contentsId, coverImageName, contentsImageName, contentsTitle, contentsDate, contentsSentence FROM album_item WHERE albumId = :albumId ORDER BY contentsDate DESC")
     fun getAlbumFeedItemInfoDESC(albumId : Long) : List<FeedItemInfo>
 
 
@@ -28,6 +28,8 @@ interface AlbumItemDao {
     @Update(onConflict = OnConflictStrategy.ABORT)
     fun updateContents(entity: AlbumItemEntity)
 
-    @Delete
-    fun deleteContents(entity: AlbumItemEntity)
+
+    @Query("DELETE FROM album_item WHERE contentsId=:id")
+    fun deleteContents(id: Long)
+
 }
