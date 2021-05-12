@@ -54,7 +54,15 @@ class PopUpDialogActivity: AppCompatActivity() {
                     val contentsCoverImage = intent.getStringExtra("contentsCoverImage")
                     val contentsImage = intent.getStringExtra("contentsImage")
                     deleteContents(contentsId, contentsCoverImage, contentsImage)
+
+                    // 피드로 돌아갔을 때 데이터 업데이트 해주기 위해 플래그 수정
+                    AlbumFeedActivity.isDataChanged = true
+
+                    // 컨텐츠가 삭제되었기 때문에 해당 컨텐츠 액티비티 종료해줌
+                    val activity = AlbumFeedContentsActivity.activity
+                    activity.finish()
                     finish()
+
                 }
             }
             DialogType.PREMIUM_INFO->{

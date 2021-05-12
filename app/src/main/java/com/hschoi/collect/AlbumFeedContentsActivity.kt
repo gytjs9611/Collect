@@ -12,6 +12,10 @@ import kotlinx.android.synthetic.main.activity_album_feed_contents.*
 
 class AlbumFeedContentsActivity : AppCompatActivity(){
 
+    companion object {
+        lateinit var activity : AlbumFeedContentsActivity
+    }
+
     private lateinit var albumTitle : String
     private var contentsId : Long = -1
     private lateinit var contentsImage : String
@@ -26,6 +30,8 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_album_feed_contents)
+
+        activity = this
 
 
         // 앨범명, 컨텐츠 제목, 날짜, 컨텐츠 내용
