@@ -259,8 +259,6 @@ class AlbumFeedActivity : AppCompatActivity() {
 //        cl_album_feed.layout_top_menu_album_feed.cl_bottom_menu_bar.setBackgroundColor(color) // 이렇게 하면 안됨
 
         layout_bottom_menu_bar.iv_menu_home.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
             finish()
         }
 
