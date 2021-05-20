@@ -206,6 +206,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
                 intent.putExtra("color", albumColor)
 
                 startActivity(intent)
+                MainActivity.isAddFromHome = false
             }
             // 액티비티 종료
             // 이전 액티비였던 컨텐츠 추가 액티비티도 함께 종료시킴
