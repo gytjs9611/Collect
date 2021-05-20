@@ -106,6 +106,9 @@ class PopUpDialogActivity: AppCompatActivity() {
 
                    // 이미지 파일 삭제
                    applicationContext.deleteFile(album.imageFileName)
+                   // 원본 이미지도 삭제
+                   val originFileName = album.imageFileName.replace("album_cover", "album_cover_origin")
+                   applicationContext.deleteFile(originFileName)
                    break
                }
         }

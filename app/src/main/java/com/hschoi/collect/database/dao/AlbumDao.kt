@@ -1,5 +1,6 @@
 package com.hschoi.collect.database.dao
 
+import android.graphics.Matrix
 import androidx.room.*
 import com.hschoi.collect.database.entity.AlbumEntity
 
@@ -11,10 +12,10 @@ interface AlbumDao {
     @Query("SELECT COUNT(*) FROM album")
     fun getAlbumCnt() : Int
 
- /*   @Query("SELECT * FROM album WHERE albumId = :id")
-    fun getAlbum(id : Int) : AlbumEntity
+    @Query("SELECT * FROM album WHERE id = :id")
+    fun getAlbum(id : Long) : AlbumEntity
 
-*/
+
     @Query("UPDATE album SET albumOrder=:order WHERE id=:id")
     fun setOrder(id: Long, order: Long)
 
@@ -33,6 +34,8 @@ interface AlbumDao {
 
     @Query("DELETE FROM album WHERE id=:id")
     fun deleteAlbum(id: Long)
+
+
 
 
 }

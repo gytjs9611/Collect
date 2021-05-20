@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -18,7 +19,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.PathParser
 import androidx.core.view.updateLayoutParams
-import com.github.tcking.imagecroppingview.ImageCroppingView
+import com.hschoi.collect.customview.ImageCroppingView
 import com.hschoi.collect.customview.ColorItem
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
@@ -38,8 +39,6 @@ import kotlinx.android.synthetic.main.layout_top_menu_bar.view.tv_album_name_tit
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
-import java.text.SimpleDateFormat
-import java.util.*
 
 class CreateNewAlbumActivity : AppCompatActivity() {
 
@@ -104,6 +103,9 @@ class CreateNewAlbumActivity : AppCompatActivity() {
     private var isImageSelected = false
 
     private lateinit var imageCroppingView : ImageCroppingView
+
+    // test
+    private var tempUri : Uri? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -185,8 +187,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
         // 취소 버튼
         layout_top_menu_create_album.iv_icon_left.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
             finish()
         }
 
@@ -204,11 +204,17 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             }
 
             // 내부저장소에 커버이미지 저장
-            val fos : FileOutputStream
+            var fos : FileOutputStream
             var cnt = 1
             var fileName = "album_cover_${title}.png"
+            var originFileName = "album_cover_origin_${title}.png"
+
             var file = File("${applicationContext.filesDir}/$fileName")
+            var originFile = File("${applicationContext.filesDir}/$originFileName")
+
             val name = file.nameWithoutExtension
+            val originName = originFile.nameWithoutExtension
+
             while(file.exists()){
                 fileName = "${name}_${cnt}.png"
                 Log.d("file", "new=$fileName")
@@ -216,16 +222,41 @@ class CreateNewAlbumActivity : AppCompatActivity() {
                 cnt++
             }
 
+            if(cnt-1>0)
+                originFileName = "${originName}_${cnt-1}.png"
+
             try{
+                // cover
                 fos = openFileOutput(fileName, Context.MODE_PRIVATE)
                 imageCroppingView.croppedImage
                         .compress(Bitmap.CompressFormat.JPEG, 50, fos)
                 fos.write(imageCroppingView.croppedImageBytes)
                 fos.close()
+
+                // origin
+                fos = openFileOutput(originFileName, Context.MODE_PRIVATE)
+                var bitmap = BitmapUtils.uriToBitmap(this, tempUri)
+
+                // 회전값 존재하면 똑바로 보이도록 조정
+               val exifDegree = BitmapUtils.getExifDegree(applicationContext, tempUri!!)
+                if(exifDegree!=0){
+                    bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@setOnClickListener
+                }
+
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
+                fos.close()
+
             } catch (e :Exception){
             }
 
-            val albumEntity = AlbumEntity(false, title, selectedFrameType, selectedColor, fileName)
+
+            // 앨범 객체 저장
+            val zoom: Float = imageCroppingView.currentZoom
+            val x: Float = imageCroppingView.getMatrixTransX()
+            val y: Float = imageCroppingView.getMatrixTransY()
+
+            val albumEntity = AlbumEntity(false, title, selectedFrameType, selectedColor,
+                    fileName, originFileName, zoom, x, y)
 
             val addAlbum = AddAlbum(applicationContext, albumEntity)
             addAlbum.start()
@@ -242,13 +273,7 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
             // 메인 앨범 리스트에 객체 추가
             val album = Albums(albumId, title, selectedColor, fileName, selectedFrameType)
-//            if(MainActivity.albumList.size==0){
-//                MainActivity.albumList.add(album)
-//                MainActivity.albumList.add(Albums(-1, "", -1,"",0))   // dummy
-//            }
-//            else{
-//                MainActivity.albumList.add(MainActivity.albumList.size-1, album)
-//            }
+
             MainActivity.albumList.add(MainActivity.albumList.size-1, album)
 
             MainActivity.homeRecyclerAdapter.notifyDataSetChanged()
@@ -258,10 +283,45 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             finish()
         }
 
+        // for test
+        var zoom = 0f
+        var zoom2 = 0f
+        var x = 0f
+        var y = 0f
+
+        layout_top_menu_create_album.cl_title.setOnClickListener {
+            zoom = imageCroppingView.currentZoom
+//            x = imageCroppingView.matrixFloatArray!![Matrix.MTRANS_X]
+//            y = imageCroppingView.matrixFloatArray!![Matrix.MTRANS_Y]
+            x = imageCroppingView.getMatrixTransX()
+            y = imageCroppingView.getMatrixTransY()
+            Log.d("sival", "zoom=$zoom, zoom2=$zoom2 x=$x, y=$y")
+        }
+
+        layout_album_title.setOnClickListener {
+            val w = LayoutParamsUtils.getScreenWidth(applicationContext)
+            val h = LayoutParamsUtils
+                .getItemHeightByPercent(applicationContext, 0.479f)
+
+            imageCroppingView.initView(applicationContext)  // 크롭 이미지뷰 초기화
+//                    imageCroppingView.setImageURI(uri)
+            imageCroppingView.setImageURI(tempUri, w, h)
 
 
-//         for test
-//        iv_add_icon.visibility = View.GONE
+            //
+            imageCroppingView.mMatrix!!.postScale(zoom, zoom)
+            imageCroppingView.currentZoom = zoom
+
+
+            val initX = imageCroppingView.getMatrixTransX()
+            val initY = imageCroppingView.getMatrixTransY()
+            imageCroppingView.mMatrix!!.postTranslate(x-initX, y-initY)
+            Log.d("sival", "zoom=$zoom,initX=$initX, x=$x, initY=$initY, y=$y")
+
+
+            imageCroppingView.imageMatrix = imageCroppingView.mMatrix
+
+        }
 
 
     }
@@ -317,7 +377,8 @@ class CreateNewAlbumActivity : AppCompatActivity() {
                         isImageSelected = true
                     }
 
-
+                    // test
+                    tempUri = uri
                 }
             }
         }

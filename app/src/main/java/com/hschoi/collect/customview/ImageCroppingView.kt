@@ -1,7 +1,8 @@
-package com.github.tcking.imagecroppingview
+package com.hschoi.collect.customview
 
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.Intent
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -18,16 +19,14 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Scroller
 import androidx.appcompat.widget.AppCompatImageView
-import com.github.tcking.imagecroppingview.ImageCroppingView.State.ANIMATE_ZOOM
-import com.github.tcking.imagecroppingview.ImageCroppingView.State.DRAG
-import com.github.tcking.imagecroppingview.ImageCroppingView.State.FLING
-import com.github.tcking.imagecroppingview.ImageCroppingView.State.NONE
-import com.github.tcking.imagecroppingview.ImageCroppingView.State.ZOOM
+import com.hschoi.collect.customview.ImageCroppingView.State.ANIMATE_ZOOM
+import com.hschoi.collect.customview.ImageCroppingView.State.DRAG
+import com.hschoi.collect.customview.ImageCroppingView.State.FLING
+import com.hschoi.collect.customview.ImageCroppingView.State.NONE
+import com.hschoi.collect.customview.ImageCroppingView.State.ZOOM
 import com.hschoi.collect.util.BitmapCropUtils
 import com.hschoi.collect.util.BitmapUtils
 import com.hschoi.collect.util.SelectAndSaveImageUtils
-import java.io.ByteArrayOutputStream
-import java.io.IOException
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
@@ -41,6 +40,7 @@ class ImageCroppingView : AppCompatImageView {
 
     companion object {
         private const val DEBUG = "DEBUG"
+        const val ACTION_MEASURE = "com.hschoi.collect.customview.ACTION_MEASURE"
 
         //
         // SuperMin and SuperMax multipliers. Determine how much the image can be
@@ -61,10 +61,10 @@ class ImageCroppingView : AppCompatImageView {
      */
 
     var currentZoom = 0f
-        private set // getter는 열리지만 setter는 닫힘. (외부에서 수정 불가)
+//        private set // getter는 열리지만 setter는 닫힘. (외부에서 수정 불가)
 
 
-    private var mMatrix: Matrix? = null
+    var mMatrix: Matrix? = null
 
     enum class State {
         NONE, DRAG, ZOOM, FLING, ANIMATE_ZOOM
@@ -76,7 +76,8 @@ class ImageCroppingView : AppCompatImageView {
     private var maxScale = 0f
     private var superMinScale = 0f
     private var superMaxScale = 0f
-    private var matrixFloatArray: FloatArray? = null
+    var matrixFloatArray: FloatArray? = null
+        private set
     private var mContext: Context? = null
     private var fling: Fling? = null
 
@@ -84,8 +85,11 @@ class ImageCroppingView : AppCompatImageView {
     private var viewHeight = 0      // 부모뷰 높이
 
 
-    private var matchViewWidth = 0f
-    private var matchViewHeight = 0f
+    var matchViewWidth = 0f
+    var matchViewHeight = 0f
+    private var redundantXSpace = 0f
+    private var redundantYSpace = 0f
+
 
     private var mScaleDetector: ScaleGestureDetector? = null    // 멀티터치 이벤트
     private var mGestureDetector: GestureDetector? = null       // 터치 이벤트
@@ -270,6 +274,7 @@ class ImageCroppingView : AppCompatImageView {
             mMatrix!!.postTranslate(fixTransX, fixTransY)   // 이미지 이동
         }
 
+        imageMatrix = mMatrix
 
         Log.d("TRANS", "transX=$transX, transY=$transY, fixTransX=$fixTransX, fixTransY=$fixTransY")
 //        isXOver = fixTransX==0f
@@ -311,7 +316,7 @@ class ImageCroppingView : AppCompatImageView {
         // 정수 기준으로 좌표가 설정되어있는 frame 과 소수 기준으로 설정된 이미지뷰 사이의 오차가 생김
         // minTrans는 올림을, maxTrans는 버림을 해주어 프레임이 이미지 영역 밖으로 나가지 않게 해줌
         Log.d("VIEW", "ICV CLASS viewWidth=$viewWidth, viewHeight=$viewHeight")
-        if(transType ==TRANS_TYPE_X){
+        if(transType == TRANS_TYPE_X){
             minTrans = ceil((viewWidth+frameWidth).toFloat()/2) - imageWidth
             maxTrans = floor((viewWidth-frameWidth).toFloat()/2)
             Log.d("TRANS", "trans=$trans, minTrans=$minTrans, maxTrans=$maxTrans")
@@ -371,6 +376,9 @@ class ImageCroppingView : AppCompatImageView {
             Log.d("TAG", "fitImageToView 실행됨")
             isAlreadyExecuted = true
             fitImageToView()
+
+            val intent = Intent(ACTION_MEASURE)
+            mContext?.sendBroadcast(intent)
         }
 
         if(isXOver){
@@ -383,15 +391,7 @@ class ImageCroppingView : AppCompatImageView {
         // minScale 계산(Main oncreate 실행 후 onMeasure 메소드 실행되기때문에 여기서 선언..)
         // min, max scale 설정
         setScale()
-       /* val scaleX = frameWidth.toFloat()/matchViewWidth
-        val scaleY = frameHeight.toFloat()/matchViewHeight
-        minScale = max(scaleX, scaleY)
-        Log.d("TAG", "minScale=$minScale")
-        maxScale = 3f
 
-        Log.d("TAG", "min=$minScale, max=$maxScale")
-        superMinScale = SUPER_MIN_MULTIPLIER * minScale
-        superMaxScale = SUPER_MAX_MULTIPLIER * maxScale*/
     }
 
     fun setScale(){
@@ -448,8 +448,9 @@ class ImageCroppingView : AppCompatImageView {
         
 
         // 부모뷰에서 남는 공간
-        val redundantYSpace = viewHeight - scale * drawableHeight
-        val redundantXSpace = viewWidth - scale * drawableWidth
+        redundantYSpace = viewHeight - scale * drawableHeight
+        redundantXSpace = viewWidth - scale * drawableWidth
+
 
         // 뷰에 딱 맞춰지는 정확한 크기
         matchViewWidth = viewWidth - redundantXSpace
@@ -621,6 +622,11 @@ class ImageCroppingView : AppCompatImageView {
         compatPostOnAnimation(doubleTap)
     }
 
+    fun getMatrixTransX() :Float{
+        mMatrix!!.getValues(matrixFloatArray)
+        return matrixFloatArray!![Matrix.MTRANS_X]
+    }
+
     fun getMatrixTransY() :Float{
         mMatrix!!.getValues(matrixFloatArray)
         return matrixFloatArray!![Matrix.MTRANS_Y]
@@ -648,7 +654,7 @@ class ImageCroppingView : AppCompatImageView {
 
 
 
-    private fun scaleImage(deltaScale: Float, focusX: Float, focusY: Float, stretchImageToSuper: Boolean) {
+    fun scaleImage(deltaScale: Float, focusX: Float, focusY: Float, stretchImageToSuper: Boolean) {
         var deltaScale = deltaScale
         val lowerScale: Float
         val upperScale: Float
