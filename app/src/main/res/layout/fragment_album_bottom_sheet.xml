@@ -15,7 +15,7 @@
         android:textSize="18dp"
         android:textColor="@color/home_bottom_menu_text"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/edit_album" />
+        android:text="@string/modify_album" />
 
     <View
         android:layout_width="match_parent"

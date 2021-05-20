@@ -6,7 +6,7 @@
     <string name="album_feed_init_text">어떤 것이든 좋아요.\n기록으로 나에 대해\n한걸음 가까워 질 수 있습니다.</string>
 
 
-    <string name="edit_album">앨범 수정</string>
+    <string name="modify_album">앨범 수정</string>
     <string name="delete_album">앨범 삭제</string>
     <string name="delete_album_description">
         정말로 해당 앨범을 삭제하실 건가요?\n

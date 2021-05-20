@@ -35,6 +35,11 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".ModifyAlbumActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
+        </activity>
+
 
         <activity android:name=".AlbumFeedActivity"
             android:screenOrientation="portrait">

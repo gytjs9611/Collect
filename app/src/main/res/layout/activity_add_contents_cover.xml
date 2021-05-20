@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@color/white">
 
-        <com.github.tcking.imagecroppingview.ImageCroppingView
+        <com.hschoi.collect.customview.ImageCroppingView
             android:id="@+id/icv_cover_image_source"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -1,17 +1,25 @@
 package com.hschoi.collect.util
 
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 
 class BitmapUtils {
     companion object {
+
+        fun uriToBitmap(context: Context, uri: Uri?): Bitmap{
+            return MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+        }
 
         fun getResizedBitmap(context: Context, uri: Uri?, viewWidth: Int, viewHeight: Int): Bitmap? {
             if (uri == null)

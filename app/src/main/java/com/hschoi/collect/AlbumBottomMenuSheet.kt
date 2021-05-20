@@ -37,7 +37,10 @@ class AlbumBottomMenuSheet(context : Context, albumId : Long) : BottomSheetDialo
 
         // 앨범 수정 버튼
         tv_album_edit.setOnClickListener {
-
+            val intent = Intent(mContext, ModifyAlbumActivity::class.java)
+            intent.putExtra("albumId", mAlbumId)
+            startActivity(intent)
+            dismiss()
         }
 
         // 앨범 삭제 버튼
