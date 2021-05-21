@@ -1,14 +1,18 @@
 package com.hschoi.collect
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
-import com.hschoi.collect.util.LayoutParamsUtils
+import com.hschoi.collect.database.AlbumDatabase
+import com.hschoi.collect.database.entity.AlbumItemEntity
+import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekFromDate
 import kotlinx.android.synthetic.main.activity_album_feed_contents.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AlbumFeedContentsActivity : AppCompatActivity(){
 
@@ -16,16 +20,36 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         lateinit var activity : AlbumFeedContentsActivity
     }
 
-    private lateinit var albumTitle : String
     private var contentsId : Long = -1
+    /*private var albumId : Long = -1
+    private lateinit var albumTitle : String
     private lateinit var contentsImage : String
     private lateinit var contentsCoverImage : String
     private lateinit var contentsTitle : String
     private lateinit var contentsDate : String
     private lateinit var contentsSentence : String
+    private var frameType = 0*/
 
-    private var color = -1
+    private lateinit var mAlbumItemEntity: AlbumItemEntity
 
+    private var albumColor = -1
+
+
+    inner class GetAlbumItemEntity(private val context: Context, private val contentsId: Long):Thread(){
+        override fun run() {
+            mAlbumItemEntity = AlbumDatabase.getInstance(context)!!
+                    .albumItemDao()
+                    .getAlbumEntity(contentsId)
+        }
+    }
+
+    inner class GetAlbumColor(private val context: Context, private val albumId: Long):Thread(){
+        override fun run() {
+            albumColor = AlbumDatabase.getInstance(context)!!
+                    .albumDao()
+                    .getAlbumColor(albumId)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,36 +57,9 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
         activity = this
 
-
         // 앨범명, 컨텐츠 제목, 날짜, 컨텐츠 내용
-        albumTitle = intent.getStringExtra("albumTitle")
         contentsId = intent.getLongExtra("contentsId", -1)
-        contentsTitle = intent.getStringExtra("contentsTitle")
-        color = intent.getIntExtra("color", getColor(R.color.album_color_pink))
-        contentsDate = intent.getStringExtra("contentsDate")
-        contentsSentence = intent.getStringExtra("contentsSentence")
-        contentsImage = intent.getStringExtra("contentsImage")
-        contentsCoverImage = intent.getStringExtra("contentsCoverImage")
 
-
-
-
-        // 상태바 색상 배경색에 따라 설정
-        val statusBarColor = getStatusBarColor(color)
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.statusBarColor = statusBarColor
-
-        // UI 출력
-        cl_feed_contents_back.setBackgroundColor(color)
-        tv_album_feed_contents_title.text = contentsTitle
-        tv_album_feed_contents_date.text = contentsDate
-        tv_album_feed_contents_string.text = contentsSentence
-        tv_album_feed_contents_string.movementMethod = ScrollingMovementMethod()    // 스크롤 가능
-
-        // 이미지
-        val fis = openFileInput(contentsImage)
-        val bitmap = BitmapFactory.decodeStream(fis)
-        Glide.with(this).load(bitmap).into(iv_feed_contents_image)
 
         // 버튼
         iv_album_feed_contents_back_button.setOnClickListener {
@@ -71,11 +68,46 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
         // 케밥 메뉴 버튼
         iv_album_feed_contents_more_button.setOnClickListener {
-            val bottomMenuSheet = ContentsBottomMenuSheet(applicationContext, contentsId,
-                                            contentsCoverImage, contentsImage)
+            val bottomMenuSheet = ContentsBottomMenuSheet(applicationContext, contentsId)
             bottomMenuSheet.show(supportFragmentManager, bottomMenuSheet.tag)
+
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+
+        GetAlbumItemEntity(this, contentsId).start()
+        Thread.sleep(100)
+
+        GetAlbumColor(this, mAlbumItemEntity.albumId).start()
+        Thread.sleep(100)
+
+
+
+        // 상태바 색상 배경색에 따라 설정
+        val statusBarColor = getStatusBarColor(albumColor)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = statusBarColor
+
+        // UI 출력
+        cl_feed_contents_back.setBackgroundColor(albumColor)
+        tv_album_feed_contents_title.text = mAlbumItemEntity.contentsTitle
+
+        var dateString = mAlbumItemEntity.contentsDate
+        dateString = dateString.substringBeforeLast('/')
+        dateString += "."+getDayOfWeekFromDate(this, dateString)
+        tv_album_feed_contents_date.text = dateString
+
+        tv_album_feed_contents_string.text = mAlbumItemEntity.contentsSentence
+        tv_album_feed_contents_string.movementMethod = ScrollingMovementMethod()    // 스크롤 가능
+
+        // 이미지
+        val fis = openFileInput(mAlbumItemEntity.contentsImageName)
+        val bitmap = BitmapFactory.decodeStream(fis)
+        Glide.with(this).load(bitmap).into(iv_feed_contents_image)
     }
 
 

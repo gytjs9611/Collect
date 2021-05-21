@@ -187,6 +187,7 @@ class AlbumFeedActivity : AppCompatActivity() {
             item.setOnClickListener {
                 val intent = Intent(this, AlbumFeedContentsActivity::class.java)
                 intent.putExtra("contentsId", contentsId)
+                intent.putExtra("albumId", albumId)
                 intent.putExtra("albumTitle", albumTitle)
                 intent.putExtra("color", color)
                 intent.putExtra("contentsImage", contentsImageName)
@@ -196,6 +197,7 @@ class AlbumFeedActivity : AppCompatActivity() {
                 val dayOfWeek = getDayOfWeekFromDate(applicationContext, date)  // E
                 intent.putExtra("contentsDate", "$date.$dayOfWeek")
                 intent.putExtra("contentsSentence", contentsSentence)
+                intent.putExtra("frameType", frameType)
                 startActivity(intent)
             }
         }

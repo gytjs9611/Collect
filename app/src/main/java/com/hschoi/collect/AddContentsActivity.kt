@@ -19,12 +19,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
+import com.hschoi.collect.database.AlbumDatabase
+import com.hschoi.collect.database.entity.AlbumEntity
+import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.BitmapCropUtils
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekString
 import com.hschoi.collect.util.LayoutParamsUtils
-import kotlinx.android.synthetic.main.activity_add_contents_free.*
+import kotlinx.android.synthetic.main.activity_add_contents.*
 import kotlinx.android.synthetic.main.layout_add_contents_image.view.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
+import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -48,37 +53,60 @@ class AddContentsActivity : AppCompatActivity() {
 //        var contentImageList = ArrayList<String>()
 
         var addContentsActivity: Activity? = null
+
+        var isModify = false
     }
+
+    private lateinit var mAlbumItemEntity : AlbumItemEntity
+    private lateinit var mAlbumEntity : AlbumEntity
 
     private var albumId: Long = -1
     private var albumTitle = ""
     private var frameType = -1
-
     private var albumColor = -1
+
+    private var contentsId: Long = -1
 
     private var isImageSelected = false
 
     private var contentImageUri : Uri? = null
 
+    private lateinit var mCalendar : Calendar
     private var mYear = 0
     private var mMonth = 0
     private var mDayOfMonth = 0
     private var mDayOfWeek = 0
 
 
+    inner class GetAlbumItemEntity(private val context: Context, private val contentsId: Long):Thread(){
+        override fun run() {
+            mAlbumItemEntity = AlbumDatabase.getInstance(context)!!
+                    .albumItemDao()
+                    .getAlbumEntity(contentsId)
+        }
+    }
+
+    inner class GetAlbumEntity(val context: Context, private val albumId: Long): Thread(){
+        override fun run(){
+            mAlbumEntity = AlbumDatabase
+                    .getInstance(context)!!
+                    .albumDao()
+                    .getAlbum(albumId)
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_contents_free)
+        setContentView(R.layout.activity_add_contents)
 
         addContentsActivity = this@AddContentsActivity
 
+        // 데이터 불러옴
+        loadData()
 
         // 레이아웃 초기화
         initLayoutStyle()
-
-
 
         // 버튼 클릭 리스너 등록
         setButtonClickListeners()
@@ -86,20 +114,72 @@ class AddContentsActivity : AppCompatActivity() {
         
     }
 
+    private fun loadData(){
+        albumId = intent.getLongExtra("albumId", -1)
+//        frameType = intent.getIntExtra("frameType", BitmapCropUtils.FRAME_TYPE_0)
+//        albumTitle = intent.getStringExtra("albumTitle")
+//        albumColor = intent.getIntExtra("color", getColor(R.color.album_color_pink))
+
+        GetAlbumEntity(this, albumId).start()
+        Thread.sleep(100)
+
+        frameType = mAlbumEntity.frameType
+        albumTitle = mAlbumEntity.albumTitle
+        albumColor = mAlbumEntity.albumColor
+
+
+        // 앨범 수정일 경우 데이터 로드
+        contentsId = intent.getLongExtra("contentsId", -1)
+        isModify = contentsId>=0
+        if(isModify){  // 컨텐츠 수정일 경우
+            val getAlbumItemEntity = GetAlbumItemEntity(this, contentsId)
+            getAlbumItemEntity.start()
+            Thread.sleep(100)
+
+            et_contents_title.setText(mAlbumItemEntity.contentsTitle)
+
+            // 날짜 설정
+            val dateString = mAlbumItemEntity.contentsDate
+            val dateFormat = SimpleDateFormat("yyyy.MM.dd")
+            val date = dateFormat.parse(dateString)
+
+            mCalendar = Calendar.getInstance()
+            mCalendar.time = date
+
+
+            // 컨텐츠 내용
+            et_contents_sentences.setText(mAlbumItemEntity.contentsSentence)
+
+
+            // 이미지
+            addImageCardView(mAlbumItemEntity.contentsImageName)
+            cl_contents_add_image_back.visibility = View.GONE
+            isImageSelected = true
+
+        }
+        else{   // 컨텐츠 생성일 경우
+            // 날짜 오늘 날짜로 초기화
+            mCalendar = Calendar.getInstance()
+        }
+
+        mYear = mCalendar[Calendar.YEAR]
+        mMonth = mCalendar[Calendar.MONTH]
+        mDayOfMonth = mCalendar[Calendar.DAY_OF_MONTH]
+        mDayOfWeek = mCalendar[Calendar.DAY_OF_WEEK]
+
+        tv_contents_date.text =
+                "$mYear.${mMonth+1}.$mDayOfMonth.${getDayOfWeekString(applicationContext, mDayOfWeek)}"
+
+    }
 
 
     private fun initLayoutStyle(){
-        frameType = intent.getIntExtra("frameType", BitmapCropUtils.FRAME_TYPE_0)
-
         // 상단바 아이콘
         layout_top_menu_add_contents.iv_icon_left.setImageDrawable(getDrawable(R.drawable.ic_close))
         layout_top_menu_add_contents.iv_icon_right.setImageDrawable(getDrawable(R.drawable.ic_next))
 
         // 상단바 타이틀, 배경색
-        albumId = intent.getLongExtra("albumId", -1)
-        albumTitle = intent.getStringExtra("albumTitle")
         layout_top_menu_add_contents.tv_album_name_title.text = albumTitle
-        albumColor = intent.getIntExtra("color", getColor(R.color.album_color_pink))
         layout_top_menu_add_contents.setBackgroundColor(albumColor)
 
         // 상태바 색상 배경색에 따라 설정
@@ -121,15 +201,7 @@ class AddContentsActivity : AppCompatActivity() {
         LayoutParamsUtils.setItemSize(iv_add_contents_image, addImageSize, addImageSize)
 
 
-        // 날짜 오늘 날짜로 초기화
-        val c = Calendar.getInstance()
-        mYear = c[Calendar.YEAR]
-        mMonth = c[Calendar.MONTH]
-        mDayOfMonth = c[Calendar.DAY_OF_MONTH]
-        mDayOfWeek = c[Calendar.DAY_OF_WEEK]
 
-        tv_contents_date.text =
-                "$mYear.${mMonth+1}.$mDayOfMonth.${getDayOfWeekString(applicationContext, mDayOfWeek)}"
     }
 
 
@@ -213,6 +285,45 @@ class AddContentsActivity : AppCompatActivity() {
         // 이미지 설정
 //        imageCardView.iv_content_image.setImageURI(uri)
         Glide.with(this).load(uri).into(imageCardView.iv_content_image)
+
+        // 삭제 버튼
+        imageCardView.iv_delete_button.setOnClickListener {
+            cl_contents_add_image_back.visibility = View.VISIBLE
+            cl_cover_image.removeView(imageCardView)
+            contentImageUri = null
+            isImageSelected = false
+        }
+    }
+
+    private fun addImageCardView(fileName : String){
+        cl_contents_add_image_back.visibility = View.GONE
+
+        // 이미지 카드뷰 객체 생성 및 초기화
+        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val imageCardView
+                = inflater.inflate(
+                R.layout.layout_add_contents_image, cl_cover_image, false
+        ) as CardView
+
+        cl_cover_image.addView(imageCardView)
+        val imageWidth = LayoutParamsUtils.getItemWidthByPercent(applicationContext, IMAGE_WIDTH)
+        val imageHeight = LayoutParamsUtils.getItemSizeByRatio(imageWidth, IMAGE_HEIGHT_RATIO)
+        LayoutParamsUtils.setItemSize(imageCardView, imageWidth, imageHeight)
+
+        imageCardView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            topToTop = cl_cover_image.id
+            startToStart = cl_cover_image.id
+            endToEnd = cl_cover_image.id
+        }
+
+        // 이미지 카드뷰 상단 여백 설정
+        val imageSideMargin = LayoutParamsUtils.getItemWidthByPercent(applicationContext, IMAGE_SIDE_MARGIN)
+        val imageTopMargin = LayoutParamsUtils.getItemSizeByRatio(imageSideMargin, IMAGE_TOP_MARGIN_RATIO)
+        LayoutParamsUtils.setItemMarginTop(imageCardView, imageTopMargin)
+
+        // 이미지 설정
+        val file = File("${applicationContext.filesDir}/${fileName}")
+        Glide.with(this).load(file).into(imageCardView.iv_content_image)
 
         // 삭제 버튼
         imageCardView.iv_delete_button.setOnClickListener {

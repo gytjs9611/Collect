@@ -35,7 +35,8 @@ interface AlbumDao {
     @Query("DELETE FROM album WHERE id=:id")
     fun deleteAlbum(id: Long)
 
-
+    @Query("SELECT albumColor FROM album WHERE id=:id")
+    fun getAlbumColor(id: Long): Int
 
 
 }

@@ -32,4 +32,6 @@ interface AlbumItemDao {
     @Query("DELETE FROM album_item WHERE contentsId=:id")
     fun deleteContents(id: Long)
 
+    @Query("SELECT * FROM album_item WHERE contentsId = :contentsId")
+    fun getAlbumEntity(contentsId: Long): AlbumItemEntity
 }
