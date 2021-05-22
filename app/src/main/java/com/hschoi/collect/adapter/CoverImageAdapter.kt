@@ -3,7 +3,6 @@ package com.hschoi.collect.adapter
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +20,9 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
     }
 
     private var mContext = context
-    var listData = ArrayList<Uri?>()  // 리스트 데이터 전달받을 변수
+    var isURI = true
+    var uriListData = ArrayList<Uri?>()  // 리스트 데이터 전달받을 변수
+    var imageNameListData = ArrayList<String?>()
 
     private var selectedPosition = 0
 
@@ -35,19 +36,24 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
     }
 
     override fun getItemCount(): Int {
-        return listData.size
+        return if(isURI) uriListData.size else imageNameListData.size
     }
 
     override fun onBindViewHolder(holder : Holder, position : Int){
-        val data = listData[position]
         Log.d("COVER", "cover image adapter - onBindViewHolder")
-
 
         if(position==itemCount-1){
             holder.bindLastItem()
         }
         else{
-            holder.bindNormalItem(data!!)
+            if(isURI){
+                val data = uriListData[position]
+                holder.bindNormalItem(data!!)
+            }
+            else{
+                val data = imageNameListData[position]
+                holder.bindNormalItem(data!!)
+            }
         }
 
         if(selectedPosition == position){
@@ -56,6 +62,7 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
         else{
             holder.itemView.cl_selected.visibility = View.INVISIBLE
         }
+
 
 
     }
@@ -93,6 +100,15 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
 
 //            val bitmap = MediaStore.Images.Media.getBitmap(mContext.contentResolver, data)
             itemView.iv_cover_image.setImageURI(data)
+        }
+
+        fun bindNormalItem(fileName : String){
+            itemView.iv_add_icon.visibility = View.GONE
+            itemView.iv_cover_image.visibility = View.VISIBLE
+
+            val fis = mContext.openFileInput(fileName)
+            val bitmap = BitmapFactory.decodeStream(fis)
+            itemView.iv_cover_image.setImageBitmap(bitmap)
         }
 
     }

@@ -3,7 +3,6 @@ package com.hschoi.collect
 import android.content.Context
 import android.content.Intent
 import android.graphics.*
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +12,7 @@ import androidx.core.graphics.PathParser
 import androidx.recyclerview.widget.GridLayoutManager
 import com.hschoi.collect.adapter.CoverImageAdapter
 import com.hschoi.collect.database.AlbumDatabase
+import com.hschoi.collect.database.entity.AlbumEntity
 import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.BitmapCropUtils
 import com.hschoi.collect.util.BitmapUtils
@@ -21,10 +21,8 @@ import com.hschoi.collect.util.PathDataUtils
 import kotlinx.android.synthetic.main.activity_add_contents_cover.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Collections.rotate
 import kotlin.collections.ArrayList
 
 
@@ -41,15 +39,21 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
     }
 
-    private var albumId: Long = -1
-    private var contentsId: Long = -1
-    private var albumTitle : String? = null
-    private var frameType = BitmapCropUtils.FRAME_TYPE_0
-    private var albumColor = -1
-    private var contentImageUri : Uri? = null
-    private var contentsDate : String? = null
-    private var contentsTitle : String? = null
-    private var contentsSentence : String? = null
+    private lateinit var mAlbumEntity: AlbumEntity
+    private lateinit var mAlbumItemEntity: AlbumItemEntity
+
+    private var mAlbumId: Long = -1
+    private var mContentsId: Long = -1
+
+    private var mAlbumTitle : String? = null
+    private var mFrameType = BitmapCropUtils.FRAME_TYPE_0
+    private var mAlbumColor = -1
+
+
+    private var mContentImageUri : Uri? = null
+    private var mContentsDate : String? = null
+    private var mContentsTitle : String? = null
+    private var mContentsSentence : String? = null
 
     private var viewWidth = 0
     private var viewHeight = 0
@@ -57,24 +61,63 @@ class AddContentsCoverActivity : AppCompatActivity() {
     private var frameHeight = 0
 
 
-    private var imageList = ArrayList<Uri?>()
+    private var imageUriList = ArrayList<Uri?>()
+    private var imageNameList = ArrayList<String?>()
 
 
+    inner class GetAlbumItemEntity(private val context: Context, private val contentsId:Long):Thread(){
+        override fun run() {
+            mAlbumItemEntity = AlbumDatabase.getInstance(context)!!
+                    .albumItemDao()
+                    .getAlbumItemEntity(contentsId)
+        }
+    }
+
+    inner class GetAlbumEntity(private val context: Context, private val albumId:Long):Thread(){
+        override fun run() {
+            mAlbumEntity = AlbumDatabase.getInstance(context)!!
+                    .albumDao()
+                    .getAlbumEntity(albumId)
+        }
+    }
+
+    inner class UpdateAlbumItem(private val context: Context, private val albumItemEntity:AlbumItemEntity):Thread(){
+        override fun run() {
+            AlbumDatabase.getInstance(context)!!
+                    .albumItemDao()
+                    .updateContents(albumItemEntity)
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_contents_cover)
 
+        mContentsId = intent.getLongExtra("contentsId", -1)
+        mAlbumId = intent.getLongExtra("albumId", -1)
+
+        GetAlbumEntity(this, mAlbumId).start()
+        Thread.sleep(100)
+
+        mAlbumTitle = mAlbumEntity.albumTitle
+        mFrameType = mAlbumEntity.frameType
+        mAlbumColor = mAlbumEntity.albumColor
+
         // 컨텐츠 추가 액티비티에서 전달된 데이터 받음
-        albumId = intent.getLongExtra("albumId", -1)
-        albumTitle = intent.getStringExtra("albumTitle")
-        frameType = intent.getIntExtra("frameType", BitmapCropUtils.FRAME_TYPE_0)
-        albumColor = intent.getIntExtra("color", getColor(R.color.album_color_pink))
-        contentImageUri = intent.getParcelableExtra("contentImageUri")
-        contentsDate = intent.getStringExtra("contentsDate")
-        contentsTitle = intent.getStringExtra("contentsTitle")
-        contentsSentence = intent.getStringExtra("contentsSentence")
+        if(AddContentsActivity.isModify){   // 컨텐츠 수정일 경우
+            GetAlbumItemEntity(this, mContentsId).start()
+            Thread.sleep(100)
+            Log.d("sival", "oncreate $mAlbumItemEntity")
+        }
+        else{
+            mContentImageUri = intent.getParcelableExtra("contentImageUri")
+        }
+
+        mContentsDate = intent.getStringExtra("contentsDate")
+        mContentsTitle = intent.getStringExtra("contentsTitle")
+        mContentsSentence = intent.getStringExtra("contentsSentence")
+        Log.d("sival", "d $mContentsDate, t $mContentsTitle, s $mContentsSentence")
 
         setOnClickListeners()
 
@@ -104,19 +147,32 @@ class AddContentsCoverActivity : AppCompatActivity() {
         frameWidth = LayoutParamsUtils.getItemSizeByRatio(frameHeight, FRAME_WIDTH_RATIO)
         // CroppingView에 프레임 정보 전달
         icv_cover_image_source.setFrameStyle(BitmapCropUtils.FRAME_TYPE_0, frameWidth, frameHeight)
-        drawFrameBack(frameType)
+        drawFrameBack(mFrameType)
 
         Log.d("MAIN", "viewWidth=$viewWidth, viewHeight=$viewHeight, frameW = $frameWidth, fameH = $frameHeight")
 
 
-        icv_cover_image_source.setImageURI(contentImageUri, viewWidth, viewHeight)
-        imageList.add(contentImageUri!!)
-        imageList.add(null) // + 버튼 생성을 위한 dummy  추가
-
-
         val adapter = CoverImageAdapter(applicationContext)
-        adapter.listData = imageList
-        Log.d("COVER", "${adapter.listData[0]}")
+
+        if(AddContentsActivity.isModify){
+            val fis = openFileInput(mAlbumItemEntity.contentsImageName)
+            val savedBitmap = BitmapFactory.decodeStream(fis)
+
+            icv_cover_image_source.initView(applicationContext)  // 크롭 이미지뷰 초기화
+            icv_cover_image_source.setImageBitmap(savedBitmap)
+            adapter.isURI = false
+            imageNameList.add(mAlbumItemEntity.contentsImageName)
+            imageNameList.add(null)
+            adapter.imageNameListData = imageNameList
+        }
+        else{
+            icv_cover_image_source.setImageURI(mContentImageUri, viewWidth, viewHeight)
+            adapter.isURI = true
+            imageUriList.add(mContentImageUri!!)
+            imageUriList.add(null) // + 버튼 생성을 위한 dummy  추가
+            adapter.uriListData = imageUriList
+        }
+
         rv_contents_image.adapter = adapter
         rv_contents_image.layoutManager = GridLayoutManager(this, 3)
 
@@ -132,85 +188,124 @@ class AddContentsCoverActivity : AppCompatActivity() {
             AlbumFeedActivity.isDataChanged = true  // 데이터 추가되었음을 알려줌
 
             // 파일명 지정 후 생성
-//            val dateTime = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-            var contentsImageName = "contents_${albumId}_${contentsTitle}.png"
-            var cnt = 1
-            var file = File("${applicationContext.filesDir}/$contentsImageName")
-            val name = file.nameWithoutExtension
-            while(file.exists()){
-                contentsImageName = "${name}_${cnt}.png"
-                Log.d("file", "new=$contentsImageName")
-                file = File("${applicationContext.filesDir}/$contentsImageName")
-                cnt++
+            var contentsImageName: String
+            if(AddContentsActivity.isModify){
+                contentsImageName = mAlbumItemEntity.contentsImageName
+            }
+            else{
+                contentsImageName = "contents_${mAlbumId}_${mContentsTitle}.png"
+                var cnt = 1
+                var file = File("${applicationContext.filesDir}/$contentsImageName")
+                val name = file.nameWithoutExtension
+                while(file.exists()){
+                    contentsImageName = "${name}_${cnt}.png"
+                    Log.d("file", "new=$contentsImageName")
+                    file = File("${applicationContext.filesDir}/$contentsImageName")
+                    cnt++
+                }
             }
 
-            var fos = openFileOutput(contentsImageName, MODE_PRIVATE)
 
             val viewWidth = LayoutParamsUtils.getScreenWidth(applicationContext)
             val viewHeight = LayoutParamsUtils
                     .getItemHeightByPercent(applicationContext, 0.479f)
 
-            var bitmap = BitmapUtils
-                    .getResizedBitmap(applicationContext, contentImageUri,
-                                            viewWidth, viewHeight)
-                    ?:return@setOnClickListener
 
-            // 이미지 회전값이 존재할 경우, 똑바로 보이도록 조정해줌
-            val exifDegree = BitmapUtils.getExifDegree(applicationContext, contentImageUri!!)
-            if(exifDegree!=0){
-                bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@setOnClickListener
+            if(AddContentsActivity.isModify){
+                // 일단은 암꺼도 안함
             }
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
-            fos.close()
+            else{
+                var fos = openFileOutput(contentsImageName, MODE_PRIVATE)
+                var bitmap:Bitmap
+                bitmap = BitmapUtils
+                        .getResizedBitmap(applicationContext, mContentImageUri,
+                                viewWidth, viewHeight)
+                        ?:return@setOnClickListener
+
+                // 이미지 회전값이 존재할 경우, 똑바로 보이도록 조정해줌
+                val exifDegree = BitmapUtils.getExifDegree(applicationContext, mContentImageUri!!)
+                if(exifDegree!=0){
+                    bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@setOnClickListener
+                }
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
+                fos.close()
+            }
+
+
 
 
             // 내부저장소에 컨텐츠 커버이미지 저장
-            var coverImageName = "contents_cover_${albumId}_${contentsTitle}.png"
-            var coverCnt = 1
-            var coverFile = File("${applicationContext.filesDir}/$coverImageName")
-            val coverName = coverFile.nameWithoutExtension
-            while(coverFile.exists()){
-                coverImageName = "${coverName}_${coverCnt}.png"
-                Log.d("file", "new=$contentsImageName")
-                coverFile = File("${applicationContext.filesDir}/$coverImageName")
-                coverCnt++
+            var coverImageName: String
+            if(AddContentsActivity.isModify){
+                coverImageName = mAlbumItemEntity.coverImageName
+
+            }
+            else{
+                coverImageName = "contents_cover_${mAlbumId}_${mContentsTitle}.png"
+                var coverCnt = 1
+                var coverFile = File("${applicationContext.filesDir}/$coverImageName")
+                val coverName = coverFile.nameWithoutExtension
+                while(coverFile.exists()){
+                    coverImageName = "${coverName}_${coverCnt}.png"
+                    Log.d("file", "new=$contentsImageName")
+                    coverFile = File("${applicationContext.filesDir}/$coverImageName")
+                    coverCnt++
+                }
             }
 
-
-
-            fos = openFileOutput(coverImageName, Context.MODE_PRIVATE)
+            var fos2 = openFileOutput(coverImageName, Context.MODE_PRIVATE)
             icv_cover_image_source.croppedImage
-                    .compress(Bitmap.CompressFormat.JPEG, 50, fos)
-            fos.close()
+                    .compress(Bitmap.CompressFormat.JPEG, 50, fos2)
+            fos2.close()
 
 
 
             // ** 데이터베이스에 컨텐츠 정보 저장
             val time = SimpleDateFormat("yyyyMMddHHmmssSSS").format(Date())
 
-            val albumItemEntity = AlbumItemEntity(albumId, albumTitle!!, contentsTitle!!,
-                "$contentsDate/$time", contentsSentence!!, coverImageName, contentsImageName, frameType)
-            val addContents = AddContents(applicationContext, albumItemEntity)
-            addContents.start()
+            if(AddContentsActivity.isModify){
+                mAlbumItemEntity.contentsSentence = mContentsSentence!!
+                mAlbumItemEntity.contentsDate = "$mContentsDate/$time"
+                mAlbumItemEntity.contentsTitle = mContentsTitle!!
 
-            Log.d("DB", "contentsId = $contentsId")
+                Log.d("sival", "$mAlbumItemEntity")
+                UpdateAlbumItem(this, mAlbumItemEntity).start()
+                Thread.sleep(100)
+
+                GetAlbumItemEntity(this, mContentsId).start()
+                Thread.sleep(100)
+                Log.d("sival", "after $mAlbumItemEntity")
+
+            }
+            else{
+                val albumItemEntity = AlbumItemEntity(mAlbumId, mAlbumTitle!!, mContentsTitle!!,
+                        "$mContentsDate/$time", mContentsSentence!!, coverImageName, contentsImageName, mFrameType)
+                val addContents = AddContents(applicationContext, albumItemEntity)
+                addContents.start()
+                Thread.sleep(100)
+            }
+
+            Log.d("DB", "contentsId = $mContentsId")
 
 
 
             // 홈 하단 메뉴바의 컨텐츠 추가 버튼 눌러서 추가하는 경우
             if(MainActivity.isAddFromHome){
                 val intent = Intent(this, AlbumFeedActivity::class.java)
-                intent.putExtra("albumId", albumId)
-                intent.putExtra("albumTitle", albumTitle)
-                intent.putExtra("frameType", frameType)
-                intent.putExtra("color", albumColor)
+                intent.putExtra("albumId", mAlbumId)
+                intent.putExtra("albumTitle", mAlbumTitle)
+                intent.putExtra("frameType", mFrameType)
+                intent.putExtra("color", mAlbumColor)
 
                 startActivity(intent)
                 MainActivity.isAddFromHome = false
             }
+
+
             // 액티비티 종료
             // 이전 액티비였던 컨텐츠 추가 액티비티도 함께 종료시킴
             val addContentsActivity = AddContentsActivity.addContentsActivity as AddContentsActivity
+            AddContentsActivity.isModify = false
             addContentsActivity.finish()
 
             finish()
@@ -224,7 +319,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
     inner class AddContents(val context: Context, private val entity: AlbumItemEntity): Thread(){
         override fun run(){
-            contentsId = AlbumDatabase
+            mContentsId = AlbumDatabase
                     .getInstance(context)!!
                     .albumItemDao()
                     .insertContents(entity)

@@ -22,7 +22,6 @@ import com.bumptech.glide.Glide
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
 import com.hschoi.collect.database.entity.AlbumItemEntity
-import com.hschoi.collect.util.BitmapCropUtils
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekString
 import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.activity_add_contents.*
@@ -61,10 +60,6 @@ class AddContentsActivity : AppCompatActivity() {
     private lateinit var mAlbumEntity : AlbumEntity
 
     private var albumId: Long = -1
-    private var albumTitle = ""
-    private var frameType = -1
-    private var albumColor = -1
-
     private var contentsId: Long = -1
 
     private var isImageSelected = false
@@ -82,7 +77,7 @@ class AddContentsActivity : AppCompatActivity() {
         override fun run() {
             mAlbumItemEntity = AlbumDatabase.getInstance(context)!!
                     .albumItemDao()
-                    .getAlbumEntity(contentsId)
+                    .getAlbumItemEntity(contentsId)
         }
     }
 
@@ -91,7 +86,7 @@ class AddContentsActivity : AppCompatActivity() {
             mAlbumEntity = AlbumDatabase
                     .getInstance(context)!!
                     .albumDao()
-                    .getAlbum(albumId)
+                    .getAlbumEntity(albumId)
         }
     }
 
@@ -116,16 +111,9 @@ class AddContentsActivity : AppCompatActivity() {
 
     private fun loadData(){
         albumId = intent.getLongExtra("albumId", -1)
-//        frameType = intent.getIntExtra("frameType", BitmapCropUtils.FRAME_TYPE_0)
-//        albumTitle = intent.getStringExtra("albumTitle")
-//        albumColor = intent.getIntExtra("color", getColor(R.color.album_color_pink))
 
         GetAlbumEntity(this, albumId).start()
         Thread.sleep(100)
-
-        frameType = mAlbumEntity.frameType
-        albumTitle = mAlbumEntity.albumTitle
-        albumColor = mAlbumEntity.albumColor
 
 
         // 앨범 수정일 경우 데이터 로드
@@ -179,11 +167,11 @@ class AddContentsActivity : AppCompatActivity() {
         layout_top_menu_add_contents.iv_icon_right.setImageDrawable(getDrawable(R.drawable.ic_next))
 
         // 상단바 타이틀, 배경색
-        layout_top_menu_add_contents.tv_album_name_title.text = albumTitle
-        layout_top_menu_add_contents.setBackgroundColor(albumColor)
+        layout_top_menu_add_contents.tv_album_name_title.text = mAlbumEntity.albumTitle
+        layout_top_menu_add_contents.setBackgroundColor(mAlbumEntity.albumColor)
 
         // 상태바 색상 배경색에 따라 설정
-        val statusBarColor = getStatusBarColor(albumColor)
+        val statusBarColor = getStatusBarColor(mAlbumEntity.albumColor)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = statusBarColor
 
@@ -219,15 +207,19 @@ class AddContentsActivity : AppCompatActivity() {
             }
             // start activity (add contents cover activity)
             val intent = Intent(this, AddContentsCoverActivity::class.java)
-            intent.putExtra("albumId", albumId)
-            intent.putExtra("albumTitle", albumTitle)
-            intent.putExtra("frameType", frameType)
-            intent.putExtra("color", albumColor)
-            intent.putExtra("contentImageUri", contentImageUri)
+            if(isModify){
+                intent.putExtra("contentsId", contentsId)
+                intent.putExtra("contentsImage", mAlbumItemEntity.contentsImageName)
+                intent.putExtra("contentsCoverImage", mAlbumItemEntity.coverImageName)
+            }
+            else{
+                intent.putExtra("contentImageUri", contentImageUri)
+            }
             val contentsDate = tv_contents_date.text.toString().substringBeforeLast(".")
             intent.putExtra("contentsDate", contentsDate)
             intent.putExtra("contentsTitle", et_contents_title.text.toString())
             intent.putExtra("contentsSentence", et_contents_sentences.text.toString())
+            intent.putExtra("albumId", albumId)
             startActivity(intent)
         }
         

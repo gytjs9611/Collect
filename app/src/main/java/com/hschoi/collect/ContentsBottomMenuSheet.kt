@@ -76,7 +76,7 @@ class ContentsBottomMenuSheet(context : Context, contentsId: Long) : BottomSheet
             mAlbumItemEntity = AlbumDatabase
                     .getInstance(context)!!
                     .albumItemDao()
-                    .getAlbumEntity(contentsId)
+                    .getAlbumItemEntity(contentsId)
         }
     }
 

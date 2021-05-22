@@ -13,7 +13,7 @@ interface AlbumDao {
     fun getAlbumCnt() : Int
 
     @Query("SELECT * FROM album WHERE id = :id")
-    fun getAlbum(id : Long) : AlbumEntity
+    fun getAlbumEntity(id : Long) : AlbumEntity
 
 
     @Query("UPDATE album SET albumOrder=:order WHERE id=:id")

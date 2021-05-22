@@ -11,8 +11,6 @@ import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekFromDate
 import kotlinx.android.synthetic.main.activity_album_feed_contents.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class AlbumFeedContentsActivity : AppCompatActivity(){
 
@@ -39,7 +37,7 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         override fun run() {
             mAlbumItemEntity = AlbumDatabase.getInstance(context)!!
                     .albumItemDao()
-                    .getAlbumEntity(contentsId)
+                    .getAlbumItemEntity(contentsId)
         }
     }
 
@@ -97,7 +95,7 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         tv_album_feed_contents_title.text = mAlbumItemEntity.contentsTitle
 
         var dateString = mAlbumItemEntity.contentsDate
-        dateString = dateString.substringBeforeLast('/')
+        dateString = dateString.substringBefore('/')
         dateString += "."+getDayOfWeekFromDate(this, dateString)
         tv_album_feed_contents_date.text = dateString
 

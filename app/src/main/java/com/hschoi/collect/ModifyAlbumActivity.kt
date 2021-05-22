@@ -396,7 +396,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
             albumEntity = AlbumDatabase
                     .getInstance(context)!!
                     .albumDao()
-                    .getAlbum(albumId)
+                    .getAlbumEntity(albumId)
         }
     }
 

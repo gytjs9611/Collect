@@ -25,7 +25,7 @@ interface AlbumItemDao {
     @Insert
     fun insertContents(entity: AlbumItemEntity): Long
 
-    @Update(onConflict = OnConflictStrategy.ABORT)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateContents(entity: AlbumItemEntity)
 
 
@@ -33,5 +33,5 @@ interface AlbumItemDao {
     fun deleteContents(id: Long)
 
     @Query("SELECT * FROM album_item WHERE contentsId = :contentsId")
-    fun getAlbumEntity(contentsId: Long): AlbumItemEntity
+    fun getAlbumItemEntity(contentsId: Long): AlbumItemEntity
 }
