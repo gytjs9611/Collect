@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.hschoi.collect.AddContentsCoverActivity
 import com.hschoi.collect.R
 import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.item_contents_cover_image.view.*
@@ -20,9 +21,7 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
     }
 
     private var mContext = context
-    var isURI = true
-    var uriListData = ArrayList<Uri?>()  // 리스트 데이터 전달받을 변수
-    var imageNameListData = ArrayList<String?>()
+    var imageNameListData = ArrayList<String>()
 
     private var selectedPosition = 0
 
@@ -36,7 +35,7 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
     }
 
     override fun getItemCount(): Int {
-        return if(isURI) uriListData.size else imageNameListData.size
+        return imageNameListData.size
     }
 
     override fun onBindViewHolder(holder : Holder, position : Int){
@@ -46,14 +45,8 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
             holder.bindLastItem()
         }
         else{
-            if(isURI){
-                val data = uriListData[position]
-                holder.bindNormalItem(data!!)
-            }
-            else{
-                val data = imageNameListData[position]
-                holder.bindNormalItem(data!!)
-            }
+            val data = imageNameListData[position]
+            holder.bindNormalItem(data)
         }
 
         if(selectedPosition == position){
@@ -76,12 +69,17 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
                 // + 버튼 이벤트
                 if(pos==itemCount-1){
                     // 이미지 추가 코드 작성 필요
+
                 }
                 else{
                     selectedPosition = pos
+                    AddContentsCoverActivity.mSelectedImage = imageNameListData[pos]
+
+                    val bitmap = BitmapFactory.decodeFile("${mContext.filesDir}/${imageNameListData[pos]}")
+
+                    AddContentsCoverActivity.mImageCropView.initView(mContext)
+                    AddContentsCoverActivity.mImageCropView.setImageBitmap(bitmap)
                     notifyDataSetChanged()
-                    
-                    // cropping view에 선택한 이미지로 업데이트
                 }
             }
         }

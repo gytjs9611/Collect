@@ -5,27 +5,27 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.updateLayoutParams
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.hschoi.collect.adapter.ContentsImageRecyclerAdapter
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
 import com.hschoi.collect.database.entity.AlbumItemEntity
+import com.hschoi.collect.util.BitmapUtils
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekString
 import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.activity_add_contents.*
-import kotlinx.android.synthetic.main.layout_add_contents_image.view.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 import java.io.File
 import java.text.SimpleDateFormat
@@ -36,24 +36,31 @@ class AddContentsActivity : AppCompatActivity() {
 
     companion object {
         private const val ADD_IMAGE_BACK_WIDTH = 340f/360f
-        private const val ADD_IMAGE_BACK_HEIGHT_RATIO = 262f/340f
+        const val ADD_IMAGE_BACK_HEIGHT_RATIO = 262f/340f
         private const val ADD_IMAGE_BACK_MARGIN = 10f/360f
 
         private const val ADD_ICON_SIZE = 52f/716f
 
-        private const val IMAGE_WIDTH = 328f/360f
-        private const val IMAGE_HEIGHT_RATIO = 262f/328f
-        private const val IMAGE_TOP_MARGIN_RATIO = 14f/16f
-        private const val IMAGE_SIDE_MARGIN = 16f/360f
+        const val IMAGE_WIDTH = 328f/360f
+        const val IMAGE_HEIGHT = 262f/716f
+        const val IMAGE_TOP_MARGIN_RATIO = 14f/16f
+        const val IMAGE_SIDE_MARGIN = 16f/360f
+        const val IMAGE_ADD_BUTTON_SIDE_MARGIN = 28f/360f
 
-        private const val REQ_STORAGE_PERMISSION = 100
-        private const val REQ_GALLERY = 101
+        const val ADD_BUTTON_WIDTH_RATIO = 56f/262f
 
-//        var contentImageList = ArrayList<String>()
+        const val DATE_TOP_MARGIN = 22f/716f
+
+        const val REQ_STORAGE_PERMISSION = 100
+        const val REQ_GALLERY = 101
 
         var addContentsActivity: Activity? = null
 
+        lateinit var imageList : ArrayList<String>
         var isModify = false
+        var isSaved = false
+
+        lateinit var defaultAddView : ConstraintLayout
     }
 
     private lateinit var mAlbumItemEntity : AlbumItemEntity
@@ -61,6 +68,8 @@ class AddContentsActivity : AppCompatActivity() {
 
     private var albumId: Long = -1
     private var contentsId: Long = -1
+
+    private lateinit var imageRecyclerAdapter : ContentsImageRecyclerAdapter
 
     private var isImageSelected = false
 
@@ -96,9 +105,29 @@ class AddContentsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_contents)
 
         addContentsActivity = this@AddContentsActivity
+        imageList = ArrayList()
+        defaultAddView = cl_contents_add_image_back
+
+
+        // 이미지 아이템 리사이클러뷰 초기화
+        imageRecyclerAdapter = ContentsImageRecyclerAdapter(imageList)
+        rv_image_list.adapter = imageRecyclerAdapter
+        rv_image_list.layoutManager = GridLayoutManager(applicationContext, 1, RecyclerView.HORIZONTAL, false)
+
+        val decoration = ContentsImageRecyclerDecoration(applicationContext)
+        rv_image_list.addItemDecoration(decoration)
 
         // 데이터 불러옴
         loadData()
+
+        if(imageList.size==0){
+            defaultAddView.bringToFront()
+        }
+        else{
+            rv_image_list.smoothScrollToPosition(imageList.size-1)
+            defaultAddView.visibility = View.INVISIBLE
+        }
+
 
         // 레이아웃 초기화
         initLayoutStyle()
@@ -108,6 +137,19 @@ class AddContentsActivity : AppCompatActivity() {
 
         
     }
+
+    override fun onDestroy() {
+        if(!isSaved && !isModify){   //  저장되지 않는 경우에 이미지 파일 모두 삭제
+            for(fileName in imageList){
+                deleteFile(fileName)
+            }
+        }
+        else{
+            isSaved = false
+        }
+        super.onDestroy()
+    }
+
 
     private fun loadData(){
         albumId = intent.getLongExtra("albumId", -1)
@@ -140,9 +182,11 @@ class AddContentsActivity : AppCompatActivity() {
 
 
             // 이미지
-            addImageCardView(mAlbumItemEntity.contentsImageName)
-            cl_contents_add_image_back.visibility = View.GONE
-            isImageSelected = true
+            val savedList = mAlbumItemEntity.contentsImageName.split("|")
+            for(name in savedList){
+                imageList.add(name)
+            }
+            imageList.add("")   // add dummy (for add button)
 
         }
         else{   // 컨텐츠 생성일 경우
@@ -188,7 +232,13 @@ class AddContentsActivity : AppCompatActivity() {
         val addImageSize = LayoutParamsUtils.getItemHeightByPercent(applicationContext, ADD_ICON_SIZE)
         LayoutParamsUtils.setItemSize(iv_add_contents_image, addImageSize, addImageSize)
 
+        val dateTopMargin = LayoutParamsUtils.getItemHeightByPercent(applicationContext, DATE_TOP_MARGIN)
+        LayoutParamsUtils.setItemMarginTop(cl_contents_date, dateTopMargin)
 
+        // 이미지 아이템 여백
+        val imageLeftMargin = LayoutParamsUtils.getItemWidthByPercent(applicationContext, IMAGE_SIDE_MARGIN)
+        val imageTopMargin = LayoutParamsUtils.getItemSizeByRatio(imageLeftMargin, IMAGE_TOP_MARGIN_RATIO)
+        LayoutParamsUtils.setItemMarginTop(rv_image_list, imageTopMargin)
 
     }
 
@@ -247,84 +297,6 @@ class AddContentsActivity : AppCompatActivity() {
                 "$year.${month+1}.$dayOfMonth.${getDayOfWeekString(applicationContext, dayOfWeek)}"
     }
 
-    // 카드뷰에 선택한 이미지 삽입
-    private fun addImageCardView(uri : Uri){
-        cl_contents_add_image_back.visibility = View.GONE
-
-        // 이미지 카드뷰 객체 생성 및 초기화
-        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val imageCardView
-                = inflater.inflate(
-                R.layout.layout_add_contents_image, cl_cover_image, false
-        ) as CardView
-
-        cl_cover_image.addView(imageCardView)
-        val imageWidth = LayoutParamsUtils.getItemWidthByPercent(applicationContext, IMAGE_WIDTH)
-        val imageHeight = LayoutParamsUtils.getItemSizeByRatio(imageWidth, IMAGE_HEIGHT_RATIO)
-        LayoutParamsUtils.setItemSize(imageCardView, imageWidth, imageHeight)
-
-        imageCardView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-            topToTop = cl_cover_image.id
-            startToStart = cl_cover_image.id
-            endToEnd = cl_cover_image.id
-        }
-
-        // 이미지 카드뷰 상단 여백 설정
-        val imageSideMargin = LayoutParamsUtils.getItemWidthByPercent(applicationContext, IMAGE_SIDE_MARGIN)
-        val imageTopMargin = LayoutParamsUtils.getItemSizeByRatio(imageSideMargin, IMAGE_TOP_MARGIN_RATIO)
-        LayoutParamsUtils.setItemMarginTop(imageCardView, imageTopMargin)
-
-        // 이미지 설정
-//        imageCardView.iv_content_image.setImageURI(uri)
-        Glide.with(this).load(uri).into(imageCardView.iv_content_image)
-
-        // 삭제 버튼
-        imageCardView.iv_delete_button.setOnClickListener {
-            cl_contents_add_image_back.visibility = View.VISIBLE
-            cl_cover_image.removeView(imageCardView)
-            contentImageUri = null
-            isImageSelected = false
-        }
-    }
-
-    private fun addImageCardView(fileName : String){
-        cl_contents_add_image_back.visibility = View.GONE
-
-        // 이미지 카드뷰 객체 생성 및 초기화
-        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val imageCardView
-                = inflater.inflate(
-                R.layout.layout_add_contents_image, cl_cover_image, false
-        ) as CardView
-
-        cl_cover_image.addView(imageCardView)
-        val imageWidth = LayoutParamsUtils.getItemWidthByPercent(applicationContext, IMAGE_WIDTH)
-        val imageHeight = LayoutParamsUtils.getItemSizeByRatio(imageWidth, IMAGE_HEIGHT_RATIO)
-        LayoutParamsUtils.setItemSize(imageCardView, imageWidth, imageHeight)
-
-        imageCardView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-            topToTop = cl_cover_image.id
-            startToStart = cl_cover_image.id
-            endToEnd = cl_cover_image.id
-        }
-
-        // 이미지 카드뷰 상단 여백 설정
-        val imageSideMargin = LayoutParamsUtils.getItemWidthByPercent(applicationContext, IMAGE_SIDE_MARGIN)
-        val imageTopMargin = LayoutParamsUtils.getItemSizeByRatio(imageSideMargin, IMAGE_TOP_MARGIN_RATIO)
-        LayoutParamsUtils.setItemMarginTop(imageCardView, imageTopMargin)
-
-        // 이미지 설정
-        val file = File("${applicationContext.filesDir}/${fileName}")
-        Glide.with(this).load(file).into(imageCardView.iv_content_image)
-
-        // 삭제 버튼
-        imageCardView.iv_delete_button.setOnClickListener {
-            cl_contents_add_image_back.visibility = View.VISIBLE
-            cl_cover_image.removeView(imageCardView)
-            contentImageUri = null
-            isImageSelected = false
-        }
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -332,13 +304,55 @@ class AddContentsActivity : AppCompatActivity() {
             REQ_GALLERY ->{
                 // 갤러리로부터 사진 가져옴
                 if(data!=null && resultCode==RESULT_OK){
-                    contentImageUri = data.data
-//                    val bitmap = MediaStore.Images.Media.getBitmap(applicationContext.contentResolver, uri)
-                    addImageCardView(contentImageUri!!)
-                    cl_contents_add_image_back.visibility = View.GONE
+                    val contentImageUri = data.data
+
+
+                    val viewWidth = LayoutParamsUtils.getScreenWidth(applicationContext)
+                    val viewHeight = LayoutParamsUtils
+                            .getItemHeightByPercent(applicationContext, 0.479f)
+
+                    var fileName = "contents_image_${mAlbumEntity.id}.png"
+                    var file = File("${applicationContext.filesDir}/$fileName")
+                    val name = file.nameWithoutExtension
+                    var cnt = 1
+
+                    while(file.exists()){
+                        fileName = "${name}_${cnt}.png"
+                        Log.d("file", "new=$fileName")
+                        file = File("${applicationContext.filesDir}/$fileName")
+                        cnt++
+                    }
+
+                    if(cnt-1>0)
+                        fileName = "${name}_${cnt-1}.png"
+
+
+                    val fos = openFileOutput(fileName, Context.MODE_PRIVATE)
+                    var bitmap: Bitmap = BitmapUtils
+                            .getResizedBitmap(applicationContext, contentImageUri,
+                                    viewWidth, viewHeight)?:return
+
+                    // 회전값 존재하면 똑바로 보이도록 조정
+                    val exifDegree = BitmapUtils.getExifDegree(applicationContext, contentImageUri!!)
+                    if(exifDegree!=0){
+                        bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return
+                    }
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
+                    fos.close()
+
+                    defaultAddView.visibility = View.INVISIBLE
                     isImageSelected = true
 
+                    if(imageList.size==0){
+                        imageList.add(fileName)
+                        imageList.add("")
+                    }
+                    else{
+                        imageList.add(imageList.size-1,fileName)
+                    }
 
+                    rv_image_list.smoothScrollToPosition(imageList.size-1)
+                    imageRecyclerAdapter.notifyDataSetChanged()
                 }
             }
         }

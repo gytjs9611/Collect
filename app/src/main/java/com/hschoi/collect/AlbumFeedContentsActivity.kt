@@ -19,14 +19,7 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
     }
 
     private var contentsId : Long = -1
-    /*private var albumId : Long = -1
-    private lateinit var albumTitle : String
-    private lateinit var contentsImage : String
-    private lateinit var contentsCoverImage : String
-    private lateinit var contentsTitle : String
-    private lateinit var contentsDate : String
-    private lateinit var contentsSentence : String
-    private var frameType = 0*/
+    private lateinit var mImageList : List<String>
 
     private lateinit var mAlbumItemEntity: AlbumItemEntity
 
@@ -103,7 +96,8 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         tv_album_feed_contents_string.movementMethod = ScrollingMovementMethod()    // 스크롤 가능
 
         // 이미지
-        val fis = openFileInput(mAlbumItemEntity.contentsImageName)
+        mImageList = mAlbumItemEntity.contentsImageName.split("|")
+        val fis = openFileInput(mImageList[0])  // 임시로 0번 이미지만 보여줌
         val bitmap = BitmapFactory.decodeStream(fis)
         Glide.with(this).load(bitmap).into(iv_feed_contents_image)
     }
