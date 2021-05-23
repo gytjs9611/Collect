@@ -58,6 +58,7 @@ class AddContentsActivity : AppCompatActivity() {
 
         lateinit var imageList : ArrayList<String>
         var isModify = false
+        var isSaved = false
 
         lateinit var defaultAddView : ConstraintLayout
     }
@@ -107,18 +108,26 @@ class AddContentsActivity : AppCompatActivity() {
         imageList = ArrayList()
         defaultAddView = cl_contents_add_image_back
 
-        // 데이터 불러옴
-        loadData()
 
+        // 이미지 아이템 리사이클러뷰 초기화
         imageRecyclerAdapter = ContentsImageRecyclerAdapter(imageList)
         rv_image_list.adapter = imageRecyclerAdapter
         rv_image_list.layoutManager = GridLayoutManager(applicationContext, 1, RecyclerView.HORIZONTAL, false)
-        if(imageList.size==0){
-            defaultAddView.bringToFront()
-        }
 
         val decoration = ContentsImageRecyclerDecoration(applicationContext)
         rv_image_list.addItemDecoration(decoration)
+
+        // 데이터 불러옴
+        loadData()
+
+        if(imageList.size==0){
+            defaultAddView.bringToFront()
+        }
+        else{
+            rv_image_list.smoothScrollToPosition(imageList.size-1)
+            defaultAddView.visibility = View.INVISIBLE
+        }
+
 
         // 레이아웃 초기화
         initLayoutStyle()
@@ -127,6 +136,18 @@ class AddContentsActivity : AppCompatActivity() {
         setButtonClickListeners()
 
         
+    }
+
+    override fun onDestroy() {
+        if(!isSaved && !isModify){   //  저장되지 않는 경우에 이미지 파일 모두 삭제
+            for(fileName in imageList){
+                deleteFile(fileName)
+            }
+        }
+        else{
+            isSaved = false
+        }
+        super.onDestroy()
     }
 
 
@@ -160,10 +181,12 @@ class AddContentsActivity : AppCompatActivity() {
             et_contents_sentences.setText(mAlbumItemEntity.contentsSentence)
 
 
-//            // 이미지
-//            addImageCardView(mAlbumItemEntity.contentsImageName)
-//            cl_contents_add_image_back.visibility = View.GONE
-//            isImageSelected = true
+            // 이미지
+            val savedList = mAlbumItemEntity.contentsImageName.split("|")
+            for(name in savedList){
+                imageList.add(name)
+            }
+            imageList.add("")   // add dummy (for add button)
 
         }
         else{   // 컨텐츠 생성일 경우

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.PathParser
 import androidx.recyclerview.widget.GridLayoutManager
 import com.hschoi.collect.adapter.CoverImageAdapter
+import com.hschoi.collect.customview.ImageCroppingView
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
 import com.hschoi.collect.database.entity.AlbumItemEntity
@@ -37,6 +38,8 @@ class AddContentsCoverActivity : AppCompatActivity() {
         private const val FRAME4_WIDTH_RATIO = 114f/230f
         private const val FRAME4_HEIGHT_PERCENT = 230f/716f    // 너비 * ratio = 높이
 
+        lateinit var mSelectedImage : String
+        lateinit var mImageCropView : ImageCroppingView
     }
 
     private lateinit var mAlbumEntity: AlbumEntity
@@ -50,7 +53,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
     private var mAlbumColor = -1
 
 
-    private var mContentImageUri : Uri? = null
     private var mContentsDate : String? = null
     private var mContentsTitle : String? = null
     private var mContentsSentence : String? = null
@@ -61,8 +63,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
     private var frameHeight = 0
 
 
-    private var imageUriList = ArrayList<Uri?>()
-    private var imageNameList = ArrayList<String?>()
+    private var imageNameList = ArrayList<String>()
 
 
     inner class GetAlbumItemEntity(private val context: Context, private val contentsId:Long):Thread(){
@@ -93,6 +94,8 @@ class AddContentsCoverActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_contents_cover)
+        mSelectedImage = ""
+        mImageCropView = icv_cover_image_source
 
         mContentsId = intent.getLongExtra("contentsId", -1)
         mAlbumId = intent.getLongExtra("albumId", -1)
@@ -109,9 +112,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
             GetAlbumItemEntity(this, mContentsId).start()
             Thread.sleep(100)
             Log.d("sival", "oncreate $mAlbumItemEntity")
-        }
-        else{
-            mContentImageUri = intent.getParcelableExtra("contentImageUri")
         }
 
         mContentsDate = intent.getStringExtra("contentsDate")
@@ -153,24 +153,16 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
 
         val adapter = CoverImageAdapter(applicationContext)
+        adapter.imageNameListData = AddContentsActivity.imageList
 
         if(AddContentsActivity.isModify){
-            val fis = openFileInput(mAlbumItemEntity.contentsImageName)
-            val savedBitmap = BitmapFactory.decodeStream(fis)
-
-            icv_cover_image_source.initView(applicationContext)  // 크롭 이미지뷰 초기화
-            icv_cover_image_source.setImageBitmap(savedBitmap)
-            adapter.isURI = false
-            imageNameList.add(mAlbumItemEntity.contentsImageName)
-            imageNameList.add(null)
-            adapter.imageNameListData = imageNameList
+            val bitmap = BitmapFactory.decodeFile("${filesDir}/${mAlbumItemEntity.coverImageName}")
+            icv_cover_image_source.setImageBitmap(bitmap)
+            // zoom, x, y 불러와서 저장했을 때 상태로 적용시키기
         }
         else{
-            icv_cover_image_source.setImageURI(mContentImageUri, viewWidth, viewHeight)
-            adapter.isURI = true
-            imageUriList.add(mContentImageUri!!)
-            imageUriList.add(null) // + 버튼 생성을 위한 dummy  추가
-            adapter.uriListData = imageUriList
+            val bitmap = BitmapFactory.decodeFile("${filesDir}/${adapter.imageNameListData[0]}")
+            icv_cover_image_source.setImageBitmap(bitmap)
         }
 
         rv_contents_image.adapter = adapter
@@ -185,52 +177,14 @@ class AddContentsCoverActivity : AppCompatActivity() {
         // 저장 버튼
         layout_top_menu_set_cover.iv_icon_right.setOnClickListener {
             // 최종적으로 추가한 이미지 저장
-            AlbumFeedActivity.isDataChanged = true  // 데이터 추가되었음을 알려줌
-
-            // 파일명 지정 후 생성
-            var contentsImageName: String
-            if(AddContentsActivity.isModify){
-                contentsImageName = mAlbumItemEntity.contentsImageName
-            }
-            else{
-                contentsImageName = "contents_${mAlbumId}_${mContentsTitle}.png"
-                var cnt = 1
-                var file = File("${applicationContext.filesDir}/$contentsImageName")
-                val name = file.nameWithoutExtension
-                while(file.exists()){
-                    contentsImageName = "${name}_${cnt}.png"
-                    Log.d("file", "new=$contentsImageName")
-                    file = File("${applicationContext.filesDir}/$contentsImageName")
-                    cnt++
-                }
-            }
-
-
-            val viewWidth = LayoutParamsUtils.getScreenWidth(applicationContext)
-            val viewHeight = LayoutParamsUtils
-                    .getItemHeightByPercent(applicationContext, 0.479f)
-
+            AlbumFeedActivity.isDataChanged = true  // 데이터 업데이트되었음을 알려줌
 
             if(AddContentsActivity.isModify){
                 // 일단은 암꺼도 안함
             }
             else{
-                var fos = openFileOutput(contentsImageName, MODE_PRIVATE)
-                var bitmap:Bitmap
-                bitmap = BitmapUtils
-                        .getResizedBitmap(applicationContext, mContentImageUri,
-                                viewWidth, viewHeight)
-                        ?:return@setOnClickListener
-
-                // 이미지 회전값이 존재할 경우, 똑바로 보이도록 조정해줌
-                val exifDegree = BitmapUtils.getExifDegree(applicationContext, mContentImageUri!!)
-                if(exifDegree!=0){
-                    bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@setOnClickListener
-                }
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
-                fos.close()
+                AddContentsActivity.isSaved = true
             }
-
 
 
 
@@ -247,13 +201,12 @@ class AddContentsCoverActivity : AppCompatActivity() {
                 val coverName = coverFile.nameWithoutExtension
                 while(coverFile.exists()){
                     coverImageName = "${coverName}_${coverCnt}.png"
-                    Log.d("file", "new=$contentsImageName")
                     coverFile = File("${applicationContext.filesDir}/$coverImageName")
                     coverCnt++
                 }
             }
 
-            var fos2 = openFileOutput(coverImageName, Context.MODE_PRIVATE)
+            val fos2 = openFileOutput(coverImageName, Context.MODE_PRIVATE)
             icv_cover_image_source.croppedImage
                     .compress(Bitmap.CompressFormat.JPEG, 50, fos2)
             fos2.close()
@@ -263,7 +216,18 @@ class AddContentsCoverActivity : AppCompatActivity() {
             // ** 데이터베이스에 컨텐츠 정보 저장
             val time = SimpleDateFormat("yyyyMMddHHmmssSSS").format(Date())
 
+            var contentsImages = ""
+            val size = AddContentsActivity.imageList.size
+            for((index, name) in AddContentsActivity.imageList.withIndex()){
+                contentsImages+=name
+                if(index!=size-2) contentsImages+="|"
+                else break
+            }
+
+
+
             if(AddContentsActivity.isModify){
+                mAlbumItemEntity.coverImageName = contentsImages
                 mAlbumItemEntity.contentsSentence = mContentsSentence!!
                 mAlbumItemEntity.contentsDate = "$mContentsDate/$time"
                 mAlbumItemEntity.contentsTitle = mContentsTitle!!
@@ -279,7 +243,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
             }
             else{
                 val albumItemEntity = AlbumItemEntity(mAlbumId, mAlbumTitle!!, mContentsTitle!!,
-                        "$mContentsDate/$time", mContentsSentence!!, coverImageName, contentsImageName, mFrameType)
+                        "$mContentsDate/$time", mContentsSentence!!, coverImageName, contentsImages, mFrameType)
                 val addContents = AddContents(applicationContext, albumItemEntity)
                 addContents.start()
                 Thread.sleep(100)
