@@ -16,12 +16,18 @@
         app:layout_constraintTop_toTopOf="parent"
         android:background="@color/black">
 
-        <ImageView
-            android:id="@+id/iv_feed_contents_image"
+<!--        <ImageView-->
+<!--            android:id="@+id/iv_feed_contents_image"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:src="@drawable/image"-->
+<!--            />-->
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_images"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/image"
-            />
+            android:orientation="horizontal"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

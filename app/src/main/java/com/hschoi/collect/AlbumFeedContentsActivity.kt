@@ -7,6 +7,7 @@ import android.text.method.ScrollingMovementMethod
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.hschoi.collect.adapter.PhotoViewPagerAdapter
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekFromDate
@@ -19,11 +20,13 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
     }
 
     private var contentsId : Long = -1
-    private lateinit var mImageList : List<String>
+    private lateinit var mImageList : ArrayList<String>
 
     private lateinit var mAlbumItemEntity: AlbumItemEntity
 
     private var albumColor = -1
+
+    private lateinit var viewPagerAdapter : PhotoViewPagerAdapter
 
 
     inner class GetAlbumItemEntity(private val context: Context, private val contentsId: Long):Thread(){
@@ -47,6 +50,9 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         setContentView(R.layout.activity_album_feed_contents)
 
         activity = this
+        mImageList = ArrayList()
+        viewPagerAdapter = PhotoViewPagerAdapter(mImageList)
+        vp_images.adapter = viewPagerAdapter
 
         // 앨범명, 컨텐츠 제목, 날짜, 컨텐츠 내용
         contentsId = intent.getLongExtra("contentsId", -1)
@@ -76,8 +82,6 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         GetAlbumColor(this, mAlbumItemEntity.albumId).start()
         Thread.sleep(100)
 
-
-
         // 상태바 색상 배경색에 따라 설정
         val statusBarColor = getStatusBarColor(albumColor)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -96,10 +100,16 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         tv_album_feed_contents_string.movementMethod = ScrollingMovementMethod()    // 스크롤 가능
 
         // 이미지
-        mImageList = mAlbumItemEntity.contentsImageName.split("|")
-        val fis = openFileInput(mImageList[0])  // 임시로 0번 이미지만 보여줌
-        val bitmap = BitmapFactory.decodeStream(fis)
-        Glide.with(this).load(bitmap).into(iv_feed_contents_image)
+        val tempList = mAlbumItemEntity.contentsImageName.split("|")
+        for(item in tempList){
+            mImageList.add(item)
+        }
+        viewPagerAdapter.notifyDataSetChanged()
+//        val fis = openFileInput(mImageList[0])  // 임시로 0번 이미지만 보여줌
+//        val bitmap = BitmapFactory.decodeStream(fis)
+//        Glide.with(this).load(bitmap).into(iv_feed_contents_image)
+
+
     }
 
 
