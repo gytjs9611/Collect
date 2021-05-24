@@ -98,7 +98,6 @@ class PopUpDialogActivity: AppCompatActivity() {
         for(album in MainActivity.albumList) {
                if (album.id == id) {
                    MainActivity.albumList.remove(album)
-                   Log.d("home", "size=${MainActivity.albumList.size}")
 
                    val deleteThread = DeleteAlbum(applicationContext, id)
                    deleteThread.start()

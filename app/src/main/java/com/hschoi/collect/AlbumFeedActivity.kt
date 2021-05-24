@@ -66,7 +66,6 @@ class AlbumFeedActivity : AppCompatActivity() {
         textSize = LayoutParamsUtils.getItemSizeByRatio(itemWidth, TITLE_TEXT_SIZE_RATIO)
         textViewSize = LayoutParamsUtils.getItemSizeByRatio(itemWidth, TITLE_TEXT_VIEW_SIZE_RATIO)
 
-        Log.d("TAG", "itemWidth = ${itemWidth}, ratio=${TITLE_TEXT_SIZE_RATIO}, textsize = $textSize")
 
 
         // add items to scroll view
@@ -278,7 +277,6 @@ class AlbumFeedActivity : AppCompatActivity() {
             val ivImageWidth = LayoutParamsUtils.getItemSizeByRatio(itemWidth, 114f/147f)
             val ivImageHeight = LayoutParamsUtils.getItemSizeByRatio(ivImageWidth, 230f/114f)
             LayoutParamsUtils.setItemSize(item.iv_image, ivImageWidth, ivImageHeight)
-            Log.d("FEED", "width=$itemWidth, height=$itemHeight, ($ivImageWidth, $ivImageHeight)")
         }
         val bottomMargin = LayoutParamsUtils.getItemHeightByPercent(applicationContext, ITEM_BOTTOM_MARGIN_PERCENT)
         LayoutParamsUtils.setItemMarginBottom(item, bottomMargin)

@@ -18,7 +18,6 @@ class AddContentsRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Ad
 
     // 1. 홀더의 생성
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {
-        Log.d("TAG", "onCreateViewHolder")
         val v = LayoutInflater.from(parent.context).inflate(R.layout.item_album_list, parent, false)
         mContext = parent.context
 

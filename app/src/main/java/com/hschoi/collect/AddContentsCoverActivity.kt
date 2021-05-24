@@ -111,13 +111,11 @@ class AddContentsCoverActivity : AppCompatActivity() {
         if(AddContentsActivity.isModify){   // 컨텐츠 수정일 경우
             GetAlbumItemEntity(this, mContentsId).start()
             Thread.sleep(100)
-            Log.d("sival", "oncreate $mAlbumItemEntity")
         }
 
         mContentsDate = intent.getStringExtra("contentsDate")
         mContentsTitle = intent.getStringExtra("contentsTitle")
         mContentsSentence = intent.getStringExtra("contentsSentence")
-        Log.d("sival", "d $mContentsDate, t $mContentsTitle, s $mContentsSentence")
 
         setOnClickListeners()
 
@@ -149,7 +147,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
         icv_cover_image_source.setFrameStyle(BitmapCropUtils.FRAME_TYPE_0, frameWidth, frameHeight)
         drawFrameBack(mFrameType)
 
-        Log.d("MAIN", "viewWidth=$viewWidth, viewHeight=$viewHeight, frameW = $frameWidth, fameH = $frameHeight")
 
 
         val adapter = CoverImageAdapter(applicationContext)
@@ -232,13 +229,11 @@ class AddContentsCoverActivity : AppCompatActivity() {
                 mAlbumItemEntity.contentsDate = "$mContentsDate/$time"
                 mAlbumItemEntity.contentsTitle = mContentsTitle!!
 
-                Log.d("sival", "$mAlbumItemEntity")
                 UpdateAlbumItem(this, mAlbumItemEntity).start()
                 Thread.sleep(100)
 
                 GetAlbumItemEntity(this, mContentsId).start()
                 Thread.sleep(100)
-                Log.d("sival", "after $mAlbumItemEntity")
 
             }
             else{
@@ -249,7 +244,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
                 Thread.sleep(100)
             }
 
-            Log.d("DB", "contentsId = $mContentsId")
 
 
 
@@ -362,8 +356,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
         val bitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val paint = Paint()
-
-        Log.d("VIEW", "CREATE ALBUM BACK viewWidth= $viewWidth, height=$viewHeight")
 
 
         // 크롭 박스 외부 영역 채우기

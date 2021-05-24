@@ -318,7 +318,6 @@ class AddContentsActivity : AppCompatActivity() {
 
                     while(file.exists()){
                         fileName = "${name}_${cnt}.png"
-                        Log.d("file", "new=$fileName")
                         file = File("${applicationContext.filesDir}/$fileName")
                         cnt++
                     }

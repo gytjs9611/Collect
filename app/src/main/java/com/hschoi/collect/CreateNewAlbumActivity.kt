@@ -150,7 +150,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         drawFrameBack(BitmapCropUtils.FRAME_TYPE_0)
 
 
-        Log.d("MAIN", "viewWidth=$viewWidth, viewHeight=$viewHeight, frameW = $frameWidth, fameH = $frameHeight")
 
 
 
@@ -217,7 +216,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
             while(file.exists()){
                 fileName = "${name}_${cnt}.png"
-                Log.d("file", "new=$fileName")
                 file = File("${applicationContext.filesDir}/$fileName")
                 cnt++
             }
@@ -266,7 +264,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             setAlbumOrder.start()
             Thread.sleep(100)
 
-            Log.d("DB", "id=$albumId")
 
 
 
@@ -295,7 +292,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 //            y = imageCroppingView.matrixFloatArray!![Matrix.MTRANS_Y]
             x = imageCroppingView.getMatrixTransX()
             y = imageCroppingView.getMatrixTransY()
-            Log.d("sival", "zoom=$zoom, zoom2=$zoom2 x=$x, y=$y")
         }
 
         layout_album_title.setOnClickListener {
@@ -316,7 +312,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             val initX = imageCroppingView.getMatrixTransX()
             val initY = imageCroppingView.getMatrixTransY()
             imageCroppingView.mMatrix!!.postTranslate(x-initX, y-initY)
-            Log.d("sival", "zoom=$zoom,initX=$initX, x=$x, initY=$initY, y=$y")
 
 
             imageCroppingView.imageMatrix = imageCroppingView.mMatrix

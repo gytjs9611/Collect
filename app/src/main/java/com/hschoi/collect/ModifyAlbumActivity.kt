@@ -267,7 +267,6 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
             // 메인 앨범 리스트 객체 수정
             for((index, album) in MainActivity.albumList.withIndex()){
-                Log.d("sival", "origin $index ${album.id}, ${album.title}")
 
                 if(album.id==albumId){
                     val temp = Albums(albumId, title, albumEntity.albumColor,
@@ -277,9 +276,6 @@ class ModifyAlbumActivity : AppCompatActivity() {
                 }
             }
 
-            for((index, album) in MainActivity.albumList.withIndex()){
-                    Log.d("sival", "$index ${album.id}, ${album.title}")
-            }
 
             MainActivity.homeRecyclerAdapter.notifyDataSetChanged()
             MainActivity.addContentsRecyclerAdapter.notifyDataSetChanged()
@@ -292,7 +288,6 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
 
     private fun loadSavedImageState(){
-        Log.d("sival", "w=${imageCroppingView.matchViewWidth}")
 
         imageCroppingView.mMatrix!!.postScale(albumEntity.zoom, albumEntity.zoom)
         imageCroppingView.currentZoom = albumEntity.zoom
@@ -313,8 +308,6 @@ class ModifyAlbumActivity : AppCompatActivity() {
         val getAlbumEntity = GetAlbumEntity(this, albumId)
         getAlbumEntity.start()
         Thread.sleep(100)
-        Log.d("sival", "${albumEntity.coverImageFileName}," +
-                "${albumEntity.coverImageOriginFileName}")
 
         // title
         layout_album_title.et_album_name.setText(albumEntity.albumTitle)
