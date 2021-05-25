@@ -86,4 +86,9 @@
     <color name="selected_image_overlay">#59FFFFFF</color>
 
 
+<!--    page indicator  -->
+    <color name="page_indicator_dot">#66FFFFFF</color>
+    <color name="page_indicator_dot_selected">#FFFFFF</color>
+
+
 </resources>

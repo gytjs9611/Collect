@@ -6,17 +6,24 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
 import com.hschoi.collect.adapter.PhotoViewPagerAdapter
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekFromDate
+import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.activity_album_feed_contents.*
+import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
 
 class AlbumFeedContentsActivity : AppCompatActivity(){
 
     companion object {
         lateinit var activity : AlbumFeedContentsActivity
+
+        private const val DOT_SIZE = 4f/716f
+        private const val DOT_TOP_MARGIN = 8f/716f
     }
 
     private var contentsId : Long = -1
@@ -51,8 +58,13 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
         activity = this
         mImageList = ArrayList()
+
+        // view pager
         viewPagerAdapter = PhotoViewPagerAdapter(mImageList)
         vp_images.adapter = viewPagerAdapter
+
+        // page indicator
+        setPageIndicator()
 
         // 앨범명, 컨텐츠 제목, 날짜, 컨텐츠 내용
         contentsId = intent.getLongExtra("contentsId", -1)
@@ -112,6 +124,20 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
     }
 
+
+    private fun setPageIndicator(){
+        val dotSize = LayoutParamsUtils.getItemHeightByPercent(this, DOT_SIZE)
+        val dotTopMargin = LayoutParamsUtils.getItemHeightByPercent(this, DOT_TOP_MARGIN)
+
+        LayoutParamsUtils.setItemMarginTop(indicator, dotTopMargin)
+
+
+        indicator.dotColor = getColor(R.color.page_indicator_dot)
+        indicator.selectedDotColor = getColor(R.color.page_indicator_dot_selected)
+        indicator.attachToPager(vp_images)
+
+
+    }
 
     private fun getStatusBarColor(albumColor : Int) : Int{
         val statusBarColor = when(albumColor){
