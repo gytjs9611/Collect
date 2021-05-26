@@ -25,7 +25,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
-        android:id="@+id/indicator"
+        android:id="@+id/indicator_feed_contents"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:spi_dotSize="4dp"

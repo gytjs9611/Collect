@@ -87,8 +87,12 @@
 
 
 <!--    page indicator  -->
-    <color name="page_indicator_dot">#66FFFFFF</color>
-    <color name="page_indicator_dot_selected">#FFFFFF</color>
+    <color name="page_indicator_dot_white">#66FFFFFF</color>
+    <color name="page_indicator_dot_white_selected">#FFFFFF</color>
+
+    <color name="page_indicator_dot_black">#66000000</color>
+    <color name="page_indicator_dot_black_selected">#000000</color>
+
 
 
 </resources>
