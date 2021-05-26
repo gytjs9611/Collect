@@ -17,7 +17,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.hschoi.collect.adapter.ContentsImageRecyclerAdapter
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
@@ -27,6 +29,8 @@ import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekString
 import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.activity_add_contents.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
+import ru.tinkoff.scrollingpagerindicator.RecyclerViewAttacher
+import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -51,6 +55,9 @@ class AddContentsActivity : AppCompatActivity() {
 
         const val DATE_TOP_MARGIN = 22f/716f
 
+        private const val DOT_TOP_MARGIN = 8f/716f
+
+
         const val REQ_STORAGE_PERMISSION = 100
         const val REQ_GALLERY = 101
 
@@ -61,6 +68,8 @@ class AddContentsActivity : AppCompatActivity() {
         var isSaved = false
 
         lateinit var defaultAddView : ConstraintLayout
+
+        var addContentsAttacher = AddImageAttacher()
     }
 
     private lateinit var mAlbumItemEntity : AlbumItemEntity
@@ -135,6 +144,8 @@ class AddContentsActivity : AppCompatActivity() {
         // 버튼 클릭 리스너 등록
         setButtonClickListeners()
 
+        // page indicator
+        setPageIndicator()
         
     }
 
@@ -149,6 +160,20 @@ class AddContentsActivity : AppCompatActivity() {
         }
         super.onDestroy()
     }
+
+    private fun setPageIndicator(){
+        val dotTopMargin = LayoutParamsUtils.getItemHeightByPercent(this, DOT_TOP_MARGIN)
+
+        LayoutParamsUtils.setItemMarginTop(indicator_add_contents, dotTopMargin)
+
+        indicator_add_contents.dotColor = getColor(R.color.page_indicator_dot_black)
+        indicator_add_contents.selectedDotColor = getColor(R.color.page_indicator_dot_black_selected)
+
+        indicator_add_contents.attachToPager(rv_image_list, addContentsAttacher)
+//        indicator_add_contents.attachToRecyclerView(rv_image_list)
+
+    }
+
 
 
     private fun loadData(){
@@ -356,6 +381,7 @@ class AddContentsActivity : AppCompatActivity() {
             }
         }
     }
+
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

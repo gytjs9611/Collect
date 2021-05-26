@@ -1,22 +1,24 @@
 package com.hschoi.collect
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
 import com.hschoi.collect.adapter.PhotoViewPagerAdapter
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekFromDate
+import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.activity_album_feed_contents.*
 
 class AlbumFeedContentsActivity : AppCompatActivity(){
 
     companion object {
         lateinit var activity : AlbumFeedContentsActivity
+
+        private const val DOT_SIZE = 4f/716f
+        private const val DOT_TOP_MARGIN = 8f/716f
     }
 
     private var contentsId : Long = -1
@@ -51,8 +53,13 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
         activity = this
         mImageList = ArrayList()
+
+        // view pager
         viewPagerAdapter = PhotoViewPagerAdapter(mImageList)
         vp_images.adapter = viewPagerAdapter
+
+        // page indicator
+        setPageIndicator()
 
         // 앨범명, 컨텐츠 제목, 날짜, 컨텐츠 내용
         contentsId = intent.getLongExtra("contentsId", -1)
@@ -105,13 +112,20 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
             mImageList.add(item)
         }
         viewPagerAdapter.notifyDataSetChanged()
-//        val fis = openFileInput(mImageList[0])  // 임시로 0번 이미지만 보여줌
-//        val bitmap = BitmapFactory.decodeStream(fis)
-//        Glide.with(this).load(bitmap).into(iv_feed_contents_image)
-
-
     }
 
+
+    private fun setPageIndicator(){
+//        val dotSize = LayoutParamsUtils.getItemHeightByPercent(this, DOT_SIZE)
+        val dotTopMargin = LayoutParamsUtils.getItemHeightByPercent(this, DOT_TOP_MARGIN)
+
+        LayoutParamsUtils.setItemMarginTop(indicator_feed_contents, dotTopMargin)
+
+
+        indicator_feed_contents.dotColor = getColor(R.color.page_indicator_dot_white)
+        indicator_feed_contents.selectedDotColor = getColor(R.color.page_indicator_dot_white_selected)
+        indicator_feed_contents.attachToPager(vp_images)
+    }
 
     private fun getStatusBarColor(albumColor : Int) : Int{
         val statusBarColor = when(albumColor){
