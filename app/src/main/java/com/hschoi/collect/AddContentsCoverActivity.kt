@@ -1,11 +1,11 @@
 package com.hschoi.collect
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.*
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.PathParser
@@ -16,7 +16,6 @@ import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
 import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.BitmapCropUtils
-import com.hschoi.collect.util.BitmapUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import com.hschoi.collect.util.PathDataUtils
 import kotlinx.android.synthetic.main.activity_add_contents_cover.*
@@ -24,7 +23,6 @@ import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class AddContentsCoverActivity : AppCompatActivity() {
@@ -38,7 +36,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
         private const val FRAME4_WIDTH_RATIO = 114f/230f
         private const val FRAME4_HEIGHT_PERCENT = 230f/716f    // 너비 * ratio = 높이
 
-        lateinit var mSelectedImage : String
         lateinit var mImageCropView : ImageCroppingView
     }
 
@@ -62,8 +59,19 @@ class AddContentsCoverActivity : AppCompatActivity() {
     private var frameWidth = 0
     private var frameHeight = 0
 
+    private var originCoverExists = false
 
-    private var imageNameList = ArrayList<String>()
+
+    private var measureReceiver = object : BroadcastReceiver(){
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if(intent?.action==ImageCroppingView.ACTION_MEASURE && AddContentsActivity.isModify){
+                if(originCoverExists){
+                    loadSavedImageState()
+                    drawFrameBack(mFrameType)
+                }
+            }
+        }
+    }
 
 
     inner class GetAlbumItemEntity(private val context: Context, private val contentsId:Long):Thread(){
@@ -94,7 +102,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_contents_cover)
-        mSelectedImage = ""
         mImageCropView = icv_cover_image_source
 
         mContentsId = intent.getLongExtra("contentsId", -1)
@@ -102,6 +109,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
         GetAlbumEntity(this, mAlbumId).start()
         Thread.sleep(100)
+
 
         mAlbumTitle = mAlbumEntity.albumTitle
         mFrameType = mAlbumEntity.frameType
@@ -112,6 +120,10 @@ class AddContentsCoverActivity : AppCompatActivity() {
             GetAlbumItemEntity(this, mContentsId).start()
             Thread.sleep(100)
         }
+
+        val filter = IntentFilter()
+        filter.addAction(ImageCroppingView.ACTION_MEASURE)
+        registerReceiver(measureReceiver, filter)
 
         mContentsDate = intent.getStringExtra("contentsDate")
         mContentsTitle = intent.getStringExtra("contentsTitle")
@@ -153,9 +165,20 @@ class AddContentsCoverActivity : AppCompatActivity() {
         adapter.imageNameListData = AddContentsActivity.imageList
 
         if(AddContentsActivity.isModify){
-            val bitmap = BitmapFactory.decodeFile("${filesDir}/${mAlbumItemEntity.coverImageName}")
+            var coverIdx = 0
+            for((index, item) in AddContentsActivity.imageList.withIndex()){
+                if(item.substringAfter("temp_")==AddContentsActivity.originCoverImage){
+                    coverIdx = index
+                    originCoverExists = true
+                    break
+                }
+            }
+            adapter.selectedPosition = coverIdx
+
+
+            val bitmap = BitmapFactory.decodeFile("${filesDir}/${AddContentsActivity.imageList[coverIdx]}")
             icv_cover_image_source.setImageBitmap(bitmap)
-            // zoom, x, y 불러와서 저장했을 때 상태로 적용시키기
+            // zoom, x, y 불러와서 저장했을 때 상태로 적용시키기 (broadcast 수신시)
         }
         else{
             val bitmap = BitmapFactory.decodeFile("${filesDir}/${adapter.imageNameListData[0]}")
@@ -175,21 +198,13 @@ class AddContentsCoverActivity : AppCompatActivity() {
         layout_top_menu_set_cover.iv_icon_right.setOnClickListener {
             // 최종적으로 추가한 이미지 저장
             AlbumFeedActivity.isDataChanged = true  // 데이터 업데이트되었음을 알려줌
-
-            if(AddContentsActivity.isModify){
-                // 일단은 암꺼도 안함
-            }
-            else{
-                AddContentsActivity.isSaved = true
-            }
-
+            AddContentsActivity.isSaved = true
 
 
             // 내부저장소에 컨텐츠 커버이미지 저장
             var coverImageName: String
             if(AddContentsActivity.isModify){
                 coverImageName = mAlbumItemEntity.coverImageName
-
             }
             else{
                 coverImageName = "contents_cover_${mAlbumId}_${mContentsTitle}.png"
@@ -216,18 +231,28 @@ class AddContentsCoverActivity : AppCompatActivity() {
             var contentsImages = ""
             val size = AddContentsActivity.imageList.size
             for((index, name) in AddContentsActivity.imageList.withIndex()){
-                contentsImages+=name
+                contentsImages+=name.substringAfter("temp_")
                 if(index!=size-2) contentsImages+="|"
                 else break
             }
 
+            val zoom: Float = icv_cover_image_source.currentZoom
+            val x: Float = icv_cover_image_source.getMatrixTransX()
+            val y: Float = icv_cover_image_source.getMatrixTransY()
 
 
             if(AddContentsActivity.isModify){
-                mAlbumItemEntity.coverImageName = contentsImages
+                val selectedIdx = adapter.selectedPosition
+
+                mAlbumItemEntity.coverImageName = coverImageName
+                mAlbumItemEntity.contentsImageName = contentsImages
+                mAlbumItemEntity.coverImageIndex = selectedIdx
                 mAlbumItemEntity.contentsSentence = mContentsSentence!!
                 mAlbumItemEntity.contentsDate = "$mContentsDate/$time"
                 mAlbumItemEntity.contentsTitle = mContentsTitle!!
+                mAlbumItemEntity.zoom = zoom
+                mAlbumItemEntity.x = x
+                mAlbumItemEntity.y = y
 
                 UpdateAlbumItem(this, mAlbumItemEntity).start()
                 Thread.sleep(100)
@@ -237,8 +262,11 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
             }
             else{
+                val selectedIndex = adapter.selectedPosition
                 val albumItemEntity = AlbumItemEntity(mAlbumId, mAlbumTitle!!, mContentsTitle!!,
-                        "$mContentsDate/$time", mContentsSentence!!, coverImageName, contentsImages, mFrameType)
+                        "$mContentsDate/$time", mContentsSentence!!,
+                                    coverImageName, selectedIndex, contentsImages, mFrameType,
+                                    zoom, x, y)
                 val addContents = AddContents(applicationContext, albumItemEntity)
                 addContents.start()
                 Thread.sleep(100)
@@ -291,6 +319,11 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        unregisterReceiver(measureReceiver)
+        super.onDestroy()
+    }
+
     // 이거 왜 추가한거지..?
     /*override fun onWindowFocusChanged(hasFocus: Boolean) {
         // onCreate 에서 할 경우, width, height 값이 0으로 나오기 때문에 onWindowFocusChanged 에서 호출해줌
@@ -300,6 +333,21 @@ class AddContentsCoverActivity : AppCompatActivity() {
         }
         Log.d("TAG", "onWindowFocusChanged 호출됨")
     }*/
+
+    private fun loadSavedImageState(){
+
+        icv_cover_image_source.mMatrix!!.postScale(mAlbumItemEntity.zoom, mAlbumItemEntity.zoom)
+        icv_cover_image_source.currentZoom = mAlbumItemEntity.zoom
+
+        val savedX = mAlbumItemEntity.x
+        val savedY = mAlbumItemEntity.y
+
+        val initX = icv_cover_image_source.getMatrixTransX()
+        val initY = icv_cover_image_source.getMatrixTransY()
+        icv_cover_image_source.mMatrix!!.postTranslate(savedX-initX, savedY-initY)
+
+        icv_cover_image_source.imageMatrix = icv_cover_image_source.mMatrix
+    }
 
 
     private fun setOnClickListeners() {

@@ -79,14 +79,10 @@ class PopUpDialogActivity: AppCompatActivity() {
         Thread.sleep(100)
 
         // 이미지 파일 삭제
-        val files = applicationContext.filesDir.listFiles()
-        for(file in files){
-            if(file.nameWithoutExtension+".png" == image){
-                file.delete()
-            }
-            else if(file.nameWithoutExtension+".png" == cover){
-                file.delete()
-            }
+        deleteFile(cover)
+        val imageList = image.split("|")
+        for(item in imageList){
+            deleteFile(item)
         }
     }
 
@@ -106,7 +102,7 @@ class PopUpDialogActivity: AppCompatActivity() {
                    // 이미지 파일 삭제
                    applicationContext.deleteFile(album.imageFileName)
                    // 원본 이미지도 삭제
-                   val originFileName = album.imageFileName.replace("album_cover", "album_cover_origin")
+                   val originFileName = album.imageFileName.replaceFirst("album_cover", "album_cover_origin")
                    applicationContext.deleteFile(originFileName)
                    break
                }
@@ -115,7 +111,7 @@ class PopUpDialogActivity: AppCompatActivity() {
         // 앨범 내 컨텐츠 이미지 모두 삭제
         val files = applicationContext.filesDir.listFiles()
         for(file in files){
-            if(file.nameWithoutExtension.startsWith("contents_${id}_")){
+            if(file.nameWithoutExtension.startsWith("contents_image_${id}_")){
                 file.delete()
             }
             else if(file.nameWithoutExtension.startsWith("contents_cover_${id}_")){

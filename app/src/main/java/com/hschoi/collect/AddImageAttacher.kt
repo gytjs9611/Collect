@@ -73,17 +73,17 @@ class AddImageAttacher : RecyclerViewAttacher() {
         this.recyclerView = pager
         this.attachedAdapter = pager.adapter
         this.indicator = indicator
+
         dataObserver = object : AdapterDataObserver() {
             override fun onChanged() {
                 Log.d("test", "on changed" )
-
                 indicator.setDotCount(attachedAdapter!!.itemCount-1)
                 updateCurrentOffset()
             }
 
         }
         attachedAdapter!!.registerAdapterDataObserver(dataObserver!!)
-        indicator.setDotCount(attachedAdapter!!.itemCount)
+        indicator.setDotCount(attachedAdapter!!.itemCount-1)
         updateCurrentOffset()
         scrollListener = object : RecyclerView.OnScrollListener() {
 

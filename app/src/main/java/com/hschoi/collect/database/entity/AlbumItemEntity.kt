@@ -19,8 +19,12 @@ data class AlbumItemEntity(
         var contentsDate : String,
         var contentsSentence : String,
         var coverImageName : String,
+        var coverImageIndex : Int,
         var contentsImageName : String,
-        var frameType : Int
+        var frameType : Int,
+        var zoom : Float,
+        var x : Float,
+        var y : Float
 ){
     @PrimaryKey(autoGenerate = true)
     var contentsId : Long = 0

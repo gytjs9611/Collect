@@ -65,7 +65,6 @@ class ContentsImageRecyclerAdapter(var items: ArrayList<String>): RecyclerView.A
         else{
             holder.bindNormal(items[position], position)
             holder.itemView.cv_contents_image.setOnClickListener {
-
             }
             holder.itemView.iv_delete_button.setOnClickListener {
                 mContext.deleteFile(items[position])
@@ -73,6 +72,7 @@ class ContentsImageRecyclerAdapter(var items: ArrayList<String>): RecyclerView.A
                 if(items.size==1) {
                     items.clear()
                     AddContentsActivity.defaultAddView.visibility = View.VISIBLE
+                    AddContentsActivity.defaultAddView.bringToFront()
                 }
                 notifyDataSetChanged()
             }

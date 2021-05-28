@@ -280,44 +280,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             finish()
         }
 
-        // for test
-        var zoom = 0f
-        var zoom2 = 0f
-        var x = 0f
-        var y = 0f
-
-        layout_top_menu_create_album.cl_title.setOnClickListener {
-            zoom = imageCroppingView.currentZoom
-//            x = imageCroppingView.matrixFloatArray!![Matrix.MTRANS_X]
-//            y = imageCroppingView.matrixFloatArray!![Matrix.MTRANS_Y]
-            x = imageCroppingView.getMatrixTransX()
-            y = imageCroppingView.getMatrixTransY()
-        }
-
-        layout_album_title.setOnClickListener {
-            val w = LayoutParamsUtils.getScreenWidth(applicationContext)
-            val h = LayoutParamsUtils
-                .getItemHeightByPercent(applicationContext, 0.479f)
-
-            imageCroppingView.initView(applicationContext)  // 크롭 이미지뷰 초기화
-//                    imageCroppingView.setImageURI(uri)
-            imageCroppingView.setImageURI(tempUri, w, h)
-
-
-            //
-            imageCroppingView.mMatrix!!.postScale(zoom, zoom)
-            imageCroppingView.currentZoom = zoom
-
-
-            val initX = imageCroppingView.getMatrixTransX()
-            val initY = imageCroppingView.getMatrixTransY()
-            imageCroppingView.mMatrix!!.postTranslate(x-initX, y-initY)
-
-
-            imageCroppingView.imageMatrix = imageCroppingView.mMatrix
-
-        }
-
 
     }
 
