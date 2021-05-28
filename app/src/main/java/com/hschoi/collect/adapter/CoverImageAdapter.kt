@@ -23,7 +23,7 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
     private var mContext = context
     var imageNameListData = ArrayList<String>()
 
-    private var selectedPosition = 0
+    var selectedPosition = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(parent.context)
@@ -71,9 +71,8 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
                     // 이미지 추가 코드 작성 필요
 
                 }
-                else{
+                else if(selectedPosition!=pos){
                     selectedPosition = pos
-                    AddContentsCoverActivity.mSelectedImage = imageNameListData[pos]
 
                     val bitmap = BitmapFactory.decodeFile("${mContext.filesDir}/${imageNameListData[pos]}")
 

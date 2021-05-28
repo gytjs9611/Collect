@@ -3,6 +3,7 @@ package com.hschoi.collect
 import android.content.Context
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.hschoi.collect.adapter.PhotoViewPagerAdapter
@@ -52,14 +53,6 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         setContentView(R.layout.activity_album_feed_contents)
 
         activity = this
-        mImageList = ArrayList()
-
-        // view pager
-        viewPagerAdapter = PhotoViewPagerAdapter(mImageList)
-        vp_images.adapter = viewPagerAdapter
-
-        // page indicator
-        setPageIndicator()
 
         // 앨범명, 컨텐츠 제목, 날짜, 컨텐츠 내용
         contentsId = intent.getLongExtra("contentsId", -1)
@@ -81,8 +74,6 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-
-
         GetAlbumItemEntity(this, contentsId).start()
         Thread.sleep(100)
 
@@ -107,11 +98,18 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
         tv_album_feed_contents_string.movementMethod = ScrollingMovementMethod()    // 스크롤 가능
 
         // 이미지
+        mImageList = ArrayList()
         val tempList = mAlbumItemEntity.contentsImageName.split("|")
         for(item in tempList){
             mImageList.add(item)
+            Log.d("test","item=$item")
         }
-        viewPagerAdapter.notifyDataSetChanged()
+        // view pager
+        viewPagerAdapter = PhotoViewPagerAdapter(mImageList)
+        vp_images.adapter = viewPagerAdapter
+
+        // page indicator
+        setPageIndicator()
     }
 
 

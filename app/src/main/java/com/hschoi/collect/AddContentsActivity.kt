@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -32,6 +33,7 @@ import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 import ru.tinkoff.scrollingpagerindicator.RecyclerViewAttacher
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
 import java.io.File
+import java.nio.file.Files
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -63,7 +65,10 @@ class AddContentsActivity : AppCompatActivity() {
 
         var addContentsActivity: Activity? = null
 
+        lateinit var originImageList : ArrayList<String>
         lateinit var imageList : ArrayList<String>
+        lateinit var originCoverImage: String
+
         var isModify = false
         var isSaved = false
 
@@ -80,7 +85,7 @@ class AddContentsActivity : AppCompatActivity() {
 
     private lateinit var imageRecyclerAdapter : ContentsImageRecyclerAdapter
 
-    private var isImageSelected = false
+//    private var isImageSelected = false
 
     private var contentImageUri : Uri? = null
 
@@ -114,8 +119,10 @@ class AddContentsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_contents)
 
         addContentsActivity = this@AddContentsActivity
+        originImageList = ArrayList()
         imageList = ArrayList()
         defaultAddView = cl_contents_add_image_back
+
 
 
         // 이미지 아이템 리사이클러뷰 초기화
@@ -150,12 +157,24 @@ class AddContentsActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        if(!isSaved && !isModify){   //  저장되지 않는 경우에 이미지 파일 모두 삭제
+        if(!isSaved){   //  저장되지 않는 경우에 이미지 파일 모두 삭제
             for(fileName in imageList){
                 deleteFile(fileName)
             }
         }
         else{
+            // 원래 저장되어있던 이미지 모두 삭제
+            for(fileName in originImageList){
+                deleteFile(fileName)
+            }
+
+            // 새로 업데이트된 파일(temp_어쩌고.png)이름 앞 temp_ 제거
+            for(fileName in imageList){
+                val prevFile = File("${applicationContext.filesDir}/$fileName")
+                val newFile = File("${applicationContext.filesDir}/${fileName.substringAfter("temp_")}")
+                prevFile.renameTo(newFile)
+            }
+
             isSaved = false
         }
         super.onDestroy()
@@ -209,10 +228,21 @@ class AddContentsActivity : AppCompatActivity() {
             // 이미지
             val savedList = mAlbumItemEntity.contentsImageName.split("|")
             for(name in savedList){
-                imageList.add(name)
+                originImageList.add(name)
+                imageList.add("temp_${name}")
             }
+            originImageList.add("")
             imageList.add("")   // add dummy (for add button)
+            imageRecyclerAdapter.notifyDataSetChanged()
 
+            originCoverImage = originImageList[mAlbumItemEntity.coverImageIndex]
+
+            // imageList 파일 생성
+            for(i in 0 until imageList.size){
+                val originFile = File("${applicationContext.filesDir}/${originImageList[i]}")
+                val destFile = File("${applicationContext.filesDir}/${imageList[i]}")
+                Files.copy(originFile.toPath(), destFile.toPath())
+            }
         }
         else{   // 컨텐츠 생성일 경우
             // 날짜 오늘 날짜로 초기화
@@ -276,19 +306,16 @@ class AddContentsActivity : AppCompatActivity() {
 
         // NEXT 버튼
         layout_top_menu_add_contents.iv_icon_right.setOnClickListener {
-            if(!isImageSelected){
+            if(imageList.isEmpty()){
                 // show toast
+                Toast.makeText(this, "이미지를 추가해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             // start activity (add contents cover activity)
             val intent = Intent(this, AddContentsCoverActivity::class.java)
-            if(isModify){
+            if(isModify) {
                 intent.putExtra("contentsId", contentsId)
-                intent.putExtra("contentsImage", mAlbumItemEntity.contentsImageName)
                 intent.putExtra("contentsCoverImage", mAlbumItemEntity.coverImageName)
-            }
-            else{
-                intent.putExtra("contentImageUri", contentImageUri)
             }
             val contentsDate = tv_contents_date.text.toString().substringBeforeLast(".")
             intent.putExtra("contentsDate", contentsDate)
@@ -336,20 +363,23 @@ class AddContentsActivity : AppCompatActivity() {
                     val viewHeight = LayoutParamsUtils
                             .getItemHeightByPercent(applicationContext, 0.479f)
 
-                    var fileName = "contents_image_${mAlbumEntity.id}.png"
+                    var fileName = "contents_image_${mAlbumEntity.id}_.png"
                     var file = File("${applicationContext.filesDir}/$fileName")
+                    var fileTemp = File("${applicationContext.filesDir}/temp_$fileName")
                     val name = file.nameWithoutExtension
                     var cnt = 1
 
-                    while(file.exists()){
-                        fileName = "${name}_${cnt}.png"
+                    while(file.exists() || fileTemp.exists()){
+                        fileName = "${name}${cnt}.png"
                         file = File("${applicationContext.filesDir}/$fileName")
+                        fileTemp = File("${applicationContext.filesDir}/temp_$fileName")
                         cnt++
                     }
 
                     if(cnt-1>0)
-                        fileName = "${name}_${cnt-1}.png"
+                        fileName = "${name}${cnt-1}.png"
 
+                    fileName = "temp_${fileName}"
 
                     val fos = openFileOutput(fileName, Context.MODE_PRIVATE)
                     var bitmap: Bitmap = BitmapUtils
@@ -365,7 +395,6 @@ class AddContentsActivity : AppCompatActivity() {
                     fos.close()
 
                     defaultAddView.visibility = View.INVISIBLE
-                    isImageSelected = true
 
                     if(imageList.size==0){
                         imageList.add(fileName)

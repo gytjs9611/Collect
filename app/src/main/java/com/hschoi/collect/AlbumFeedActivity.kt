@@ -10,6 +10,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.hschoi.collect.customview.AlbumFeedItem
 import com.hschoi.collect.database.AlbumDatabase
+import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.BitmapCropUtils
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekFromDate
 import com.hschoi.collect.util.LayoutParamsUtils
@@ -39,7 +40,7 @@ class AlbumFeedActivity : AppCompatActivity() {
         var isDataChanged = false
     }
 
-    private var albumItemList = ArrayList<FeedItemInfo>()
+    private var albumItemList = ArrayList<AlbumItemEntity>()
     private var albumItemCnt = 0
 
     private var albumId :Long = -1
@@ -147,7 +148,7 @@ class AlbumFeedActivity : AppCompatActivity() {
     }
 
     private fun showItemASC(){
-        albumItemList = ArrayList<FeedItemInfo>()
+        albumItemList = ArrayList()
         val getAlbumFeedItemInfo = GetAlbumFeedItemInfoASC(applicationContext, albumId)
         getAlbumFeedItemInfo.start()
         Thread.sleep(100)
@@ -156,7 +157,7 @@ class AlbumFeedActivity : AppCompatActivity() {
     }
 
     private fun showItemDESC(){
-        albumItemList = ArrayList<FeedItemInfo>()
+        albumItemList = ArrayList()
         val getAlbumFeedItemInfo = GetAlbumFeedItemInfoDESC(applicationContext, albumId)
         getAlbumFeedItemInfo.start()
         Thread.sleep(100)
@@ -322,9 +323,7 @@ class AlbumFeedActivity : AppCompatActivity() {
 
 
             for(item in albumFeedItems){
-                val feedItem = FeedItemInfo(item.contentsId, item.coverImageName, item.contentsImageName,
-                        item.contentsTitle, item.contentsDate, item.contentsSentence)
-                albumItemList.add(feedItem)
+                albumItemList.add(item)
             }
         }
     }
@@ -338,18 +337,16 @@ class AlbumFeedActivity : AppCompatActivity() {
 
 
             for(item in albumFeedItems){
-                val feedItem = FeedItemInfo(item.contentsId, item.coverImageName, item.contentsImageName,
-                    item.contentsTitle, item.contentsDate, item.contentsSentence)
-                albumItemList.add(feedItem)
+                albumItemList.add(item)
             }
         }
     }
 
 }
 
-data class FeedItemInfo(val contentsId : Long, val coverImageName : String, val contentsImageName : String,
+/*data class FeedItemInfo(val contentsId : Long, val coverImageName : String, val contentsImageName : String,
                         val contentsTitle : String, val contentsDate : String,
-                        val contentsSentence : String)
+                        val contentsSentence : String)*/
 
 
 

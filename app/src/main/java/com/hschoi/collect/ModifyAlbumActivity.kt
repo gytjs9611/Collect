@@ -286,6 +286,11 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        unregisterReceiver(measureReceiver)
+        super.onDestroy()
+    }
+
 
     private fun loadSavedImageState(){
 
