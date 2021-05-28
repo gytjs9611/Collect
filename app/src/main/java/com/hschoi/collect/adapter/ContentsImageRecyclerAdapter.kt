@@ -64,6 +64,9 @@ class ContentsImageRecyclerAdapter(var items: ArrayList<String>): RecyclerView.A
         }
         else{
             holder.bindNormal(items[position], position)
+            holder.itemView.cv_contents_image.setOnClickListener {
+
+            }
             holder.itemView.iv_delete_button.setOnClickListener {
                 mContext.deleteFile(items[position])
                 items.removeAt(position)
