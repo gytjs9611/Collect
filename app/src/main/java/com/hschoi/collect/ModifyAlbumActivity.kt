@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.Dimension
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -29,6 +30,7 @@ import com.hschoi.collect.util.BitmapCropUtils
 import com.hschoi.collect.util.BitmapUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import com.hschoi.collect.util.PathDataUtils
+import gun0912.tedimagepicker.builder.TedImagePicker
 import kotlinx.android.synthetic.main.activity_create_new_album.cl_image_cropping_view
 import kotlinx.android.synthetic.main.activity_create_new_album.iv_add_icon_default
 import kotlinx.android.synthetic.main.activity_create_new_album.iv_frame_stroke
@@ -184,7 +186,25 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
         // 이미지 추가 버튼 누르면 갤러리 실행
         iv_add_icon_default.setOnClickListener {
-            selectGallery()
+            if (ContextCompat.checkSelfPermission(this.applicationContext,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+                // Permission is not granted
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    // First time
+                    ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        REQ_STORAGE_PERMISSION
+                    )
+                } else {
+                    // Not first time
+                    Toast.makeText(this, "기기 설정에서 권한을 허용해주세요", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Permission has already been granted
+                openImagePicker()
+            }
         }
 
 
@@ -291,6 +311,21 @@ class ModifyAlbumActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    private fun openImagePicker(){
+        TedImagePicker.with(this)
+            .start { uri ->
+                val w = LayoutParamsUtils.getScreenWidth(applicationContext)
+                val h = LayoutParamsUtils.getItemHeightByPercent(applicationContext, 0.479f)
+
+                imageCroppingView.initView(applicationContext)  // 크롭 이미지뷰 초기화
+                imageCroppingView.setImageURI(uri, w, h)
+
+                // 이미지 처음으로 선택되면 이미지 추가 버튼 형태 변경하기
+
+                tempUri = uri
+            }
+
+    }
 
     private fun loadSavedImageState(){
 
@@ -442,10 +477,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
                 if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     Log.d("GALLERY", "permission granted")
                     // 동의했을 경우 갤러리 실행
-                    val intent = Intent(Intent.ACTION_PICK)
-                    intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    intent.type = "image/*"
-                    startActivityForResult(intent, REQ_GALLERY)
+                    openImagePicker()
                 }
                 else{
                     // 거부했을 경우
@@ -454,26 +486,6 @@ class ModifyAlbumActivity : AppCompatActivity() {
             }
         }
     }
-
-
-    private fun selectGallery() {
-//        val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        if (readPermission == PackageManager.PERMISSION_DENIED) {
-            // 권한 없어서 요청
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQ_STORAGE_PERMISSION)
-            Log.d("GALLERY", "권한요청 $readPermission, denied=${PackageManager.PERMISSION_DENIED}")
-
-        } else { // 권한 있음
-            Log.d("GALLERY", "권한있음 갤러리 실행되야함")
-
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            intent.type = "image/*"
-            startActivityForResult(intent, REQ_GALLERY)
-        }
-    }
-
 
 
 

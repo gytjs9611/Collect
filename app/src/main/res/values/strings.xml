@@ -5,7 +5,6 @@
     <string name="home_add_text">나만의 컬렉션을\n만들어 보세요.</string>
     <string name="album_feed_init_text">어떤 것이든 좋아요.\n기록으로 나에 대해\n한걸음 가까워 질 수 있습니다.</string>
 
-
     <string name="modify_album">앨범 수정</string>
     <string name="delete_album">앨범 삭제</string>
     <string name="delete_album_description">
@@ -40,6 +39,9 @@
 
 
     <string name="create_new_album">앨범 만들기</string>
+
+
+
 
     <!--    frame0  -->
     <string name="frame0_fill">

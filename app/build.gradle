@@ -72,4 +72,7 @@ dependencies {
 
     // page indicator
     implementation "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator:1.2.0"
+
+    // image picker
+    implementation 'gun0912.ted:tedimagepicker:1.0.8'
 }
