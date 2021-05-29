@@ -79,8 +79,8 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
 
 //        갤러리 접근
-        private const val REQ_STORAGE_PERMISSION = 100
-        private const val REQ_GALLERY = 101
+        const val REQ_STORAGE_PERMISSION = 100
+        const val REQ_GALLERY = 101
     }
 
 

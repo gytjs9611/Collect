@@ -40,8 +40,8 @@
 
     <string name="create_new_album">앨범 만들기</string>
 
-
-
+<!--    image picker    -->
+    <string name="max_image_cnt">이미지는 최대 %d장까지 추가할 수\n있습니다.</string>
 
     <!--    frame0  -->
     <string name="frame0_fill">
