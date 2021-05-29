@@ -18,9 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.hschoi.collect.adapter.ContentsImageRecyclerAdapter
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
@@ -28,10 +26,9 @@ import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.BitmapUtils
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekString
 import com.hschoi.collect.util.LayoutParamsUtils
+import gun0912.tedimagepicker.builder.TedImagePicker
 import kotlinx.android.synthetic.main.activity_add_contents.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
-import ru.tinkoff.scrollingpagerindicator.RecyclerViewAttacher
-import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
 import java.io.File
 import java.nio.file.Files
 import java.text.SimpleDateFormat
@@ -41,6 +38,9 @@ import java.util.*
 class AddContentsActivity : AppCompatActivity() {
 
     companion object {
+        private lateinit var mContext: Context
+        private var MAX_IMAGE_CNT = 10
+
         private const val ADD_IMAGE_BACK_WIDTH = 340f/360f
         const val ADD_IMAGE_BACK_HEIGHT_RATIO = 262f/340f
         private const val ADD_IMAGE_BACK_MARGIN = 10f/360f
@@ -69,21 +69,88 @@ class AddContentsActivity : AppCompatActivity() {
         lateinit var imageList : ArrayList<String>
         lateinit var originCoverImage: String
 
+        private lateinit var imageRecyclerView: RecyclerView
+        private lateinit var imageRecyclerAdapter : ContentsImageRecyclerAdapter
+
+
+        private lateinit var mAlbumItemEntity : AlbumItemEntity
+        private lateinit var mAlbumEntity : AlbumEntity
+
         var isModify = false
         var isSaved = false
 
         lateinit var defaultAddView : ConstraintLayout
 
         var addContentsAttacher = AddImageAttacher()
+
+
+        fun openImagePicker(){
+            val itemCnt = if(imageList.size==0) 0 else imageList.size-1
+            val remainCnt = MAX_IMAGE_CNT - itemCnt
+
+            val maxInfo = String.format(mContext.getString(R.string.max_image_cnt), MAX_IMAGE_CNT)
+            TedImagePicker.with(mContext)
+                .max(remainCnt, maxInfo)
+                .startMultiImage { uriList ->
+                    val viewWidth = LayoutParamsUtils.getScreenWidth(mContext)
+                    val viewHeight = LayoutParamsUtils
+                        .getItemHeightByPercent(mContext, 0.479f)
+
+                    for(item in uriList){
+                        var fileName = "contents_image_${mAlbumEntity.id}_.png"
+                        var file = File("${mContext.filesDir}/$fileName")
+                        var fileTemp = File("${mContext.filesDir}/temp_$fileName")
+                        val name = file.nameWithoutExtension
+                        var cnt = 1
+
+                        while(file.exists() || fileTemp.exists()){
+                            fileName = "${name}${cnt}.png"
+                            file = File("${mContext.filesDir}/$fileName")
+                            fileTemp = File("${mContext.filesDir}/temp_$fileName")
+                            cnt++
+                        }
+
+                        if(cnt-1>0)
+                            fileName = "${name}${cnt-1}.png"
+
+                        fileName = "temp_${fileName}"
+
+                        val fos = mContext.openFileOutput(fileName, Context.MODE_PRIVATE)
+                        var bitmap: Bitmap = BitmapUtils
+                            .getResizedBitmap(mContext, item,
+                                viewWidth, viewHeight)?:return@startMultiImage
+
+                        // 회전값 존재하면 똑바로 보이도록 조정
+                        val exifDegree = BitmapUtils.getExifDegree(mContext, item!!)
+                        if(exifDegree!=0){
+                            bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@startMultiImage
+                        }
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
+                        fos.close()
+
+                        defaultAddView.visibility = View.INVISIBLE
+
+                        if(imageList.size==0){
+                            imageList.add(fileName)
+                            imageList.add("")
+                        }
+                        else{
+                            imageList.add(imageList.size-1,fileName)
+                        }
+
+                        imageRecyclerView.smoothScrollToPosition(imageList.size-1)
+                        imageRecyclerAdapter.notifyDataSetChanged()
+                    }
+                }
+
+        }
     }
 
-    private lateinit var mAlbumItemEntity : AlbumItemEntity
-    private lateinit var mAlbumEntity : AlbumEntity
+
 
     private var albumId: Long = -1
     private var contentsId: Long = -1
 
-    private lateinit var imageRecyclerAdapter : ContentsImageRecyclerAdapter
 
 //    private var isImageSelected = false
 
@@ -117,6 +184,8 @@ class AddContentsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_contents)
+        mContext = this
+        MAX_IMAGE_CNT = 10  // free, premium 차이두기
 
         addContentsActivity = this@AddContentsActivity
         originImageList = ArrayList()
@@ -126,12 +195,13 @@ class AddContentsActivity : AppCompatActivity() {
 
 
         // 이미지 아이템 리사이클러뷰 초기화
+        imageRecyclerView = rv_image_list
         imageRecyclerAdapter = ContentsImageRecyclerAdapter(imageList)
-        rv_image_list.adapter = imageRecyclerAdapter
-        rv_image_list.layoutManager = GridLayoutManager(applicationContext, 1, RecyclerView.HORIZONTAL, false)
+        imageRecyclerView.adapter = imageRecyclerAdapter
+        imageRecyclerView.layoutManager = GridLayoutManager(applicationContext, 1, RecyclerView.HORIZONTAL, false)
 
         val decoration = ContentsImageRecyclerDecoration(applicationContext)
-        rv_image_list.addItemDecoration(decoration)
+        imageRecyclerView.addItemDecoration(decoration)
 
         // 데이터 불러옴
         loadData()
@@ -140,7 +210,7 @@ class AddContentsActivity : AppCompatActivity() {
             defaultAddView.bringToFront()
         }
         else{
-            rv_image_list.smoothScrollToPosition(imageList.size-1)
+            imageRecyclerView.smoothScrollToPosition(imageList.size-1)
             defaultAddView.visibility = View.INVISIBLE
         }
 
@@ -328,7 +398,25 @@ class AddContentsActivity : AppCompatActivity() {
         // 이미지 추가 버튼
         iv_add_contents_image.setOnClickListener {
             // 이미지 갤러리로부터 받아오기
-            selectGallery()
+//            selectGallery()
+            if (ContextCompat.checkSelfPermission(this.applicationContext,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+                // Permission is not granted
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    // First time
+                    ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQ_STORAGE_PERMISSION
+                    )
+                } else {
+                    // Not first time
+                    Toast.makeText(this, "기기 설정에서 권한을 허용해주세요", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Permission has already been granted
+                openImagePicker()
+            }
         }
 
         // 날짜 선택 버튼
@@ -419,10 +507,7 @@ class AddContentsActivity : AppCompatActivity() {
                 if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     Log.d("GALLERY", "permission granted")
                     // 동의했을 경우 갤러리 실행
-                    val intent = Intent(Intent.ACTION_PICK)
-                    intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    intent.type = "image/*"
-                    startActivityForResult(intent, REQ_GALLERY)
+                    openImagePicker()
                 }
                 else{
                     // 거부했을 경우
@@ -432,7 +517,64 @@ class AddContentsActivity : AppCompatActivity() {
         }
     }
 
-
+//    fun openImagePicker(){
+//        val itemCnt = if(imageList.size==0) 0 else imageList.size-1
+//        val remainCnt = MAX_IMAGE_CNT - itemCnt
+//        TedImagePicker.with(this)
+//            .max(remainCnt, "띠용?")
+//            .startMultiImage { uriList ->
+//                val viewWidth = LayoutParamsUtils.getScreenWidth(applicationContext)
+//                val viewHeight = LayoutParamsUtils
+//                    .getItemHeightByPercent(applicationContext, 0.479f)
+//
+//                for(item in uriList){
+//                    var fileName = "contents_image_${mAlbumEntity.id}_.png"
+//                    var file = File("${applicationContext.filesDir}/$fileName")
+//                    var fileTemp = File("${applicationContext.filesDir}/temp_$fileName")
+//                    val name = file.nameWithoutExtension
+//                    var cnt = 1
+//
+//                    while(file.exists() || fileTemp.exists()){
+//                        fileName = "${name}${cnt}.png"
+//                        file = File("${applicationContext.filesDir}/$fileName")
+//                        fileTemp = File("${applicationContext.filesDir}/temp_$fileName")
+//                        cnt++
+//                    }
+//
+//                    if(cnt-1>0)
+//                        fileName = "${name}${cnt-1}.png"
+//
+//                    fileName = "temp_${fileName}"
+//
+//                    val fos = openFileOutput(fileName, Context.MODE_PRIVATE)
+//                    var bitmap: Bitmap = BitmapUtils
+//                        .getResizedBitmap(applicationContext, item,
+//                            viewWidth, viewHeight)?:return@startMultiImage
+//
+//                    // 회전값 존재하면 똑바로 보이도록 조정
+//                    val exifDegree = BitmapUtils.getExifDegree(applicationContext, item!!)
+//                    if(exifDegree!=0){
+//                        bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@startMultiImage
+//                    }
+//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
+//                    fos.close()
+//
+//                    defaultAddView.visibility = View.INVISIBLE
+//
+//                    if(imageList.size==0){
+//                        imageList.add(fileName)
+//                        imageList.add("")
+//                    }
+//                    else{
+//                        imageList.add(imageList.size-1,fileName)
+//                    }
+//
+//                    rv_image_list.smoothScrollToPosition(imageList.size-1)
+//                    imageRecyclerAdapter.notifyDataSetChanged()
+//                }
+//            }
+//
+//    }
 
     private fun selectGallery() {
 //        val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
