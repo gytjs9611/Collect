@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         private const val FINISH_INTERVAL_TIME = 1000
         lateinit var defaultAddAlbum : View
         lateinit var albumList : ArrayList<Albums>
+
+        lateinit var homeRecyclerView : RecyclerView
         lateinit var homeRecyclerAdapter : HomeRecyclerAdapter
         lateinit var addContentsRecyclerAdapter: AddContentsRecyclerAdapter
 
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         albumList = ArrayList()
 
+        homeRecyclerView = rv_album_card
         homeRecyclerAdapter = HomeRecyclerAdapter(albumList)
         addContentsRecyclerAdapter = AddContentsRecyclerAdapter(albumList)
 

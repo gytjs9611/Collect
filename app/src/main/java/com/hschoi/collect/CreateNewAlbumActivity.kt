@@ -297,6 +297,7 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             MainActivity.homeRecyclerAdapter.notifyDataSetChanged()
             MainActivity.addContentsRecyclerAdapter.notifyDataSetChanged()
 
+            MainActivity.homeRecyclerView.smoothScrollToPosition(MainActivity.albumList.size-2)
 
             finish()
         }
