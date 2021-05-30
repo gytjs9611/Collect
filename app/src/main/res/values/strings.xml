@@ -35,7 +35,7 @@
     <string name="contents_image_title">게시물 이미지</string>
 
     <string name="contents_title_hint">제목</string>
-    <string name="contents_sentences_hint">당신의 취향을 기록해보세요.</string>
+    <string name="contents_sentences_hint">당신의 취향을 기록해보세요.\n\n\n\n\n\n\n</string>
 
 
     <string name="create_new_album">앨범 만들기</string>
