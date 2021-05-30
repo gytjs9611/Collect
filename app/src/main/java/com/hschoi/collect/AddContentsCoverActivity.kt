@@ -10,6 +10,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.PathParser
 import androidx.recyclerview.widget.GridLayoutManager
+import com.hschoi.collect.adapter.AddContentsRecyclerAdapter
 import com.hschoi.collect.adapter.CoverImageAdapter
 import com.hschoi.collect.customview.ImageCroppingView
 import com.hschoi.collect.database.AlbumDatabase
@@ -60,6 +61,8 @@ class AddContentsCoverActivity : AppCompatActivity() {
     private var frameHeight = 0
 
     private var originCoverExists = false
+
+    private lateinit var adapter: CoverImageAdapter
 
 
     private var measureReceiver = object : BroadcastReceiver(){
@@ -161,8 +164,8 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
 
 
-        val adapter = CoverImageAdapter(applicationContext)
-        adapter.imageNameListData = AddContentsActivity.imageList
+        adapter = CoverImageAdapter(AddContentsActivity.imageList)
+
 
         if(AddContentsActivity.isModify){
             var coverIdx = 0
@@ -181,7 +184,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
             // zoom, x, y 불러와서 저장했을 때 상태로 적용시키기 (broadcast 수신시)
         }
         else{
-            val bitmap = BitmapFactory.decodeFile("${filesDir}/${adapter.imageNameListData[0]}")
+            val bitmap = BitmapFactory.decodeFile("${filesDir}/${AddContentsActivity.imageList[0]}")
             icv_cover_image_source.setImageBitmap(bitmap)
         }
 
@@ -316,7 +319,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
+        adapter.notifyDataSetChanged()
     }
 
     override fun onDestroy() {
