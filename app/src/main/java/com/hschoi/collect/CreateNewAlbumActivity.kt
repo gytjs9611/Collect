@@ -31,6 +31,7 @@ import com.hschoi.collect.util.BitmapUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import com.hschoi.collect.util.PathDataUtils
 import gun0912.tedimagepicker.builder.TedImagePicker
+import kotlinx.android.synthetic.main.activity_add_contents.*
 import kotlinx.android.synthetic.main.activity_create_new_album.*
 import kotlinx.android.synthetic.main.layout_create_new_album_color.*
 import kotlinx.android.synthetic.main.layout_create_new_album_color.view.*
@@ -215,13 +216,15 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             val title = layout_album_title.et_album_name.text.toString()
 
             if(!isImageSelected){
-                // toast 띄우기
+                Toast.makeText(this, R.string.toast_add_image, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
             if(title==""){
-                // toast 띄우기
+                Toast.makeText(this, R.string.toast_enter_title, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
 
             // 내부저장소에 커버이미지 저장
             var fos : FileOutputStream
@@ -284,8 +287,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             val setAlbumOrder = SetAlbumOrder(applicationContext, albumId)
             setAlbumOrder.start()
             Thread.sleep(100)
-
-
 
 
 

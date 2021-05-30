@@ -238,7 +238,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
             val title = layout_album_title.et_album_name.text.toString()
 
             if(title==""){
-                // toast 띄우기
+                Toast.makeText(this, R.string.toast_enter_title, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

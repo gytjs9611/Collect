@@ -6,18 +6,6 @@
     <string name="album_feed_init_text">어떤 것이든 좋아요.\n기록으로 나에 대해\n한걸음 가까워 질 수 있습니다.</string>
 
     <string name="modify_album">앨범 수정</string>
-    <string name="delete_album">앨범 삭제</string>
-    <string name="delete_album_description">
-        정말로 해당 앨범을 삭제하실 건가요?\n
-        삭제 시 안에 작성된\n
-        게시물까지 전부 삭제됩니다.
-    </string>
-
-    <string name="delete_contents">작성 글 삭제</string>
-    <string name="delete_contents_description">
-        정말로 해당 글을 삭제하실 건가요?\n
-        삭제된 글은 복구가 불가능합니다.
-    </string>
 
     <string name="cancel">취소</string>
     <string name="edit">수정</string>
@@ -40,9 +28,40 @@
 
     <string name="create_new_album">앨범 만들기</string>
 
-<!--    image picker    -->
-    <string name="max_image_cnt">이미지는 최대 %d장까지 추가할 수\n있습니다.</string>
+<!--    popup dialog    -->
+    <!--    title   -->
+    <string name="delete_album">앨범 삭제</string>
+    <string name="delete_contents">작성 글 삭제</string>
 
+    <!--    description-->
+    <string name="delete_album_description">
+        정말로 해당 앨범을 삭제하실 건가요?\n
+        삭제 시 안에 작성된\n
+        게시물까지 전부 삭제됩니다.
+    </string>
+    <string name="delete_contents_description">
+        정말로 해당 글을 삭제하실 건가요?\n
+        삭제된 글은 복구가 불가능합니다.
+    </string>
+    <string name="back_contents_description">
+        뒤로가기하면 지금 쓴거 저장 안돼요~
+    </string>
+
+
+
+<!--    Toast   -->
+    <string name="toast_add_image">이미지를 추가해주세요.</string>
+    <string name="toast_enter_title">제목을 입력해주세요.</string>
+    <string name="toast_enter_sentences">내용을 입력해주세요.</string>
+
+    <!--    image picker    -->
+    <string name="toast_max_image_cnt">이미지는 %d장까지 추가할 수 있습니다.</string>
+
+
+
+
+
+<!--    FRAME   -->
     <!--    frame0  -->
     <string name="frame0_fill">
 

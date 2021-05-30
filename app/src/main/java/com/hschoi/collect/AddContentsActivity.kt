@@ -6,15 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.ScrollView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -100,7 +97,7 @@ class AddContentsActivity : AppCompatActivity() {
             val remainCnt = MAX_IMAGE_CNT - itemCnt
 
             if(remainCnt>0){
-                val maxInfo = String.format(mContext.getString(R.string.max_image_cnt), MAX_IMAGE_CNT)
+                val maxInfo = String.format(mContext.getString(R.string.toast_max_image_cnt), MAX_IMAGE_CNT)
                 TedImagePicker.with(mContext)
                         .max(remainCnt, maxInfo)
                         .startMultiImage { uriList ->
@@ -158,7 +155,7 @@ class AddContentsActivity : AppCompatActivity() {
             }
             else{
                 // if premium
-                val str = String.format(mContext.getString(R.string.max_image_cnt), MAX_IMAGE_CNT)
+                val str = String.format(mContext.getString(R.string.toast_max_image_cnt), MAX_IMAGE_CNT)
                 Toast.makeText(mContext, str , Toast.LENGTH_SHORT).show()
                 // else
                 // Show Preminum Popup
@@ -402,11 +399,25 @@ class AddContentsActivity : AppCompatActivity() {
 
         // NEXT 버튼
         layout_top_menu_add_contents.iv_icon_right.setOnClickListener {
+            val title = et_contents_title.text.toString()
+            val sentences = et_contents_sentences.text.toString()
+
             if(imageList.isEmpty()){
                 // show toast
-                Toast.makeText(this, "이미지를 추가해주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.toast_add_image, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            if(title==""){
+                Toast.makeText(this, R.string.toast_enter_title, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if(sentences==""){
+                Toast.makeText(this, R.string.toast_enter_sentences, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+
             // start activity (add contents cover activity)
             val intent = Intent(this, AddContentsCoverActivity::class.java)
             if(isModify) {
