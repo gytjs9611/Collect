@@ -6,12 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -61,7 +64,6 @@ class AddContentsActivity : AppCompatActivity() {
 
 
         const val REQ_STORAGE_PERMISSION = 100
-        const val REQ_GALLERY = 101
 
         var addContentsActivity: Activity? = null
 
@@ -83,6 +85,15 @@ class AddContentsActivity : AppCompatActivity() {
 
         var addContentsAttacher = AddImageAttacher()
 
+        fun hideKeyboard(){
+            val activity = mContext as Activity
+            val focusView = activity.currentFocus
+            if(focusView!=null){
+                val imm = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(focusView.windowToken, 0)
+                focusView.clearFocus()
+            }
+        }
 
         fun openImagePicker(){
             val itemCnt = if(imageList.size==0) 0 else imageList.size-1
@@ -92,6 +103,7 @@ class AddContentsActivity : AppCompatActivity() {
             TedImagePicker.with(mContext)
                 .max(remainCnt, maxInfo)
                 .startMultiImage { uriList ->
+
                     val viewWidth = LayoutParamsUtils.getScreenWidth(mContext)
                     val viewHeight = LayoutParamsUtils
                         .getItemHeightByPercent(mContext, 0.479f)
@@ -184,6 +196,8 @@ class AddContentsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_contents)
+
+
         mContext = this
         MAX_IMAGE_CNT = 10  // free, premium 차이두기
 
@@ -191,8 +205,6 @@ class AddContentsActivity : AppCompatActivity() {
         originImageList = ArrayList()
         imageList = ArrayList()
         defaultAddView = cl_contents_add_image_back
-
-
 
         // 이미지 아이템 리사이클러뷰 초기화
         imageRecyclerView = rv_image_list
@@ -223,8 +235,11 @@ class AddContentsActivity : AppCompatActivity() {
 
         // page indicator
         setPageIndicator()
-        
+
+
     }
+
+
 
     override fun onDestroy() {
         if(!isSaved){   //  저장되지 않는 경우에 이미지 파일 모두 삭제
@@ -398,7 +413,6 @@ class AddContentsActivity : AppCompatActivity() {
         // 이미지 추가 버튼
         iv_add_contents_image.setOnClickListener {
             // 이미지 갤러리로부터 받아오기
-//            selectGallery()
             if (ContextCompat.checkSelfPermission(this.applicationContext,
                     Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -421,12 +435,16 @@ class AddContentsActivity : AppCompatActivity() {
 
         // 날짜 선택 버튼
         cl_contents_date.setOnClickListener {
+            hideKeyboard()
+
             // 달력 호출해서 날짜 yyyy.mm.dd.요일 형식으로 받아오기
             val datePickerFragment = DatePickerFragment(mYear, mMonth, mDayOfMonth)
             datePickerFragment.show(supportFragmentManager, "datePicker")
         }
 
     }
+
+
 
     fun processDatePickerResult(year: Int, month: Int, dayOfMonth: Int, dayOfWeek: Int){
         mYear = year
@@ -437,67 +455,6 @@ class AddContentsActivity : AppCompatActivity() {
                 "$year.${month+1}.$dayOfMonth.${getDayOfWeekString(applicationContext, dayOfWeek)}"
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode){
-            REQ_GALLERY ->{
-                // 갤러리로부터 사진 가져옴
-                if(data!=null && resultCode==RESULT_OK){
-                    val contentImageUri = data.data
-
-
-                    val viewWidth = LayoutParamsUtils.getScreenWidth(applicationContext)
-                    val viewHeight = LayoutParamsUtils
-                            .getItemHeightByPercent(applicationContext, 0.479f)
-
-                    var fileName = "contents_image_${mAlbumEntity.id}_.png"
-                    var file = File("${applicationContext.filesDir}/$fileName")
-                    var fileTemp = File("${applicationContext.filesDir}/temp_$fileName")
-                    val name = file.nameWithoutExtension
-                    var cnt = 1
-
-                    while(file.exists() || fileTemp.exists()){
-                        fileName = "${name}${cnt}.png"
-                        file = File("${applicationContext.filesDir}/$fileName")
-                        fileTemp = File("${applicationContext.filesDir}/temp_$fileName")
-                        cnt++
-                    }
-
-                    if(cnt-1>0)
-                        fileName = "${name}${cnt-1}.png"
-
-                    fileName = "temp_${fileName}"
-
-                    val fos = openFileOutput(fileName, Context.MODE_PRIVATE)
-                    var bitmap: Bitmap = BitmapUtils
-                            .getResizedBitmap(applicationContext, contentImageUri,
-                                    viewWidth, viewHeight)?:return
-
-                    // 회전값 존재하면 똑바로 보이도록 조정
-                    val exifDegree = BitmapUtils.getExifDegree(applicationContext, contentImageUri!!)
-                    if(exifDegree!=0){
-                        bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return
-                    }
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
-                    fos.close()
-
-                    defaultAddView.visibility = View.INVISIBLE
-
-                    if(imageList.size==0){
-                        imageList.add(fileName)
-                        imageList.add("")
-                    }
-                    else{
-                        imageList.add(imageList.size-1,fileName)
-                    }
-
-                    rv_image_list.smoothScrollToPosition(imageList.size-1)
-                    imageRecyclerAdapter.notifyDataSetChanged()
-                }
-            }
-        }
-    }
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -517,87 +474,9 @@ class AddContentsActivity : AppCompatActivity() {
         }
     }
 
-//    fun openImagePicker(){
-//        val itemCnt = if(imageList.size==0) 0 else imageList.size-1
-//        val remainCnt = MAX_IMAGE_CNT - itemCnt
-//        TedImagePicker.with(this)
-//            .max(remainCnt, "띠용?")
-//            .startMultiImage { uriList ->
-//                val viewWidth = LayoutParamsUtils.getScreenWidth(applicationContext)
-//                val viewHeight = LayoutParamsUtils
-//                    .getItemHeightByPercent(applicationContext, 0.479f)
-//
-//                for(item in uriList){
-//                    var fileName = "contents_image_${mAlbumEntity.id}_.png"
-//                    var file = File("${applicationContext.filesDir}/$fileName")
-//                    var fileTemp = File("${applicationContext.filesDir}/temp_$fileName")
-//                    val name = file.nameWithoutExtension
-//                    var cnt = 1
-//
-//                    while(file.exists() || fileTemp.exists()){
-//                        fileName = "${name}${cnt}.png"
-//                        file = File("${applicationContext.filesDir}/$fileName")
-//                        fileTemp = File("${applicationContext.filesDir}/temp_$fileName")
-//                        cnt++
-//                    }
-//
-//                    if(cnt-1>0)
-//                        fileName = "${name}${cnt-1}.png"
-//
-//                    fileName = "temp_${fileName}"
-//
-//                    val fos = openFileOutput(fileName, Context.MODE_PRIVATE)
-//                    var bitmap: Bitmap = BitmapUtils
-//                        .getResizedBitmap(applicationContext, item,
-//                            viewWidth, viewHeight)?:return@startMultiImage
-//
-//                    // 회전값 존재하면 똑바로 보이도록 조정
-//                    val exifDegree = BitmapUtils.getExifDegree(applicationContext, item!!)
-//                    if(exifDegree!=0){
-//                        bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@startMultiImage
-//                    }
-//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
-//                    fos.close()
-//
-//                    defaultAddView.visibility = View.INVISIBLE
-//
-//                    if(imageList.size==0){
-//                        imageList.add(fileName)
-//                        imageList.add("")
-//                    }
-//                    else{
-//                        imageList.add(imageList.size-1,fileName)
-//                    }
-//
-//                    rv_image_list.smoothScrollToPosition(imageList.size-1)
-//                    imageRecyclerAdapter.notifyDataSetChanged()
-//                }
-//            }
-//
-//    }
-
-    private fun selectGallery() {
-//        val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        if (readPermission == PackageManager.PERMISSION_DENIED) {
-            // 권한 없어서 요청
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQ_STORAGE_PERMISSION)
-            Log.d("GALLERY", "권한요청 $readPermission, denied=${PackageManager.PERMISSION_DENIED}")
-
-        } else { // 권한 있음
-            Log.d("GALLERY", "권한있음 갤러리 실행되야함")
-
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            intent.type = "image/*"
-            startActivityForResult(intent, REQ_GALLERY)
-        }
-    }
-
 
     override fun onResume() {
         super.onResume()
-
     }
 
 

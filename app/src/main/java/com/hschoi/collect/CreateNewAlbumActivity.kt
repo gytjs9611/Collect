@@ -10,7 +10,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -302,6 +304,22 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val focusView = currentFocus
+        if (focusView != null) {
+            val rect = Rect()
+            focusView.getGlobalVisibleRect(rect)
+            val x = ev.x.toInt()
+            val y = ev.y.toInt()
+            if (!rect.contains(x, y)) {
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(focusView.windowToken, 0)
+                focusView.clearFocus()
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
 
     inner class AddAlbum(val context : Context, private val entity : AlbumEntity) : Thread() {
         override fun run() {
@@ -321,9 +339,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         }
     }
 
-    private fun initImageCroppingView(){
-
-    }
 
     override fun onResume() {
         super.onResume()
