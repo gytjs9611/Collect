@@ -134,7 +134,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:background="@null"
                 android:textSize="20dp"
-                android:maxLines="1"
+                android:inputType="text"
+                android:maxLength="15"
                 android:textColorHint="@color/add_contents_hint_color"
                 android:hint="@string/contents_title_hint"/>
 

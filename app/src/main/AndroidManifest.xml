@@ -15,8 +15,8 @@
         >
         <activity android:name=".MainActivity"
             android:theme="@style/HomeTheme"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,7 +26,9 @@
 
 
 <!--        팝업 다이얼로그    -->
-        <activity android:name=".PopUpDialogActivity" android:theme="@style/DialogTheme" />
+        <activity android:name=".PopUpDialogActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/DialogTheme" />
 
 
 
