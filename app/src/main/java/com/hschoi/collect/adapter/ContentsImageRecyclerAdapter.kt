@@ -51,6 +51,8 @@ class ContentsImageRecyclerAdapter(var items: ArrayList<String>): RecyclerView.A
             holder.bindLastItem()
 
             holder.itemView.setOnClickListener {
+                AddContentsActivity.hideKeyboard()
+
                 if (ContextCompat.checkSelfPermission(mContext,
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
