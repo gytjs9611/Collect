@@ -27,7 +27,6 @@ import java.util.*
 
 
 class AddContentsCoverActivity : AppCompatActivity() {
-
     companion object{
         private const val IMAGE_CROPPING_VIEW_HEIGHT_RATIO = 272f/716f
 
