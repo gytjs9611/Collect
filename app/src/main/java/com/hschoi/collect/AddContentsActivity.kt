@@ -99,61 +99,72 @@ class AddContentsActivity : AppCompatActivity() {
             val itemCnt = if(imageList.size==0) 0 else imageList.size-1
             val remainCnt = MAX_IMAGE_CNT - itemCnt
 
-            val maxInfo = String.format(mContext.getString(R.string.max_image_cnt), MAX_IMAGE_CNT)
-            TedImagePicker.with(mContext)
-                .max(remainCnt, maxInfo)
-                .startMultiImage { uriList ->
+            if(remainCnt>0){
+                val maxInfo = String.format(mContext.getString(R.string.max_image_cnt), MAX_IMAGE_CNT)
+                TedImagePicker.with(mContext)
+                        .max(remainCnt, maxInfo)
+                        .startMultiImage { uriList ->
 
-                    val viewWidth = LayoutParamsUtils.getScreenWidth(mContext)
-                    val viewHeight = LayoutParamsUtils
-                        .getItemHeightByPercent(mContext, 0.479f)
+                            val viewWidth = LayoutParamsUtils.getScreenWidth(mContext)
+                            val viewHeight = LayoutParamsUtils
+                                    .getItemHeightByPercent(mContext, 0.479f)
 
-                    for(item in uriList){
-                        var fileName = "contents_image_${mAlbumEntity.id}_.png"
-                        var file = File("${mContext.filesDir}/$fileName")
-                        var fileTemp = File("${mContext.filesDir}/temp_$fileName")
-                        val name = file.nameWithoutExtension
-                        var cnt = 1
+                            for(item in uriList){
+                                var fileName = "contents_image_${mAlbumEntity.id}_.png"
+                                var file = File("${mContext.filesDir}/$fileName")
+                                var fileTemp = File("${mContext.filesDir}/temp_$fileName")
+                                val name = file.nameWithoutExtension
+                                var cnt = 1
 
-                        while(file.exists() || fileTemp.exists()){
-                            fileName = "${name}${cnt}.png"
-                            file = File("${mContext.filesDir}/$fileName")
-                            fileTemp = File("${mContext.filesDir}/temp_$fileName")
-                            cnt++
+                                while(file.exists() || fileTemp.exists()){
+                                    fileName = "${name}${cnt}.png"
+                                    file = File("${mContext.filesDir}/$fileName")
+                                    fileTemp = File("${mContext.filesDir}/temp_$fileName")
+                                    cnt++
+                                }
+
+                                if(cnt-1>0)
+                                    fileName = "${name}${cnt-1}.png"
+
+                                fileName = "temp_${fileName}"
+
+                                val fos = mContext.openFileOutput(fileName, Context.MODE_PRIVATE)
+                                var bitmap: Bitmap = BitmapUtils
+                                        .getResizedBitmap(mContext, item,
+                                                viewWidth, viewHeight)?:return@startMultiImage
+
+                                // 회전값 존재하면 똑바로 보이도록 조정
+                                val exifDegree = BitmapUtils.getExifDegree(mContext, item!!)
+                                if(exifDegree!=0){
+                                    bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@startMultiImage
+                                }
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
+                                fos.close()
+
+                                defaultAddView.visibility = View.INVISIBLE
+
+                                if(imageList.size==0){
+                                    imageList.add(fileName)
+                                    imageList.add("")
+                                }
+                                else{
+                                    imageList.add(imageList.size-1,fileName)
+                                }
+
+                                imageRecyclerView.smoothScrollToPosition(imageList.size-1)
+                                imageRecyclerAdapter.notifyDataSetChanged()
+                            }
                         }
+            }
+            else{
+                // if premium
+                val str = String.format(mContext.getString(R.string.max_image_cnt), MAX_IMAGE_CNT)
+                Toast.makeText(mContext, str , Toast.LENGTH_SHORT).show()
+                // else
+                // Show Preminum Popup
+            }
 
-                        if(cnt-1>0)
-                            fileName = "${name}${cnt-1}.png"
 
-                        fileName = "temp_${fileName}"
-
-                        val fos = mContext.openFileOutput(fileName, Context.MODE_PRIVATE)
-                        var bitmap: Bitmap = BitmapUtils
-                            .getResizedBitmap(mContext, item,
-                                viewWidth, viewHeight)?:return@startMultiImage
-
-                        // 회전값 존재하면 똑바로 보이도록 조정
-                        val exifDegree = BitmapUtils.getExifDegree(mContext, item!!)
-                        if(exifDegree!=0){
-                            bitmap = BitmapUtils.rotate(bitmap, exifDegree.toFloat()) ?: return@startMultiImage
-                        }
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
-                        fos.close()
-
-                        defaultAddView.visibility = View.INVISIBLE
-
-                        if(imageList.size==0){
-                            imageList.add(fileName)
-                            imageList.add("")
-                        }
-                        else{
-                            imageList.add(imageList.size-1,fileName)
-                        }
-
-                        imageRecyclerView.smoothScrollToPosition(imageList.size-1)
-                        imageRecyclerAdapter.notifyDataSetChanged()
-                    }
-                }
 
         }
     }

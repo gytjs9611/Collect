@@ -1,31 +1,39 @@
 package com.hschoi.collect.adapter
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.hschoi.collect.AddContentsActivity
 import com.hschoi.collect.AddContentsCoverActivity
 import com.hschoi.collect.R
 import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.item_contents_cover_image.view.*
 
-class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapter.Holder>(){
+class CoverImageAdapter(var items: ArrayList<String>) : RecyclerView.Adapter<CoverImageAdapter.Holder>(){
 
     companion object {
         private const val ITEM_WIDTH_PERCENT = 1f/3f
         private const val ITEM_HEIGHT_RATIO = 100f/120f
     }
 
-    private var mContext = context
-    var imageNameListData = ArrayList<String>()
+    private lateinit var mContext: Context
 
     var selectedPosition = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+        mContext = parent.context
+
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_contents_cover_image, parent, false)
         val itemWidth = LayoutParamsUtils.getItemWidthByPercent(mContext, ITEM_WIDTH_PERCENT)
@@ -35,7 +43,7 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
     }
 
     override fun getItemCount(): Int {
-        return imageNameListData.size
+        return items.size
     }
 
     override fun onBindViewHolder(holder : Holder, position : Int){
@@ -45,7 +53,7 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
             holder.bindLastItem()
         }
         else{
-            val data = imageNameListData[position]
+            val data = items[position]
             holder.bindNormalItem(data)
         }
 
@@ -69,12 +77,32 @@ class CoverImageAdapter(context: Context) : RecyclerView.Adapter<CoverImageAdapt
                 // + 버튼 이벤트
                 if(pos==itemCount-1){
                     // 이미지 추가 코드 작성 필요
-
+                    if (ContextCompat.checkSelfPermission(mContext,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        // Permission is not granted
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(mContext as Activity,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            // First time
+                            ActivityCompat.requestPermissions(mContext as Activity,
+                                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                    AddContentsActivity.REQ_STORAGE_PERMISSION
+                            )
+                        } else {
+                            // Not first time
+                            Toast.makeText(mContext, "기기 설정에서 권한을 허용해주세요", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        // Permission has already been granted
+                        AddContentsActivity.openImagePicker()
+                        items = AddContentsActivity.imageList
+                        notifyDataSetChanged()
+                    }
                 }
                 else if(selectedPosition!=pos){
                     selectedPosition = pos
 
-                    val bitmap = BitmapFactory.decodeFile("${mContext.filesDir}/${imageNameListData[pos]}")
+                    val bitmap = BitmapFactory.decodeFile("${mContext.filesDir}/${items[pos]}")
 
                     AddContentsCoverActivity.mImageCropView.initView(mContext)
                     AddContentsCoverActivity.mImageCropView.setImageBitmap(bitmap)
