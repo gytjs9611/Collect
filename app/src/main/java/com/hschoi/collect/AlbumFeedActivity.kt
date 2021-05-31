@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -37,7 +36,9 @@ class AlbumFeedActivity : AppCompatActivity() {
 
         private const val INIT_TEXT_SIZE_PERCENT = 13f/716f
 
-        var isDataChanged = false
+//        var isDataChanged = false
+
+        lateinit var activity : AlbumFeedActivity
     }
 
     private var albumItemList = ArrayList<AlbumItemEntity>()
@@ -60,7 +61,7 @@ class AlbumFeedActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_album_feed)
 
-        isDataChanged = false   // 데이터 업데이트 되었는지 판단하는 변수 false 로 초기
+        activity = this
 
         itemWidth = LayoutParamsUtils.getItemWidthByPercent(applicationContext, ITEM_WIDTH_PERCENT)
         itemHeight = LayoutParamsUtils.getItemSizeByRatio(itemWidth, ITEM_WIDTH_DIMENSION_RATIO)
@@ -105,14 +106,11 @@ class AlbumFeedActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if(isDataChanged){
-            loadAlbumFeed()
-            isDataChanged = false
-        }
+//
 
     }
 
-    private fun loadAlbumFeed(){
+    fun loadAlbumFeed(){
         val getItemCnt = GetItemCnt(applicationContext, albumId)
         getItemCnt.start()
         Thread.sleep(100)

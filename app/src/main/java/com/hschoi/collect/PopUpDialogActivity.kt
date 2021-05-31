@@ -2,7 +2,6 @@ package com.hschoi.collect
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.hschoi.collect.database.AlbumDatabase
 import kotlinx.android.synthetic.main.activity_popup.*
@@ -55,9 +54,6 @@ class PopUpDialogActivity: AppCompatActivity() {
                     val contentsImage = intent.getStringExtra("contentsImage")
                     deleteContents(contentsId, contentsCoverImage, contentsImage)
 
-                    // 피드로 돌아갔을 때 데이터 업데이트 해주기 위해 플래그 수정
-                    AlbumFeedActivity.isDataChanged = true
-
                     // 컨텐츠가 삭제되었기 때문에 해당 컨텐츠 액티비티 종료해줌
                     val activity = AlbumFeedContentsActivity.activity
                     activity.finish()
@@ -77,6 +73,9 @@ class PopUpDialogActivity: AppCompatActivity() {
         val deleteThread = DeleteContents(applicationContext, contentsId)
         deleteThread.start()
         Thread.sleep(100)
+
+        val albumFeedActivity = AlbumFeedActivity.activity
+        albumFeedActivity.loadAlbumFeed()
 
         // 이미지 파일 삭제
         deleteFile(cover)

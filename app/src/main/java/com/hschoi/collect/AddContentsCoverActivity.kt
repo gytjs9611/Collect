@@ -131,7 +131,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
         mContentsTitle = intent.getStringExtra("contentsTitle")
         mContentsSentence = intent.getStringExtra("contentsSentence")
 
-        setOnClickListeners()
 
         // 상태바 색상 설정
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -199,7 +198,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
         // 저장 버튼
         layout_top_menu_set_cover.iv_icon_right.setOnClickListener {
             // 최종적으로 추가한 이미지 저장
-            AlbumFeedActivity.isDataChanged = true  // 데이터 업데이트되었음을 알려줌
             AddContentsActivity.isSaved = true
 
 
@@ -274,7 +272,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
                 Thread.sleep(100)
             }
 
-
+            AlbumFeedActivity.activity.loadAlbumFeed()
 
 
             // 홈 하단 메뉴바의 컨텐츠 추가 버튼 눌러서 추가하는 경우
@@ -352,9 +350,6 @@ class AddContentsCoverActivity : AppCompatActivity() {
     }
 
 
-    private fun setOnClickListeners() {
-
-    }
 
 
     private fun setFrameStroke(frameType: Int){
