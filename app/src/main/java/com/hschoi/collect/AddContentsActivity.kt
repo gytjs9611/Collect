@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hschoi.collect.adapter.ContentsImageRecyclerAdapter
@@ -28,6 +29,7 @@ import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekString
 import com.hschoi.collect.util.LayoutParamsUtils
 import gun0912.tedimagepicker.builder.TedImagePicker
 import kotlinx.android.synthetic.main.activity_add_contents.*
+import kotlinx.android.synthetic.main.layout_common_title.view.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 import java.io.File
 import java.nio.file.Files
@@ -303,7 +305,7 @@ class AddContentsActivity : AppCompatActivity() {
             getAlbumItemEntity.start()
             Thread.sleep(100)
 
-            et_contents_title.setText(mAlbumItemEntity.contentsTitle)
+            layout_title.et_title.setText(mAlbumItemEntity.contentsTitle)
 
             // 날짜 설정
             val dateString = mAlbumItemEntity.contentsDate
@@ -399,7 +401,7 @@ class AddContentsActivity : AppCompatActivity() {
 
         // NEXT 버튼
         layout_top_menu_add_contents.iv_icon_right.setOnClickListener {
-            val title = et_contents_title.text.toString()
+            val title = layout_title.et_title.text.toString()
             val sentences = et_contents_sentences.text.toString()
 
             if(imageList.isEmpty()){
@@ -426,7 +428,7 @@ class AddContentsActivity : AppCompatActivity() {
             }
             val contentsDate = tv_contents_date.text.toString().substringBeforeLast(".")
             intent.putExtra("contentsDate", contentsDate)
-            intent.putExtra("contentsTitle", et_contents_title.text.toString())
+            intent.putExtra("contentsTitle", layout_title.et_title.text.toString())
             intent.putExtra("contentsSentence", et_contents_sentences.text.toString())
             intent.putExtra("albumId", albumId)
             startActivity(intent)
@@ -462,6 +464,24 @@ class AddContentsActivity : AppCompatActivity() {
             // 달력 호출해서 날짜 yyyy.mm.dd.요일 형식으로 받아오기
             val datePickerFragment = DatePickerFragment(mYear, mMonth, mDayOfMonth)
             datePickerFragment.show(supportFragmentManager, "datePicker")
+        }
+
+
+        layout_title.et_title.et_title.setOnFocusChangeListener { v, hasFocus ->
+            if(hasFocus){
+                layout_title.cv_string_length.visibility = View.VISIBLE
+                layout_title.v_title_underline.setBackgroundColor(getColor(R.color.edit_text_underline_focus))
+            }
+            else{
+                layout_title.cv_string_length.visibility = View.INVISIBLE
+                layout_title.v_title_underline.setBackgroundColor(getColor(R.color.edit_text_underline_unfocus))
+            }
+        }
+
+
+        // 제목 입력된 글자 수 표시
+        layout_title.et_title.addTextChangedListener {
+            layout_title.tv_length.text = "${it?.length}/${resources.getInteger(R.integer.title_max_length)}"
         }
 
     }

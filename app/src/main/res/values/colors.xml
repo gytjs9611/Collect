@@ -93,6 +93,10 @@
     <color name="page_indicator_dot_black">#66000000</color>
     <color name="page_indicator_dot_black_selected">#000000</color>
 
-
+<!--    title string length -->
+    <color name="string_length_background">#ECECEC</color>
+    <color name="edit_text_underline_focus">#535353</color>
+    <color name="edit_text_underline_unfocus">#1A000000</color>
+    <color name="edit_text_length">#CC000000</color>
 
 </resources>

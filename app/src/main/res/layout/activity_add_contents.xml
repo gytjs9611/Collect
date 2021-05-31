@@ -122,8 +122,9 @@
 
 
 
-            <EditText
-                android:id="@+id/et_contents_title"
+            <include
+                android:id="@+id/layout_title"
+                layout="@layout/layout_common_title"
                 android:layout_width="match_parent"
                 android:layout_height="37dp"
                 android:layout_marginEnd="16dp"
@@ -133,20 +134,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:background="@null"
-                android:textSize="20dp"
-                android:inputType="text"
-                android:maxLength="15"
-                android:textColorHint="@color/add_contents_hint_color"
-                android:hint="@string/contents_title_hint"/>
+                android:textSize="20dp"/>
 
-            <View
-                android:id="@+id/v_et_contents_title_underline"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:background="@color/edit_text_underline"
-                app:layout_constraintTop_toBottomOf="@id/et_contents_title"
-                app:layout_constraintStart_toStartOf="@id/et_contents_title"
-                app:layout_constraintEnd_toEndOf="@id/et_contents_title"/>
 
 
             <EditText
@@ -167,7 +156,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_contents_title" />
+                app:layout_constraintTop_toBottomOf="@+id/layout_title" />
 
 
 

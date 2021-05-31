@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.PathParser
 import androidx.core.view.updateLayoutParams
+import androidx.core.widget.addTextChangedListener
 import com.hschoi.collect.customview.ImageCroppingView
 import com.hschoi.collect.customview.ColorItem
 import com.hschoi.collect.database.AlbumDatabase
@@ -33,6 +34,7 @@ import com.hschoi.collect.util.BitmapUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import com.hschoi.collect.util.PathDataUtils
 import gun0912.tedimagepicker.builder.TedImagePicker
+import kotlinx.android.synthetic.main.activity_add_contents.*
 import kotlinx.android.synthetic.main.activity_create_new_album.cl_image_cropping_view
 import kotlinx.android.synthetic.main.activity_create_new_album.iv_add_icon_default
 import kotlinx.android.synthetic.main.activity_create_new_album.iv_frame_stroke
@@ -41,6 +43,7 @@ import kotlinx.android.synthetic.main.activity_create_new_album.layout_album_col
 import kotlinx.android.synthetic.main.activity_create_new_album.layout_album_frame
 import kotlinx.android.synthetic.main.activity_create_new_album.layout_album_title
 import kotlinx.android.synthetic.main.activity_create_new_album.layout_top_menu_create_album
+import kotlinx.android.synthetic.main.layout_common_title.view.*
 import kotlinx.android.synthetic.main.layout_create_new_album_color.*
 import kotlinx.android.synthetic.main.layout_create_new_album_color.view.*
 import kotlinx.android.synthetic.main.layout_create_new_album_frame.*
@@ -214,7 +217,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
         val titleFontSize = LayoutParamsUtils.getItemHeightByPercent(applicationContext, TITLE_FONT_SIZE_PERCENT)
         val titleEditTextFontSize = LayoutParamsUtils.getItemHeightByPercent(applicationContext, TITLE_EDIT_TEXT_FONT_SIZE_PERCENT)
         layout_album_title.tv_album_name_title.setTextSize(Dimension.DP, titleFontSize.toFloat())
-        layout_album_title.et_album_name.setTextSize(Dimension.DP, titleEditTextFontSize.toFloat())
+        layout_album_title.layout_title.et_title.setTextSize(Dimension.DP, titleEditTextFontSize.toFloat())
         initTitleLayoutMargin()
 
         // 프레임
@@ -235,7 +238,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
         // 저장 버튼
         layout_top_menu_create_album.iv_icon_right.setOnClickListener {
-            val title = layout_album_title.et_album_name.text.toString()
+            val title = layout_album_title.layout_title.et_title.text.toString()
 
             if(title==""){
                 Toast.makeText(this, R.string.toast_enter_title, Toast.LENGTH_SHORT).show()
@@ -306,6 +309,24 @@ class ModifyAlbumActivity : AppCompatActivity() {
         }
 
 
+        layout_title.et_title.et_title.setOnFocusChangeListener { v, hasFocus ->
+            if(hasFocus){
+                layout_title.cv_string_length.visibility = View.VISIBLE
+                layout_title.v_title_underline.setBackgroundColor(getColor(R.color.edit_text_underline_focus))
+            }
+            else{
+                layout_title.cv_string_length.visibility = View.INVISIBLE
+                layout_title.v_title_underline.setBackgroundColor(getColor(R.color.edit_text_underline_unfocus))
+            }
+        }
+
+
+        // 제목 입력된 글자 수 표시
+        layout_title.et_title.addTextChangedListener {
+            layout_title.tv_length.text = "${it?.length}/${resources.getInteger(R.integer.title_max_length)}"
+        }
+
+
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
@@ -368,7 +389,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
         Thread.sleep(100)
 
         // title
-        layout_album_title.et_album_name.setText(albumEntity.albumTitle)
+        layout_album_title.layout_title.et_title.setText(albumEntity.albumTitle)
 
         // frame
         selectedFrameType = albumEntity.frameType
@@ -735,7 +756,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
         LayoutParamsUtils.setItemMarginTop(layout_album_title, layoutTopMargin) // 레이아웃 상단 여백
         LayoutParamsUtils.setItemMarginStart(layout_album_title, commonMargin)   // 레이아웃 좌측 공통 여백
         LayoutParamsUtils.setItemMarginEnd(layout_album_title, commonMargin)  // 레이아웃 우측 공통 여백
-        LayoutParamsUtils.setItemMarginTop(layout_album_title.et_album_name, etTopMargin)    // EditText 상단 여백
+        LayoutParamsUtils.setItemMarginTop(layout_album_title.layout_title.et_title, etTopMargin)    // EditText 상단 여백
     }
 
     private fun initFrameLayoutMargin(){

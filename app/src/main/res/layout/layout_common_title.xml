@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/et_title"
+        android:layout_width="0dp"
+        android:layout_height="27dp"
+        android:background="@null"
+        android:hint="@string/album_title_hint"
+        android:inputType="text"
+        android:maxLength="15"
+        android:maxLines="1"
+        android:paddingHorizontal="0dp"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/v_title_underline"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/edit_text_underline"
+        android:layout_marginTop="6dp"
+        app:layout_constraintStart_toStartOf="@id/et_title"
+        app:layout_constraintEnd_toEndOf="@id/et_title"
+        app:layout_constraintTop_toBottomOf="@id/et_title"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_string_length"
+        android:layout_width="wrap_content"
+        android:layout_height="23dp"
+        app:cardBackgroundColor="@color/string_length_background"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/et_title"
+        app:layout_constraintEnd_toEndOf="@+id/et_title"
+        app:layout_constraintTop_toTopOf="@+id/et_title"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/tv_length"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingHorizontal="4dp"
+            android:text="0/15"
+            android:textColor="@color/edit_text_length"
+            android:textSize="13dp"
+            android:inputType="text"
+            android:maxLength="@integer/title_max_length"
+            android:textColorHint="@color/add_contents_hint_color" />
+
+    </androidx.cardview.widget.CardView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
