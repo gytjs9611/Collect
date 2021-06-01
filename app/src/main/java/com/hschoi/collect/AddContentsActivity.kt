@@ -395,12 +395,12 @@ class AddContentsActivity : AppCompatActivity() {
 
     private fun setButtonClickListeners(){
         // CLOSE 버튼
-        layout_top_menu_add_contents.iv_icon_left.setOnClickListener {
+        layout_top_menu_add_contents.cl_icon_left.setOnClickListener {
             finish()
         }
 
         // NEXT 버튼
-        layout_top_menu_add_contents.iv_icon_right.setOnClickListener {
+        layout_top_menu_add_contents.cl_icon_right.setOnClickListener {
             val title = layout_title.et_title.text.toString()
             val sentences = et_contents_sentences.text.toString()
 
@@ -483,6 +483,7 @@ class AddContentsActivity : AppCompatActivity() {
         layout_title.et_title.addTextChangedListener {
             layout_title.tv_length.text = "${it?.length}/${resources.getInteger(R.integer.title_max_length)}"
         }
+
 
     }
 

@@ -209,12 +209,12 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
 
         // 취소 버튼
-        layout_top_menu_create_album.iv_icon_left.setOnClickListener {
+        layout_top_menu_create_album.cl_icon_left.setOnClickListener {
             finish()
         }
 
         // 저장 버튼
-        layout_top_menu_create_album.iv_icon_right.setOnClickListener {
+        layout_top_menu_create_album.cl_icon_right.setOnClickListener {
             val title = layout_album_title.layout_title.et_title.text.toString()
 
             if(!isImageSelected){

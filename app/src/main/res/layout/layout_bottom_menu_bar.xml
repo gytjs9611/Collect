@@ -32,6 +32,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!--    bottom menu icons   -->
+
+
     <ImageView
         android:id="@+id/iv_menu_home"
         android:layout_width="0dp"
@@ -67,6 +69,34 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.464" />
+
+
+
+<!--    touch area  -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_menu_home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cl_menu_add"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_menu_add"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toStartOf="@id/cl_menu_setting"
+        app:layout_constraintStart_toEndOf="@id/cl_menu_home"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_menu_setting"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cl_menu_add"
+        app:layout_constraintWidth_percent="0.333333"/>
+
+
 
 
 

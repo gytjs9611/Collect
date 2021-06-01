@@ -191,12 +191,12 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
         
         // 뒤로가기 버튼
-        layout_top_menu_set_cover.iv_icon_left.setOnClickListener {
+        layout_top_menu_set_cover.cl_icon_left.setOnClickListener {
             finish()
         }
 
         // 저장 버튼
-        layout_top_menu_set_cover.iv_icon_right.setOnClickListener {
+        layout_top_menu_set_cover.cl_icon_right.setOnClickListener {
             // 최종적으로 추가한 이미지 저장
             AddContentsActivity.isSaved = true
 

@@ -59,12 +59,12 @@ class AlbumFeedContentsActivity : AppCompatActivity(){
 
 
         // 버튼
-        iv_album_feed_contents_back_button.setOnClickListener {
+        cl_icon_left.setOnClickListener {
             finish()
         }
 
         // 케밥 메뉴 버튼
-        iv_album_feed_contents_more_button.setOnClickListener {
+        cl_icon_right.setOnClickListener {
             val bottomMenuSheet = ContentsBottomMenuSheet(applicationContext, contentsId)
             bottomMenuSheet.show(supportFragmentManager, bottomMenuSheet.tag)
 

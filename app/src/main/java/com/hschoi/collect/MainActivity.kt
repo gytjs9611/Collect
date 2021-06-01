@@ -120,18 +120,23 @@ class MainActivity : AppCompatActivity() {
         
 
         // 홈 버튼 누르면 가장 첫번째 아이템으로 스크롤 이동
-       layout_bottom_menu_bar.iv_menu_home.setOnClickListener {
+       layout_bottom_menu_bar.cl_menu_home.setOnClickListener {
             rv_album_card.smoothScrollToPosition(0)
         }
 
 
         // 하단 컨텐츠 추가 메뉴 클릭 이벤트 설정
-        layout_bottom_menu_bar.iv_menu_add.setOnClickListener {
+        layout_bottom_menu_bar.cl_menu_add.setOnClickListener {
             // 앨범 리스트 버튼 좌라락 바텀 메뉴
             list_panel.isTouchEnabled = true
             list_panel.panelState = PanelState.COLLAPSED
             cl_fake_fade.setBackgroundColor(getColor(R.color.fade))
             cl_fake_fade.isClickable = true
+        }
+
+        // 하단 세팅 메뉴 클릭 이벤트 설정
+        layout_bottom_menu_bar.cl_menu_setting.setOnClickListener {
+            // setting activity
         }
 
         rv_album_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {

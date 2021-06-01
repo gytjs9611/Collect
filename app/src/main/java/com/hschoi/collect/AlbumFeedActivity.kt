@@ -90,14 +90,6 @@ class AlbumFeedActivity : AppCompatActivity() {
         LayoutParamsUtils.setItemSize(sp_right_top_margin, 1, rightTopMargin)
 
 
-        layout_bottom_menu_bar.iv_menu_add.setOnClickListener {
-            val intent = Intent(this, AddContentsActivity::class.java)
-            intent.putExtra("albumId", albumId)
-            intent.putExtra("albumTitle", albumTitle)
-            intent.putExtra("color", color)
-            intent.putExtra("frameType", frameType)
-            startActivity(intent)
-        }
 
         loadAlbumFeed()
 
@@ -224,14 +216,14 @@ class AlbumFeedActivity : AppCompatActivity() {
         layout_top_menu_album_feed.setBackgroundColor(color)
         layout_top_menu_album_feed.tv_album_name_title.text = title
 
-        layout_top_menu_album_feed.iv_icon_left.setOnClickListener {
+        layout_top_menu_album_feed.cl_icon_left.setOnClickListener {
             finish()
         }
 
         layout_top_menu_album_feed.iv_icon_right
             .setImageDrawable(getDrawable(R.drawable.ic_sort_asc))
 
-        layout_top_menu_album_feed.iv_icon_right.setOnClickListener {
+        layout_top_menu_album_feed.cl_icon_right.setOnClickListener {
             isASC = !isASC
             val setAscOption = SetAscOption(applicationContext, albumId, isASC)
             setAscOption.start()
@@ -258,8 +250,25 @@ class AlbumFeedActivity : AppCompatActivity() {
         layout_bottom_menu_bar.iv_menu_setting.setImageDrawable(getDrawable(R.drawable.ic_setting_white))
 //        cl_album_feed.layout_top_menu_album_feed.cl_bottom_menu_bar.setBackgroundColor(color) // 이렇게 하면 안됨
 
+
+        // home
         layout_bottom_menu_bar.iv_menu_home.setOnClickListener {
             finish()
+        }
+
+        // add contents
+        layout_bottom_menu_bar.cl_menu_add.setOnClickListener {
+            val intent = Intent(this, AddContentsActivity::class.java)
+            intent.putExtra("albumId", albumId)
+            intent.putExtra("albumTitle", albumTitle)
+            intent.putExtra("color", color)
+            intent.putExtra("frameType", frameType)
+            startActivity(intent)
+        }
+
+        // setting
+        layout_bottom_menu_bar.cl_menu_setting.setOnClickListener {
+            // start setting activity
         }
 
     }
