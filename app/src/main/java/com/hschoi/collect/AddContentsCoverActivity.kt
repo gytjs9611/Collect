@@ -71,7 +71,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
     private lateinit var adapter: CoverImageAdapter
 
     private lateinit var selectedFrameButton : View
-    private var selectedFrameType = BitmapCropUtils.FRAME_TYPE_0
+//    private var selectedFrameType = BitmapCropUtils.FRAME_TYPE_0
 
 
     private var measureReceiver = object : BroadcastReceiver(){
@@ -132,11 +132,37 @@ class AddContentsCoverActivity : AppCompatActivity() {
 //        mFrameType = mAlbumEntity.frameType
         mAlbumColor = mAlbumEntity.albumColor
 
+
+
         // 컨텐츠 추가 액티비티에서 전달된 데이터 받음
         if(AddContentsActivity.isModify){   // 컨텐츠 수정일 경우
             GetAlbumItemEntity(this, mContentsId).start()
             Thread.sleep(100)
+
+            mFrameType = mAlbumItemEntity.frameType
+            selectedFrameButton = when(mFrameType){
+                BitmapCropUtils.FRAME_TYPE_0->{
+                    layout_button_frame0
+                }
+                BitmapCropUtils.FRAME_TYPE_1->{
+                    layout_button_frame1
+                }
+                BitmapCropUtils.FRAME_TYPE_2->{
+                    layout_button_frame2
+                }
+                BitmapCropUtils.FRAME_TYPE_3->{
+                    layout_button_frame3
+                }
+                BitmapCropUtils.FRAME_TYPE_4->{
+                    layout_button_frame4
+                }
+                else->{
+                    layout_button_frame0
+                }
+            }
         }
+        setFrameButtonFocused(selectedFrameButton)
+
 
         val filter = IntentFilter()
         filter.addAction(ImageCroppingView.ACTION_MEASURE)
@@ -265,6 +291,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
                 mAlbumItemEntity.contentsSentence = mContentsSentence!!
                 mAlbumItemEntity.contentsDate = "$mContentsDate/$time"
                 mAlbumItemEntity.contentsTitle = mContentsTitle!!
+                mAlbumItemEntity.frameType = mFrameType
                 mAlbumItemEntity.zoom = zoom
                 mAlbumItemEntity.x = x
                 mAlbumItemEntity.y = y
@@ -350,45 +377,56 @@ class AddContentsCoverActivity : AppCompatActivity() {
     }*/
 
     private fun initFrameButtons(){
-        layout_button_frame0.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_frame_back))
-        layout_button_frame1.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame1_button))
-        layout_button_frame2.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame2_button))
-        layout_button_frame3.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame3_button))
-        layout_button_frame4.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame4_button))
+        val icon0 = getDrawable(R.drawable.ic_frame0_button)
+        val icon1 = getDrawable(R.drawable.ic_frame1_button)
+        val icon2 = getDrawable(R.drawable.ic_frame2_button)
+        val icon3 = getDrawable(R.drawable.ic_frame3_button)
+        val icon4 = getDrawable(R.drawable.ic_frame4_button)
+        icon0?.setTint(getColor(R.color.white))
+        icon1?.setTint(getColor(R.color.white))
+        icon2?.setTint(getColor(R.color.white))
+        icon3?.setTint(getColor(R.color.white))
+        icon4?.setTint(getColor(R.color.white))
+
+        layout_button_frame0.iv_frame_icon.setImageDrawable(icon0)
+        layout_button_frame1.iv_frame_icon.setImageDrawable(icon1)
+        layout_button_frame2.iv_frame_icon.setImageDrawable(icon2)
+        layout_button_frame3.iv_frame_icon.setImageDrawable(icon3)
+        layout_button_frame4.iv_frame_icon.setImageDrawable(icon4)
     }
 
 
     private fun setFrameButtonOnClickListener(){
         // 프레임 버튼
         layout_button_frame0.setOnClickListener{
-            selectedFrameType = BitmapCropUtils.FRAME_TYPE_0
+            mFrameType = BitmapCropUtils.FRAME_TYPE_0
             drawFrameBack(BitmapCropUtils.FRAME_TYPE_0)
             setFrameButtonFocused(layout_button_frame0)
         }
         layout_button_frame1.setOnClickListener {
-            selectedFrameType = BitmapCropUtils.FRAME_TYPE_1
+            mFrameType = BitmapCropUtils.FRAME_TYPE_1
             drawFrameBack(BitmapCropUtils.FRAME_TYPE_1)
             setFrameButtonFocused(layout_button_frame1)
         }
         layout_button_frame2.setOnClickListener{
-            selectedFrameType = BitmapCropUtils.FRAME_TYPE_2
+            mFrameType = BitmapCropUtils.FRAME_TYPE_2
             drawFrameBack(BitmapCropUtils.FRAME_TYPE_2)
             setFrameButtonFocused(layout_button_frame2)
         }
         layout_button_frame3.setOnClickListener{
-            selectedFrameType = BitmapCropUtils.FRAME_TYPE_3
+            mFrameType = BitmapCropUtils.FRAME_TYPE_3
             drawFrameBack(BitmapCropUtils.FRAME_TYPE_3)
             setFrameButtonFocused(layout_button_frame3)
         }
         layout_button_frame4.setOnClickListener{
-            selectedFrameType = BitmapCropUtils.FRAME_TYPE_4
+            mFrameType = BitmapCropUtils.FRAME_TYPE_4
             drawFrameBack(BitmapCropUtils.FRAME_TYPE_4)
             setFrameButtonFocused(layout_button_frame4)
         }
     }
     private fun setFrameButtonFocused(button : View){
         selectedFrameButton.iv_frame_icon_back.setImageDrawable(null)
-        button.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_frame_back))
+        button.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_contents_frame_back))
         selectedFrameButton = button
     }
 
