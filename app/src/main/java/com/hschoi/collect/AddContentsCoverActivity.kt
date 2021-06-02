@@ -6,11 +6,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.*
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.view.WindowManager
+import androidx.annotation.Dimension
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.PathParser
 import androidx.recyclerview.widget.GridLayoutManager
-import com.hschoi.collect.adapter.AddContentsRecyclerAdapter
 import com.hschoi.collect.adapter.CoverImageAdapter
 import com.hschoi.collect.customview.ImageCroppingView
 import com.hschoi.collect.database.AlbumDatabase
@@ -20,6 +22,11 @@ import com.hschoi.collect.util.BitmapCropUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import com.hschoi.collect.util.PathDataUtils
 import kotlinx.android.synthetic.main.activity_add_contents_cover.*
+import kotlinx.android.synthetic.main.activity_create_new_album.*
+import kotlinx.android.synthetic.main.layout_create_new_album_color.*
+import kotlinx.android.synthetic.main.layout_create_new_album_frame.*
+import kotlinx.android.synthetic.main.layout_create_new_album_frame.view.*
+import kotlinx.android.synthetic.main.layout_frame_select_button.view.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 import java.io.File
 import java.text.SimpleDateFormat
@@ -36,7 +43,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
         private const val FRAME4_WIDTH_RATIO = 114f/230f
         private const val FRAME4_HEIGHT_PERCENT = 230f/716f    // 너비 * ratio = 높이
 
-        lateinit var mImageCropView : ImageCroppingView
+        lateinit var imageCroppingView : ImageCroppingView
     }
 
     private lateinit var mAlbumEntity: AlbumEntity
@@ -62,6 +69,9 @@ class AddContentsCoverActivity : AppCompatActivity() {
     private var originCoverExists = false
 
     private lateinit var adapter: CoverImageAdapter
+
+    private lateinit var selectedFrameButton : View
+    private var selectedFrameType = BitmapCropUtils.FRAME_TYPE_0
 
 
     private var measureReceiver = object : BroadcastReceiver(){
@@ -104,7 +114,12 @@ class AddContentsCoverActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_contents_cover)
-        mImageCropView = icv_cover_image_source
+        imageCroppingView = icv_cover_image_source
+
+        selectedFrameButton = layout_button_frame0   // 액티비티 실행 시 프레임 스타일 초기값
+        setFrameButtonOnClickListener()
+        initFrameButtons()
+
 
         mContentsId = intent.getLongExtra("contentsId", -1)
         mAlbumId = intent.getLongExtra("albumId", -1)
@@ -114,7 +129,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
 
         mAlbumTitle = mAlbumEntity.albumTitle
-        mFrameType = mAlbumEntity.frameType
+//        mFrameType = mAlbumEntity.frameType
         mAlbumColor = mAlbumEntity.albumColor
 
         // 컨텐츠 추가 액티비티에서 전달된 데이터 받음
@@ -334,6 +349,49 @@ class AddContentsCoverActivity : AppCompatActivity() {
         Log.d("TAG", "onWindowFocusChanged 호출됨")
     }*/
 
+    private fun initFrameButtons(){
+        layout_button_frame0.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_frame_back))
+        layout_button_frame1.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame1_button))
+        layout_button_frame2.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame2_button))
+        layout_button_frame3.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame3_button))
+        layout_button_frame4.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame4_button))
+    }
+
+
+    private fun setFrameButtonOnClickListener(){
+        // 프레임 버튼
+        layout_button_frame0.setOnClickListener{
+            selectedFrameType = BitmapCropUtils.FRAME_TYPE_0
+            drawFrameBack(BitmapCropUtils.FRAME_TYPE_0)
+            setFrameButtonFocused(layout_button_frame0)
+        }
+        layout_button_frame1.setOnClickListener {
+            selectedFrameType = BitmapCropUtils.FRAME_TYPE_1
+            drawFrameBack(BitmapCropUtils.FRAME_TYPE_1)
+            setFrameButtonFocused(layout_button_frame1)
+        }
+        layout_button_frame2.setOnClickListener{
+            selectedFrameType = BitmapCropUtils.FRAME_TYPE_2
+            drawFrameBack(BitmapCropUtils.FRAME_TYPE_2)
+            setFrameButtonFocused(layout_button_frame2)
+        }
+        layout_button_frame3.setOnClickListener{
+            selectedFrameType = BitmapCropUtils.FRAME_TYPE_3
+            drawFrameBack(BitmapCropUtils.FRAME_TYPE_3)
+            setFrameButtonFocused(layout_button_frame3)
+        }
+        layout_button_frame4.setOnClickListener{
+            selectedFrameType = BitmapCropUtils.FRAME_TYPE_4
+            drawFrameBack(BitmapCropUtils.FRAME_TYPE_4)
+            setFrameButtonFocused(layout_button_frame4)
+        }
+    }
+    private fun setFrameButtonFocused(button : View){
+        selectedFrameButton.iv_frame_icon_back.setImageDrawable(null)
+        button.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_frame_back))
+        selectedFrameButton = button
+    }
+
     private fun loadSavedImageState(){
 
         icv_cover_image_source.mMatrix!!.postScale(mAlbumItemEntity.zoom, mAlbumItemEntity.zoom)
@@ -376,7 +434,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
         iv_cover_image_frame_stroke.setImageDrawable(frameDrawable)
     }
 
-    private fun drawFrameBack(frameType : Int){
+    /*private fun drawFrameBack(frameType : Int){
         // 프레임 타입에 따라 프레임 사이즈 달리 설정 (프레임4 외에는 사이즈 모두 동일함)
         if(frameType!=BitmapCropUtils.FRAME_TYPE_4){
             frameHeight = LayoutParamsUtils.getItemHeightByPercent(applicationContext, FRAME_HEIGHT_PERCENT)
@@ -420,6 +478,87 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
         // CroppingView에 프레임 정보 전달
         icv_cover_image_source.setFrameStyle(frameType, frameWidth, frameHeight)
+    }*/
+
+    private fun drawFrameBack(frameType : Int){
+        // 프레임 타입에 따라 프레임 사이즈 달리 설정 (프레임4 외에는 사이즈 모두 동일함)
+        if(frameType!=BitmapCropUtils.FRAME_TYPE_4){
+            frameHeight = LayoutParamsUtils.getItemHeightByPercent(applicationContext, CreateNewAlbumActivity.FRAME_HEIGHT_PERCENT)
+            frameWidth = LayoutParamsUtils.getItemSizeByRatio(frameHeight, CreateNewAlbumActivity.FRAME_WIDTH_RATIO)
+        }
+        else{
+            frameHeight = LayoutParamsUtils.getItemHeightByPercent(applicationContext, CreateNewAlbumActivity.FRAME4_HEIGHT_PERCENT)
+            frameWidth = LayoutParamsUtils.getItemSizeByRatio(frameHeight, CreateNewAlbumActivity.FRAME4_WIDTH_RATIO)
+        }
+        LayoutParamsUtils.setItemSize(iv_cover_image_frame_stroke, frameWidth, frameHeight)
+
+        // 프레임 모양 가져와 알맞은 크기로 변경
+        val pathData : String = BitmapCropUtils.getPathData(applicationContext, frameType)
+        val path : Path = PathParser.createPathFromPathData(pathData)
+        val resizedPath : Path = PathDataUtils.resizePath(path, frameWidth.toFloat(), frameHeight.toFloat())
+
+        // 프레임 시작점
+        val x0 = (viewWidth - frameWidth).toFloat() / 2
+        val y0 = (viewHeight - frameHeight).toFloat() / 2
+
+        // 그리기 관련 객체 생성
+        val bitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+
+        Log.d("VIEW", "CREATE ALBUM BACK viewWidth= $viewWidth, height=$viewHeight")
+
+
+        // 크롭 박스 외부 영역 채우기
+        paint.color = getColor(R.color.image_crop_background)
+        canvas.drawRect(0f, 0f, viewWidth.toFloat(), viewHeight.toFloat(), paint)
+
+        // paint 모드 변경해서 겹치는 영역 (프레임 영역) paint 제거
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        canvas.translate(x0, y0)    // 프레임 이미지 paint 시작 좌표 이동
+        canvas.drawPath(resizedPath, paint)
+
+        // 캔버스 위에서 작업한 비트맵 프레임 이미지를 이미지뷰에 설정
+        iv_cover_image_cropping_view_frame_back.setImageBitmap(bitmap)
+
+        // 프레임 테두리 설정
+        setFrameStroke(frameType)
+
+        // CroppingView에 프레임 정보 전달
+        imageCroppingView.setFrameStyle(frameType, frameWidth, frameHeight)
+
+         // 4번 프레임 -> 다른 프레임 or 다른 프레임 -> 4번 프레임으로 변경할 때 minScale 재설정
+         if(frameType==BitmapCropUtils.FRAME_TYPE_4 || selectedFrameButton==layout_button_frame4){
+             imageCroppingView.setScale()
+         }
+
+         // 이전에 선택된 프레임 4번이고, 스케일 최대로 줄인 상태일 때
+         // 다른 프레임은 높이가 더 높기 때문에 이미지 그만큼 확대해줌
+         if(selectedFrameButton==layout_button_frame4 && imageCroppingView.currentZoom<imageCroppingView.minScale){
+             imageCroppingView.setZoomMinScale()
+             Log.d("MAIN", "setZoomMinScale")
+         }
+
+         //
+         val imageBottomY = imageCroppingView.getMatrixTransY()+imageCroppingView.getSrcImageHeight()
+         val frameBottomY = imageCroppingView.y0 + frameHeight
+
+         val imageTopY = imageCroppingView.getMatrixTransY()
+         val frameTopY = imageCroppingView.y0
+
+         if(selectedFrameButton==layout_button_frame4 && imageBottomY<=frameBottomY){
+             Log.d("MOVE", "bottom $frameBottomY-$imageBottomY=${frameBottomY-imageBottomY}")
+             imageCroppingView.moveImage(0f, frameBottomY-imageBottomY)
+         }
+         else if(selectedFrameButton==layout_button_frame4 && imageTopY>=frameTopY){
+             Log.d("MOVE", "top -($imageTopY-$frameTopY)=${frameTopY-imageTopY}")
+             imageCroppingView.moveImage(0f, -(imageTopY-frameTopY))
+         }
+
+
+
+
+
     }
-  
+
 }

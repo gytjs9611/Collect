@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+
+        <!--        add frame items dynamically     -->
+
+    <include
+        android:id="@+id/layout_button_frame0"
+        layout="@layout/layout_frame_select_button"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="60:95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.183" />
+
+        <include
+            android:id="@+id/layout_button_frame1"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent="0.183"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="60:95"
+            layout="@layout/layout_frame_select_button"
+            app:layout_constraintStart_toEndOf="@id/layout_button_frame0"
+            app:layout_constraintEnd_toStartOf="@id/layout_button_frame2"
+            />
+
+        <include
+            android:id="@+id/layout_button_frame2"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent="0.183"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="60:95"
+            layout="@layout/layout_frame_select_button"
+            app:layout_constraintStart_toEndOf="@id/layout_button_frame1"
+            app:layout_constraintEnd_toStartOf="@id/layout_button_frame3"
+            />
+
+        <include
+            android:id="@+id/layout_button_frame3"
+            android:layout_width="0dp"
+            app:layout_constraintWidth_percent="0.183"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="60:95"
+            layout="@layout/layout_frame_select_button"
+            app:layout_constraintStart_toEndOf="@id/layout_button_frame2"
+            app:layout_constraintEnd_toStartOf="@id/layout_button_frame4"
+            />
+
+        <include
+            android:id="@+id/layout_button_frame4"
+            layout="@layout/layout_frame_select_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="60:95"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.183" />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

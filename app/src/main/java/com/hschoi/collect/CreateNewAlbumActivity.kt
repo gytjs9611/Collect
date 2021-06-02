@@ -55,11 +55,11 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         private const val ADD_IMAGE_ICON_HEIGHT_PERCENT = 26f/716f
         private const val ADD_IMAGE_SWITCH_ICON_HEIGHT_PERCENT = 38f/716f
 
-        private const val FRAME_WIDTH_RATIO = 114f/234f
-        private const val FRAME_HEIGHT_PERCENT = 234f/716f    // 너비 * ratio = 높이
+        const val FRAME_WIDTH_RATIO = 114f/234f
+        const val FRAME_HEIGHT_PERCENT = 234f/716f    // 너비 * ratio = 높이
         
-        private const val FRAME4_WIDTH_RATIO = 114f/230f
-        private const val FRAME4_HEIGHT_PERCENT = 230f/716f    // 너비 * ratio = 높이
+        const val FRAME4_WIDTH_RATIO = 114f/230f
+        const val FRAME4_HEIGHT_PERCENT = 230f/716f    // 너비 * ratio = 높이
 
         private const val COMMON_MARGIN_SIZE_PERCENT = 16f/360f
         private const val COMMON_TOP_MARGIN_SIZE_PERCENT = 22f/716f
