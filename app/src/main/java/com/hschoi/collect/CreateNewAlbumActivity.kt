@@ -694,15 +694,28 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         tv_album_frame_subtitle.setTextSize(Dimension.DP, frameSubtitleFontSize.toFloat())
         LayoutParamsUtils.setItemMarginTop(layout_album_frame.cl_frame_icons, frameTitleBottomMargin)
 
-
         tv_album_color_title.setTextSize(Dimension.DP, titleFontSize.toFloat())
 
-        layout_button_frame0.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_frame_back))
+        val icon0 = getDrawable(R.drawable.ic_frame0_button)
+        val icon1 = getDrawable(R.drawable.ic_frame1_button)
+        val icon2 = getDrawable(R.drawable.ic_frame2_button)
+        val icon3 = getDrawable(R.drawable.ic_frame3_button)
+        val icon4 = getDrawable(R.drawable.ic_frame4_button)
 
-        layout_button_frame1.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame1_button))
-        layout_button_frame2.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame2_button))
-        layout_button_frame3.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame3_button))
-        layout_button_frame4.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame4_button))
+        val strokeColor = getColor(R.color.create_album_frame_stroke)
+        icon0?.setTint(strokeColor)
+        icon1?.setTint(strokeColor)
+        icon2?.setTint(strokeColor)
+        icon3?.setTint(strokeColor)
+        icon4?.setTint(strokeColor)
+
+        layout_button_frame0.iv_frame_icon.setImageDrawable(icon0)
+        layout_button_frame1.iv_frame_icon.setImageDrawable(icon1)
+        layout_button_frame2.iv_frame_icon.setImageDrawable(icon2)
+        layout_button_frame3.iv_frame_icon.setImageDrawable(icon3)
+        layout_button_frame4.iv_frame_icon.setImageDrawable(icon4)
+
+        layout_button_frame0.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_frame_back))
     }
 
     private fun initColorButtons(){

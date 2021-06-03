@@ -46,7 +46,7 @@ class AlbumFeedActivity : AppCompatActivity() {
 
     private var albumId :Long = -1
     private lateinit var albumTitle : String
-    private var frameType = BitmapCropUtils.FRAME_TYPE_0
+//    private var frameType = BitmapCropUtils.FRAME_TYPE_0
     private var color = -1
 
     private var itemWidth = 0
@@ -76,7 +76,7 @@ class AlbumFeedActivity : AppCompatActivity() {
 
         albumId = intent.getLongExtra("albumId", -1)
         albumTitle = intent.getStringExtra("albumTitle")
-        frameType = intent.getIntExtra("frameType", BitmapCropUtils.FRAME_TYPE_0)
+//        frameType = intent.getIntExtra("frameType", BitmapCropUtils.FRAME_TYPE_0)
         color = intent.getIntExtra("color", getColor(R.color.album_color_pink))
         val statusBarColor = getStatusBarColor(color)
 
@@ -165,11 +165,12 @@ class AlbumFeedActivity : AppCompatActivity() {
         for((i, data) in albumItemList.withIndex()){
             val contentsId = data.contentsId
             val coverImageName = data.coverImageName
-            val contentsImageName = data.contentsImageName
+            val coverFrameType = data.frameType
+//            val contentsImageName = data.contentsImageName
             val contentsTitle = data.contentsTitle
-            val contentsDate = data.contentsDate    // yyyy.M.d/time
-            val contentsSentence = data.contentsSentence
-            val item = AlbumFeedItem(applicationContext, coverImageName, frameType, contentsTitle)
+//            val contentsDate = data.contentsDate    // yyyy.M.d/time
+//            val contentsSentence = data.contentsSentence
+            val item = AlbumFeedItem(applicationContext, coverImageName, coverFrameType, contentsTitle)
             item.setTitleTextSize(textSize.toFloat(), textViewSize, (itemHeight*0.6).roundToInt())
 
             addItemToAlbumFeed(item, i)
@@ -177,17 +178,17 @@ class AlbumFeedActivity : AppCompatActivity() {
             item.setOnClickListener {
                 val intent = Intent(this, AlbumFeedContentsActivity::class.java)
                 intent.putExtra("contentsId", contentsId)
-                intent.putExtra("albumId", albumId)
-                intent.putExtra("albumTitle", albumTitle)
-                intent.putExtra("color", color)
-                intent.putExtra("contentsImage", contentsImageName)
-                intent.putExtra("contentsCoverImage", coverImageName)
-                intent.putExtra("contentsTitle", contentsTitle)
-                val date = contentsDate.substringBefore("/")    // yyyy.M.d
-                val dayOfWeek = getDayOfWeekFromDate(applicationContext, date)  // E
-                intent.putExtra("contentsDate", "$date.$dayOfWeek")
-                intent.putExtra("contentsSentence", contentsSentence)
-                intent.putExtra("frameType", frameType)
+//                intent.putExtra("albumId", albumId)
+//                intent.putExtra("albumTitle", albumTitle)
+//                intent.putExtra("color", color)
+//                intent.putExtra("contentsImage", contentsImageName)
+//                intent.putExtra("contentsCoverImage", coverImageName)
+//                intent.putExtra("contentsTitle", contentsTitle)
+//                val date = contentsDate.substringBefore("/")    // yyyy.M.d
+//                val dayOfWeek = getDayOfWeekFromDate(applicationContext, date)  // E
+//                intent.putExtra("contentsDate", "$date.$dayOfWeek")
+//                intent.putExtra("contentsSentence", contentsSentence)
+//                intent.putExtra("frameType", frameType)
                 startActivity(intent)
             }
         }
@@ -260,9 +261,9 @@ class AlbumFeedActivity : AppCompatActivity() {
         layout_bottom_menu_bar.cl_menu_add.setOnClickListener {
             val intent = Intent(this, AddContentsActivity::class.java)
             intent.putExtra("albumId", albumId)
-            intent.putExtra("albumTitle", albumTitle)
-            intent.putExtra("color", color)
-            intent.putExtra("frameType", frameType)
+//            intent.putExtra("albumTitle", albumTitle)
+//            intent.putExtra("color", color)
+//            intent.putExtra("frameType", frameType)
             startActivity(intent)
         }
 
@@ -281,7 +282,7 @@ class AlbumFeedActivity : AppCompatActivity() {
             ll_right_side.addView(item)
         }
         LayoutParamsUtils.setItemSize(item,itemWidth, itemHeight)
-        if(frameType==4){
+        if(item.mFrameType==4){
             val ivImageWidth = LayoutParamsUtils.getItemSizeByRatio(itemWidth, 114f/147f)
             val ivImageHeight = LayoutParamsUtils.getItemSizeByRatio(ivImageWidth, 230f/114f)
             LayoutParamsUtils.setItemSize(item.iv_image, ivImageWidth, ivImageHeight)

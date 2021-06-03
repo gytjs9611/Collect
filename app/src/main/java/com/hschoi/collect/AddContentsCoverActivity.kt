@@ -73,6 +73,8 @@ class AddContentsCoverActivity : AppCompatActivity() {
     private lateinit var selectedFrameButton : View
 //    private var selectedFrameType = BitmapCropUtils.FRAME_TYPE_0
 
+    private var isOpened = false
+
 
     private var measureReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -129,7 +131,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
 
         mAlbumTitle = mAlbumEntity.albumTitle
-//        mFrameType = mAlbumEntity.frameType
+        mFrameType = mAlbumEntity.frameType
         mAlbumColor = mAlbumEntity.albumColor
 
 
@@ -140,27 +142,9 @@ class AddContentsCoverActivity : AppCompatActivity() {
             Thread.sleep(100)
 
             mFrameType = mAlbumItemEntity.frameType
-            selectedFrameButton = when(mFrameType){
-                BitmapCropUtils.FRAME_TYPE_0->{
-                    layout_button_frame0
-                }
-                BitmapCropUtils.FRAME_TYPE_1->{
-                    layout_button_frame1
-                }
-                BitmapCropUtils.FRAME_TYPE_2->{
-                    layout_button_frame2
-                }
-                BitmapCropUtils.FRAME_TYPE_3->{
-                    layout_button_frame3
-                }
-                BitmapCropUtils.FRAME_TYPE_4->{
-                    layout_button_frame4
-                }
-                else->{
-                    layout_button_frame0
-                }
-            }
         }
+
+        selectedFrameButton = getFrameButton(mFrameType)
         setFrameButtonFocused(selectedFrameButton)
 
 
@@ -342,6 +326,22 @@ class AddContentsCoverActivity : AppCompatActivity() {
         }
 
 
+        // 프레임 보기 버튼
+        cl_contents_frame_title.setOnClickListener {
+            if(isOpened){   // 닫기
+                iv_frame_show_icon.setImageDrawable(getDrawable(R.drawable.ic_down))
+                layout_contents_frame.visibility = View.GONE
+                v_frame_title_bottom.visibility = View.VISIBLE
+                isOpened = false
+            }
+            else{   // 열기
+                iv_frame_show_icon.setImageDrawable(getDrawable(R.drawable.ic_up))
+                layout_contents_frame.visibility = View.VISIBLE
+                v_frame_title_bottom.visibility = View.GONE
+                isOpened = true
+            }
+        }
+
     }
 
 
@@ -382,11 +382,13 @@ class AddContentsCoverActivity : AppCompatActivity() {
         val icon2 = getDrawable(R.drawable.ic_frame2_button)
         val icon3 = getDrawable(R.drawable.ic_frame3_button)
         val icon4 = getDrawable(R.drawable.ic_frame4_button)
-        icon0?.setTint(getColor(R.color.white))
-        icon1?.setTint(getColor(R.color.white))
-        icon2?.setTint(getColor(R.color.white))
-        icon3?.setTint(getColor(R.color.white))
-        icon4?.setTint(getColor(R.color.white))
+
+        val strokeColor = getColor(R.color.white)
+        icon0?.setTint(strokeColor)
+        icon1?.setTint(strokeColor)
+        icon2?.setTint(strokeColor)
+        icon3?.setTint(strokeColor)
+        icon4?.setTint(strokeColor)
 
         layout_button_frame0.iv_frame_icon.setImageDrawable(icon0)
         layout_button_frame1.iv_frame_icon.setImageDrawable(icon1)
@@ -424,6 +426,30 @@ class AddContentsCoverActivity : AppCompatActivity() {
             setFrameButtonFocused(layout_button_frame4)
         }
     }
+
+    private fun getFrameButton(type: Int): View{
+        return when(type){
+            BitmapCropUtils.FRAME_TYPE_0->{
+                layout_button_frame0
+            }
+            BitmapCropUtils.FRAME_TYPE_1->{
+                layout_button_frame1
+            }
+            BitmapCropUtils.FRAME_TYPE_2->{
+                layout_button_frame2
+            }
+            BitmapCropUtils.FRAME_TYPE_3->{
+                layout_button_frame3
+            }
+            BitmapCropUtils.FRAME_TYPE_4->{
+                layout_button_frame4
+            }
+            else->{
+                layout_button_frame0
+            }
+        }
+    }
+
     private fun setFrameButtonFocused(button : View){
         selectedFrameButton.iv_frame_icon_back.setImageDrawable(null)
         button.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_contents_frame_back))

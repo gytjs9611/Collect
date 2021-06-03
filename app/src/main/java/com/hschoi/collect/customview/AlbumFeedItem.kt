@@ -15,10 +15,13 @@ import kotlinx.android.synthetic.main.item_album_feed.view.*
 
 class AlbumFeedItem(context : Context, imageName : String, frameType : Int, title : String) : ConstraintLayout(context) {
     private var mContext = context
-    private lateinit var clFeedItem: ConstraintLayout
-    private lateinit var clImageFrame : ConstraintLayout
-    private lateinit var ivImage : ImageView
-    private lateinit var tvTitle : VerticalTextView
+    lateinit var clFeedItem: ConstraintLayout
+    lateinit var clImageFrame : ConstraintLayout
+    lateinit var ivImage : ImageView
+    lateinit var tvTitle : VerticalTextView
+
+    var mFrameType = frameType
+        private set
 
 
     init {
