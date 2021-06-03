@@ -45,6 +45,7 @@ class HomeRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<H
     // 2. 홀더의 바인딩
     override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
 
+        Log.d("test", "id=${items[position].id} itemCount=${itemCount}")
         if(items[position].id==(-1).toLong()){
             if(itemCount==1){
                 holder.bindDefaultAddItem()
@@ -107,17 +108,22 @@ class HomeRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<H
         }
 
         fun bindDefaultAddItem(){
+            Log.d("add", "default")
             setAlbumToAddButton()
             itemView.tv_description.visibility = View.VISIBLE
             val constraintSet = ConstraintSet()
+            constraintSet.clone(itemView.cl_layout)
             constraintSet.clear(itemView.iv_add_icon_last.id, ConstraintSet.BOTTOM)
             constraintSet.applyTo(itemView.cl_layout)
             itemView.iv_add_icon_last.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 topToTop = itemView.g_add_icon_top.id
             }
+
         }
 
         fun bindLastItem(){
+            Log.d("add", "last")
+
             setAlbumToAddButton()
             itemView.tv_description.visibility = View.INVISIBLE
             itemView.iv_add_icon_last.updateLayoutParams<ConstraintLayout.LayoutParams> {
