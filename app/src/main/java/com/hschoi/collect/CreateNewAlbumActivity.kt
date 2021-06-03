@@ -55,11 +55,11 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         private const val ADD_IMAGE_ICON_HEIGHT_PERCENT = 26f/716f
         private const val ADD_IMAGE_SWITCH_ICON_HEIGHT_PERCENT = 38f/716f
 
-        private const val FRAME_WIDTH_RATIO = 114f/234f
-        private const val FRAME_HEIGHT_PERCENT = 234f/716f    // 너비 * ratio = 높이
+        const val FRAME_WIDTH_RATIO = 114f/234f
+        const val FRAME_HEIGHT_PERCENT = 234f/716f    // 너비 * ratio = 높이
         
-        private const val FRAME4_WIDTH_RATIO = 114f/230f
-        private const val FRAME4_HEIGHT_PERCENT = 230f/716f    // 너비 * ratio = 높이
+        const val FRAME4_WIDTH_RATIO = 114f/230f
+        const val FRAME4_HEIGHT_PERCENT = 230f/716f    // 너비 * ratio = 높이
 
         private const val COMMON_MARGIN_SIZE_PERCENT = 16f/360f
         private const val COMMON_TOP_MARGIN_SIZE_PERCENT = 22f/716f
@@ -694,15 +694,28 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         tv_album_frame_subtitle.setTextSize(Dimension.DP, frameSubtitleFontSize.toFloat())
         LayoutParamsUtils.setItemMarginTop(layout_album_frame.cl_frame_icons, frameTitleBottomMargin)
 
-
         tv_album_color_title.setTextSize(Dimension.DP, titleFontSize.toFloat())
 
-        layout_button_frame0.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_frame_back))
+        val icon0 = getDrawable(R.drawable.ic_frame0_button)
+        val icon1 = getDrawable(R.drawable.ic_frame1_button)
+        val icon2 = getDrawable(R.drawable.ic_frame2_button)
+        val icon3 = getDrawable(R.drawable.ic_frame3_button)
+        val icon4 = getDrawable(R.drawable.ic_frame4_button)
 
-        layout_button_frame1.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame1_button))
-        layout_button_frame2.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame2_button))
-        layout_button_frame3.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame3_button))
-        layout_button_frame4.iv_frame_icon.setImageDrawable(getDrawable(R.drawable.ic_frame4_button))
+        val strokeColor = getColor(R.color.create_album_frame_stroke)
+        icon0?.setTint(strokeColor)
+        icon1?.setTint(strokeColor)
+        icon2?.setTint(strokeColor)
+        icon3?.setTint(strokeColor)
+        icon4?.setTint(strokeColor)
+
+        layout_button_frame0.iv_frame_icon.setImageDrawable(icon0)
+        layout_button_frame1.iv_frame_icon.setImageDrawable(icon1)
+        layout_button_frame2.iv_frame_icon.setImageDrawable(icon2)
+        layout_button_frame3.iv_frame_icon.setImageDrawable(icon3)
+        layout_button_frame4.iv_frame_icon.setImageDrawable(icon4)
+
+        layout_button_frame0.iv_frame_icon_back.setImageDrawable(getDrawable(R.drawable.ic_button_frame_back))
     }
 
     private fun initColorButtons(){

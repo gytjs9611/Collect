@@ -104,8 +104,8 @@ class CoverImageAdapter(var items: ArrayList<String>) : RecyclerView.Adapter<Cov
 
                     val bitmap = BitmapFactory.decodeFile("${mContext.filesDir}/${items[pos]}")
 
-                    AddContentsCoverActivity.mImageCropView.initView(mContext)
-                    AddContentsCoverActivity.mImageCropView.setImageBitmap(bitmap)
+                    AddContentsCoverActivity.imageCroppingView.initView(mContext)
+                    AddContentsCoverActivity.imageCroppingView.setImageBitmap(bitmap)
                     notifyDataSetChanged()
                 }
             }

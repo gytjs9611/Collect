@@ -99,4 +99,11 @@
     <color name="edit_text_underline_unfocus">#1A000000</color>
     <color name="edit_text_length">#CC000000</color>
 
+
+<!--    frame button color -->
+    <color name="create_album_frame_stroke">#535353</color>
+
+<!--    cover frame bottom view stroke  -->
+    <color name="cover_frame_bottom_view_stroke">#1AFFFFFF</color>
+
 </resources>
