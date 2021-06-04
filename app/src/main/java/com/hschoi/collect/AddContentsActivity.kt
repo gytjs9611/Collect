@@ -64,7 +64,7 @@ class AddContentsActivity : AppCompatActivity() {
 
         const val REQ_STORAGE_PERMISSION = 100
 
-        var addContentsActivity: Activity? = null
+        lateinit var activity: Activity
 
         lateinit var originImageList : ArrayList<String>
         lateinit var imageList : ArrayList<String>
@@ -184,7 +184,6 @@ class AddContentsActivity : AppCompatActivity() {
     private var mDayOfMonth = 0
     private var mDayOfWeek = 0
 
-
     inner class GetAlbumItemEntity(private val context: Context, private val contentsId: Long):Thread(){
         override fun run() {
             mAlbumItemEntity = AlbumDatabase.getInstance(context)!!
@@ -202,6 +201,8 @@ class AddContentsActivity : AppCompatActivity() {
         }
     }
 
+    private var isInitFinished = false
+    private var originDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -211,7 +212,7 @@ class AddContentsActivity : AppCompatActivity() {
         mContext = this
         MAX_IMAGE_CNT = 10  // free, premium 차이두기
 
-        addContentsActivity = this@AddContentsActivity
+        activity = this@AddContentsActivity
         originImageList = ArrayList()
         imageList = ArrayList()
         defaultAddView = cl_contents_add_image_back
@@ -227,6 +228,7 @@ class AddContentsActivity : AppCompatActivity() {
 
         // 데이터 불러옴
         loadData()
+        isInitFinished =true
 
         if(imageList.size==0){
             defaultAddView.bringToFront()
@@ -245,10 +247,47 @@ class AddContentsActivity : AppCompatActivity() {
 
         // page indicator
         setPageIndicator()
-
-
     }
 
+    override fun onBackPressed() {
+        if(!isInitFinished){
+            finish()
+        }
+        else{
+            val titleModified : Boolean
+            val contentsModified : Boolean
+            val imageModified : Boolean
+            val dateModified = originDate != tv_contents_date.text.toString()
+
+            if(isModify){   // modify album
+                titleModified = mAlbumItemEntity.contentsTitle != layout_title.et_title.text.toString()
+                contentsModified = mAlbumItemEntity.contentsSentence != et_contents_sentences.text.toString()
+                var currentImage = ""
+                for(i in 0..imageList.size-2){
+                    currentImage+=imageList[i].substringAfter("temp_")
+                    if(i!= imageList.size-2) {
+                        currentImage+="|"
+                    }
+                }
+                imageModified = mAlbumItemEntity.contentsImageName != currentImage
+            }
+            else{
+                titleModified = layout_title.et_title.text.isNotEmpty()
+                contentsModified = et_contents_sentences.text.isNotEmpty()
+                imageModified = imageList.isNotEmpty()
+            }
+
+            if(titleModified || contentsModified || dateModified || imageModified){
+                currentFocus?.clearFocus()
+                val intent = Intent(this, PopUpDialogActivity::class.java)
+                intent.putExtra("type", PopUpDialogActivity.Companion.DialogType.MODIFY_NOT_SAVE_CHECK)
+                startActivity(intent)
+            }
+            else{
+                finish()
+            }
+        }
+    }
 
 
     override fun onDestroy() {
@@ -352,6 +391,7 @@ class AddContentsActivity : AppCompatActivity() {
         tv_contents_date.text =
                 "$mYear.${mMonth+1}.$mDayOfMonth.${getDayOfWeekString(applicationContext, mDayOfWeek)}"
 
+        originDate = tv_contents_date.text.toString()
     }
 
 

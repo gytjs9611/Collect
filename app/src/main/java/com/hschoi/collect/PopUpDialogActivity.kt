@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_popup.*
 class PopUpDialogActivity: AppCompatActivity() {
     companion object{
         enum class DialogType {
-            PREMIUM_INFO, ALBUM_DELETE_CHECK, CONTENTS_DELETE_CHECK
+            PREMIUM_INFO, ALBUM_DELETE_CHECK, CONTENTS_DELETE_CHECK, MODIFY_NOT_SAVE_CHECK
         }
     }
 
@@ -59,6 +59,21 @@ class PopUpDialogActivity: AppCompatActivity() {
                     activity.finish()
                     finish()
 
+                }
+            }
+            DialogType.MODIFY_NOT_SAVE_CHECK->{
+                tv_title.text = getString(R.string.cancel_add_contents)
+                tv_description.text = getString(R.string.cancel_add_contents_description)
+                // 취소
+                tv_left.setOnClickListener {
+                    finish()
+                }
+                // 확인
+                tv_right.text = getString(R.string.ok)
+                tv_right.setOnClickListener {
+                    val activity = AddContentsActivity.activity
+                    activity.finish()
+                    finish()
                 }
             }
             DialogType.PREMIUM_INFO->{

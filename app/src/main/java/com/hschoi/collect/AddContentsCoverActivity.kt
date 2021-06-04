@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import androidx.annotation.Dimension
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.PathParser
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,10 +21,7 @@ import com.hschoi.collect.util.BitmapCropUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import com.hschoi.collect.util.PathDataUtils
 import kotlinx.android.synthetic.main.activity_add_contents_cover.*
-import kotlinx.android.synthetic.main.activity_create_new_album.*
-import kotlinx.android.synthetic.main.layout_create_new_album_color.*
 import kotlinx.android.synthetic.main.layout_create_new_album_frame.*
-import kotlinx.android.synthetic.main.layout_create_new_album_frame.view.*
 import kotlinx.android.synthetic.main.layout_frame_select_button.view.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 import java.io.File
@@ -316,7 +312,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
             // 액티비티 종료
             // 이전 액티비였던 컨텐츠 추가 액티비티도 함께 종료시킴
-            val addContentsActivity = AddContentsActivity.addContentsActivity as AddContentsActivity
+            val addContentsActivity = AddContentsActivity.activity as AddContentsActivity
             AddContentsActivity.isModify = false
             addContentsActivity.finish()
 

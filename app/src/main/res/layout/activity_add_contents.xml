@@ -109,7 +109,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     app:layout_constraintDimensionRatio="1:1"
-                    android:src="@drawable/ic_down"
+                    android:src="@drawable/ic_down_gray"
                     android:layout_marginStart="7dp"
                     app:layout_constraintStart_toEndOf="@id/tv_contents_date"
                     app:layout_constraintTop_toTopOf="parent"
