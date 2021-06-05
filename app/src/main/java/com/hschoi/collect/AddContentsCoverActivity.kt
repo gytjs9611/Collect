@@ -22,6 +22,12 @@ import com.hschoi.collect.util.LayoutParamsUtils
 import com.hschoi.collect.util.PathDataUtils
 import kotlinx.android.synthetic.main.activity_add_contents_cover.*
 import kotlinx.android.synthetic.main.layout_create_new_album_frame.*
+import kotlinx.android.synthetic.main.layout_create_new_album_frame.layout_button_frame0
+import kotlinx.android.synthetic.main.layout_create_new_album_frame.layout_button_frame1
+import kotlinx.android.synthetic.main.layout_create_new_album_frame.layout_button_frame2
+import kotlinx.android.synthetic.main.layout_create_new_album_frame.layout_button_frame3
+import kotlinx.android.synthetic.main.layout_create_new_album_frame.layout_button_frame4
+import kotlinx.android.synthetic.main.layout_frame_buttons.*
 import kotlinx.android.synthetic.main.layout_frame_select_button.view.*
 import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 import java.io.File
@@ -74,9 +80,14 @@ class AddContentsCoverActivity : AppCompatActivity() {
 
     private var measureReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
-            if(intent?.action==ImageCroppingView.ACTION_MEASURE && AddContentsActivity.isModify){
-                if(originCoverExists){
-                    loadSavedImageState()
+            if(intent?.action==ImageCroppingView.ACTION_MEASURE){
+                if(AddContentsActivity.isModify){   // 컨텐츠 수정
+                    if(originCoverExists){
+                        loadSavedImageState()
+                        drawFrameBack(mFrameType)
+                    }
+                }
+                else{   // 컨텐츠 생성
                     drawFrameBack(mFrameType)
                 }
             }
@@ -588,7 +599,8 @@ class AddContentsCoverActivity : AppCompatActivity() {
         imageCroppingView.setFrameStyle(frameType, frameWidth, frameHeight)
 
          // 4번 프레임 -> 다른 프레임 or 다른 프레임 -> 4번 프레임으로 변경할 때 minScale 재설정
-         if(frameType==BitmapCropUtils.FRAME_TYPE_4 || selectedFrameButton==layout_button_frame4){
+         if(selectedFrameButton!=layout_button_frame4 && frameType==BitmapCropUtils.FRAME_TYPE_4
+                 || selectedFrameButton==layout_button_frame4 && frameType!=BitmapCropUtils.FRAME_TYPE_4){
              imageCroppingView.setScale()
          }
 
