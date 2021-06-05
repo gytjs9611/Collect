@@ -249,7 +249,7 @@ class AddContentsActivity : AppCompatActivity() {
         setPageIndicator()
     }
 
-    override fun onBackPressed() {
+    private fun backButtonEvent(){
         if(!isInitFinished){
             finish()
         }
@@ -287,6 +287,10 @@ class AddContentsActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    override fun onBackPressed() {
+        backButtonEvent()
     }
 
 
@@ -436,7 +440,7 @@ class AddContentsActivity : AppCompatActivity() {
     private fun setButtonClickListeners(){
         // CLOSE 버튼
         layout_top_menu_add_contents.cl_icon_left.setOnClickListener {
-            finish()
+            backButtonEvent()
         }
 
         // NEXT 버튼
