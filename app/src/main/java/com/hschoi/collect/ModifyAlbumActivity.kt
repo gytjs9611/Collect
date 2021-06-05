@@ -94,6 +94,8 @@ class ModifyAlbumActivity : AppCompatActivity() {
         //        갤러리 접근
         private const val REQ_STORAGE_PERMISSION = 100
         private const val REQ_GALLERY = 101
+
+        lateinit var activity : ModifyAlbumActivity
     }
 
 
@@ -134,6 +136,8 @@ class ModifyAlbumActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_modify_album)
+
+        activity = this@ModifyAlbumActivity
 
         albumId = intent.getLongExtra("albumId", -1)
 

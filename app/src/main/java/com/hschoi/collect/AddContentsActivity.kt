@@ -280,7 +280,7 @@ class AddContentsActivity : AppCompatActivity() {
             if(titleModified || contentsModified || dateModified || imageModified){
                 currentFocus?.clearFocus()
                 val intent = Intent(this, PopUpDialogActivity::class.java)
-                intent.putExtra("type", PopUpDialogActivity.Companion.DialogType.MODIFY_NOT_SAVE_CHECK)
+                intent.putExtra("type", PopUpDialogActivity.Companion.DialogType.CONTENTS_MODIFY_NOT_SAVE_CHECK)
                 startActivity(intent)
             }
             else{

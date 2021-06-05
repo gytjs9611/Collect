@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -86,6 +85,8 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 //        갤러리 접근
         const val REQ_STORAGE_PERMISSION = 100
         const val REQ_GALLERY = 101
+
+        lateinit var activity : CreateNewAlbumActivity
     }
 
 
@@ -119,6 +120,8 @@ class CreateNewAlbumActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_new_album)
+
+        activity = this@CreateNewAlbumActivity
 
 
         imageCroppingView = ImageCroppingView(applicationContext)
@@ -210,7 +213,7 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
         // 취소 버튼
         layout_top_menu_create_album.cl_icon_left.setOnClickListener {
-            finish()
+            backButtonEvent()
         }
 
         // 저장 버튼
@@ -323,6 +326,28 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         }
 
     }
+
+    private fun backButtonEvent(){
+        val isTitleModified = layout_title.et_title.text.isNotEmpty()
+        val isFrameModified = selectedFrameButton != layout_button_frame0
+        val isColorModified = selectedColorButton != color_item_pink
+
+        if(isImageSelected || isTitleModified || isFrameModified || isColorModified){
+            val intent = Intent(this, PopUpDialogActivity::class.java)
+            intent.putExtra(PopUpDialogActivity.TYPE, PopUpDialogActivity.Companion.DialogType.ALBUM_MODIFY_NOT_SAVE_CHECK)
+            intent.putExtra(PopUpDialogActivity.IS_NEW_ALBUM, true)
+            startActivity(intent)
+        }
+        else{
+            finish()
+        }
+    }
+
+
+    override fun onBackPressed() {
+        backButtonEvent()
+    }
+
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val focusView = currentFocus

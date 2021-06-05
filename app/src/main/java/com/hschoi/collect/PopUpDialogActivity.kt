@@ -10,8 +10,11 @@ import kotlinx.android.synthetic.main.activity_popup.*
 class PopUpDialogActivity: AppCompatActivity() {
     companion object{
         enum class DialogType {
-            PREMIUM_INFO, ALBUM_DELETE_CHECK, CONTENTS_DELETE_CHECK, MODIFY_NOT_SAVE_CHECK
+            PREMIUM_INFO, ALBUM_DELETE_CHECK, CONTENTS_DELETE_CHECK,
+            CONTENTS_MODIFY_NOT_SAVE_CHECK, ALBUM_MODIFY_NOT_SAVE_CHECK
         }
+        const val TYPE = "type"
+        const val IS_NEW_ALBUM ="isNewAlbum"
     }
 
     private var mAlbumId = -1
@@ -61,7 +64,7 @@ class PopUpDialogActivity: AppCompatActivity() {
 
                 }
             }
-            DialogType.MODIFY_NOT_SAVE_CHECK->{
+            DialogType.CONTENTS_MODIFY_NOT_SAVE_CHECK->{
                 tv_title.text = getString(R.string.cancel_add_contents)
                 tv_description.text = getString(R.string.cancel_add_contents_description)
                 // 취소
@@ -72,6 +75,23 @@ class PopUpDialogActivity: AppCompatActivity() {
                 tv_right.text = getString(R.string.ok)
                 tv_right.setOnClickListener {
                     val activity = AddContentsActivity.activity
+                    activity.finish()
+                    finish()
+                }
+            }
+            DialogType.ALBUM_MODIFY_NOT_SAVE_CHECK->{
+                tv_title.text = getString(R.string.cancel_add_album)
+                tv_description.text = getString(R.string.cancel_add_album_description)
+                // 취소
+                tv_left.setOnClickListener {
+                    finish()
+                }
+                // 확인
+                tv_right.text = getString(R.string.ok)
+                tv_right.setOnClickListener {
+                    val isNewAlbum = intent.getBooleanExtra(IS_NEW_ALBUM, true)
+                    val activity = if(isNewAlbum) CreateNewAlbumActivity.activity
+                                    else ModifyAlbumActivity.activity
                     activity.finish()
                     finish()
                 }
