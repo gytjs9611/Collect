@@ -178,7 +178,7 @@ class AddContentsCoverActivity : AppCompatActivity() {
         frameHeight = LayoutParamsUtils.getItemHeightByPercent(applicationContext, FRAME_HEIGHT_PERCENT)
         frameWidth = LayoutParamsUtils.getItemSizeByRatio(frameHeight, FRAME_WIDTH_RATIO)
         // CroppingView에 프레임 정보 전달
-        icv_cover_image_source.setFrameStyle(BitmapCropUtils.FRAME_TYPE_0, frameWidth, frameHeight)
+        icv_cover_image_source.setFrameStyle(mFrameType, frameWidth, frameHeight)
         drawFrameBack(mFrameType)
 
 

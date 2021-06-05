@@ -80,8 +80,8 @@ class PopUpDialogActivity: AppCompatActivity() {
                 }
             }
             DialogType.ALBUM_MODIFY_NOT_SAVE_CHECK->{
-                tv_title.text = getString(R.string.cancel_add_album)
-                tv_description.text = getString(R.string.cancel_add_album_description)
+                tv_title.text = getString(R.string.cancel_modify_album)
+                tv_description.text = getString(R.string.cancel_modify_album_description)
                 // 취소
                 tv_left.setOnClickListener {
                     finish()

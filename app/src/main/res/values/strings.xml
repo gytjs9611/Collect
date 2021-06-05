@@ -37,6 +37,8 @@
     <string name="cancel_add_contents">작성 취소</string>
     <string name="cancel_add_album">작성 취소</string>
 
+    <string name="cancel_modify_album">작성 취소</string>
+
     <!--    description-->
     <string name="delete_album_description">
         정말로 해당 앨범을 삭제하실 건가요?\n
@@ -54,6 +56,10 @@
     <string name="cancel_add_album_description">
         앨범 생성을 종료하시겠습니까?\n
         종료 시 작성 중인 내용은 저장되지 않습니다.
+    </string>
+    <string name="cancel_modify_album_description">
+        앨범 수정을 종료하시겠습니까?\n
+        종료 시 수정 중인 내용은 저장되지 않습니다.
     </string>
 
 

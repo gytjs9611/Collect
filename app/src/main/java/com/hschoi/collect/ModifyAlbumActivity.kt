@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -106,7 +105,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
 
     private var albumId : Long = -1
-    private lateinit var albumEntity : AlbumEntity
+    private lateinit var mAlbumEntity : AlbumEntity
 
     private var selectedFrameType = BitmapCropUtils.FRAME_TYPE_0
     private var viewWidth = 0
@@ -122,6 +121,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
     private lateinit var imageCroppingView : ImageCroppingView
 
     private var tempUri : Uri? = null
+    private var isInitFinished = false
 
     private var measureReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -157,6 +157,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
 
         loadAlbumInfo()  // 기존에 저장된 값으로 앨범 정보, 선택상태 초기화
+        isInitFinished = true
 
         setFrameButtonOnClickListener() // 프레임 버튼 선택 이벤트
         setColorButtonOnClickListener() // 컬러 버튼 선택 이벤트
@@ -178,7 +179,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
 
         // icv 에 저장된 이미지 로드
-        val fis = openFileInput(albumEntity.coverImageOriginFileName)
+        val fis = openFileInput(mAlbumEntity.coverImageOriginFileName)
         val savedBitmap = BitmapFactory.decodeStream(fis)
 
         imageCroppingView.initView(applicationContext)  // 크롭 이미지뷰 초기화
@@ -237,7 +238,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
         // 취소 버튼
         layout_top_menu_create_album.cl_icon_left.setOnClickListener {
-            finish()
+            backButtonEvent()
         }
 
         // 저장 버튼
@@ -253,7 +254,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
             var fos : FileOutputStream
             try{
                 // cover
-                fos = openFileOutput(albumEntity.coverImageFileName, Context.MODE_PRIVATE)
+                fos = openFileOutput(mAlbumEntity.coverImageFileName, Context.MODE_PRIVATE)
                 imageCroppingView.croppedImage
                         .compress(Bitmap.CompressFormat.JPEG, 50, fos)
                 fos.write(imageCroppingView.croppedImageBytes)
@@ -261,7 +262,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
                 // origin
                 if(tempUri!=null){  // 이미지 변경했을 경우에만
-                    fos = openFileOutput(albumEntity.coverImageOriginFileName, Context.MODE_PRIVATE)
+                    fos = openFileOutput(mAlbumEntity.coverImageOriginFileName, Context.MODE_PRIVATE)
                     var bitmap = BitmapUtils.uriToBitmap(this, tempUri)
 
                     // 회전값 존재하면 똑바로 보이도록 조정
@@ -279,15 +280,15 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
 
             // 앨범 객체 저장
-            albumEntity.albumTitle = title
-            albumEntity.albumColor = selectedColor
-            albumEntity.frameType = selectedFrameType
-            albumEntity.zoom = imageCroppingView.currentZoom
-            albumEntity.x = imageCroppingView.getMatrixTransX()
-            albumEntity.y = imageCroppingView.getMatrixTransY()
+            mAlbumEntity.albumTitle = title
+            mAlbumEntity.albumColor = selectedColor
+            mAlbumEntity.frameType = selectedFrameType
+            mAlbumEntity.zoom = imageCroppingView.currentZoom
+            mAlbumEntity.x = imageCroppingView.getMatrixTransX()
+            mAlbumEntity.y = imageCroppingView.getMatrixTransY()
 
 
-            val modifyAlbum = ModifyAlbum(applicationContext, albumEntity)
+            val modifyAlbum = ModifyAlbum(applicationContext, mAlbumEntity)
             modifyAlbum.start()
             Thread.sleep(100)
 
@@ -298,8 +299,8 @@ class ModifyAlbumActivity : AppCompatActivity() {
             for((index, album) in MainActivity.albumList.withIndex()){
 
                 if(album.id==albumId){
-                    val temp = Albums(albumId, title, albumEntity.albumColor,
-                            albumEntity.coverImageFileName, albumEntity.frameType)
+                    val temp = Albums(albumId, title, mAlbumEntity.albumColor,
+                            mAlbumEntity.coverImageFileName, mAlbumEntity.frameType)
                     MainActivity.albumList[index] = temp
                     break
                 }
@@ -332,6 +333,38 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
 
     }
+
+    override fun onBackPressed() {
+        if(isInitFinished){
+            backButtonEvent()
+        }
+        else{
+            finish()
+        }
+    }
+
+    private fun backButtonEvent(){
+
+        val isZoomModified = mAlbumEntity.zoom != imageCroppingView.currentZoom
+        val isXModified = mAlbumEntity.x != imageCroppingView.getMatrixTransX()
+        val isYModified = mAlbumEntity.y != imageCroppingView.getMatrixTransY()
+        val isImageModified = (tempUri!=null || isZoomModified || isXModified || isYModified)
+
+        val isTitleModified = layout_title.et_title.text.toString() != mAlbumEntity.albumTitle
+        val isFrameModified = selectedFrameType != mAlbumEntity.frameType
+        val isColorModified = selectedColor != mAlbumEntity.albumColor
+
+        if(isImageModified || isTitleModified || isFrameModified || isColorModified){
+            val intent = Intent(this, PopUpDialogActivity::class.java)
+            intent.putExtra(PopUpDialogActivity.TYPE, PopUpDialogActivity.Companion.DialogType.ALBUM_MODIFY_NOT_SAVE_CHECK)
+            intent.putExtra(PopUpDialogActivity.IS_NEW_ALBUM, false)
+            startActivity(intent)
+        }
+        else{
+            finish()
+        }
+    }
+
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val focusView = currentFocus
@@ -372,11 +405,11 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
     private fun loadSavedImageState(){
 
-        imageCroppingView.mMatrix!!.postScale(albumEntity.zoom, albumEntity.zoom)
-        imageCroppingView.currentZoom = albumEntity.zoom
+        imageCroppingView.mMatrix!!.postScale(mAlbumEntity.zoom, mAlbumEntity.zoom)
+        imageCroppingView.currentZoom = mAlbumEntity.zoom
 
-        val savedX = albumEntity.x
-        val savedY = albumEntity.y
+        val savedX = mAlbumEntity.x
+        val savedY = mAlbumEntity.y
 
         val initX = imageCroppingView.getMatrixTransX()
         val initY = imageCroppingView.getMatrixTransY()
@@ -393,11 +426,11 @@ class ModifyAlbumActivity : AppCompatActivity() {
         Thread.sleep(100)
 
         // title
-        layout_album_title.layout_title.et_title.setText(albumEntity.albumTitle)
+        layout_album_title.layout_title.et_title.setText(mAlbumEntity.albumTitle)
 
         // frame
-        selectedFrameType = albumEntity.frameType
-        selectedFrameButton = when(albumEntity.frameType){
+        selectedFrameType = mAlbumEntity.frameType
+        selectedFrameButton = when(mAlbumEntity.frameType){
             BitmapCropUtils.FRAME_TYPE_0->{
                 layout_button_frame0
             }
@@ -420,7 +453,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
         setFrameButtonFocused(selectedFrameButton)
 
         // color
-        selectedColor = albumEntity.albumColor
+        selectedColor = mAlbumEntity.albumColor
         selectedColorButton = when(selectedColor){
             resources.getColor(R.color.album_color_pink)->{
                 color_item_pink
@@ -469,7 +502,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
     inner class GetAlbumEntity(val context: Context, private val albumId : Long): Thread(){
         override fun run() {
-            albumEntity = AlbumDatabase
+            mAlbumEntity = AlbumDatabase
                     .getInstance(context)!!
                     .albumDao()
                     .getAlbumEntity(albumId)
