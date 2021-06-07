@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/tv_home_setting"
+        android:id="@+id/tv_setting_menu_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -21,7 +21,7 @@
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_home_setting"
+        app:layout_constraintTop_toBottomOf="@id/tv_setting_menu_title"
         android:background="@color/setting_subtitle_line_color"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,6 +18,7 @@
         android:textSize="18dp"/>
 
     <ImageView
+        android:id="@+id/iv_next"
         android:layout_width="14dp"
         android:layout_height="14dp"
         android:layout_marginEnd="7dp"
@@ -26,6 +27,33 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:tint="@color/setting_next_icon" />
+
+
+
+    <TextView
+        android:id="@+id/tv_sub_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/tv_item_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text=""
+        android:letterSpacing="-0.02"
+        android:textColor="@color/setting_sub_item_color"
+        android:textSize="15dp"/>
+
+    <TextView
+        android:id="@+id/tv_version_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintEnd_toStartOf="@id/iv_next"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text=""
+        android:textColor="@color/setting_sub_item_color"
+        android:textSize="15dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

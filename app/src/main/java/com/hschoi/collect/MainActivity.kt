@@ -2,6 +2,7 @@ package com.hschoi.collect
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -117,6 +118,8 @@ class MainActivity : AppCompatActivity() {
 //        list_panel.setFadeOnClickListener {
 //            list_panel.panelState = PanelState.HIDDEN
 //        }
+
+        layout_bottom_menu_bar.iv_menu_home.imageTintList = ColorStateList.valueOf(getColor(R.color.black))
         
 
         // 홈 버튼 누르면 가장 첫번째 아이템으로 스크롤 이동
@@ -137,6 +140,8 @@ class MainActivity : AppCompatActivity() {
         // 하단 세팅 메뉴 클릭 이벤트 설정
         layout_bottom_menu_bar.cl_menu_setting.setOnClickListener {
             // setting activity
+            startActivity(Intent(this, SettingActivity::class.java))
+            overridePendingTransition(0, 0)
         }
 
         rv_album_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {

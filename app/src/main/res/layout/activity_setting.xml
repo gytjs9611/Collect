@@ -132,4 +132,18 @@
         app:layout_constraintStart_toStartOf="@id/setting_home_sentence"
         app:layout_constraintEnd_toEndOf="@id/setting_home_sentence"/>
 
+
+    <!--    bottom menu -->
+
+    <include
+        android:id="@+id/layout_bottom_menu_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.078"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/layout_bottom_menu_bar"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

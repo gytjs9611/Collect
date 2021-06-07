@@ -1,5 +1,6 @@
 package com.hschoi.collect.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -73,6 +74,7 @@ class HomeRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<H
                 intent.putExtra("frameType", frameType)
                 intent.putExtra("color", color)
                 mContext.startActivity(intent)
+                (mContext as Activity).overridePendingTransition(0, 0)
             }
 
             // 앨범 수정, 삭제 하단 메뉴
