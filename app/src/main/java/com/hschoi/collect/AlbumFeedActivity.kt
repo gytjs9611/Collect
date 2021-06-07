@@ -102,6 +102,11 @@ class AlbumFeedActivity : AppCompatActivity() {
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(0, 0)
+    }
+
     fun loadAlbumFeed(){
         val getItemCnt = GetItemCnt(applicationContext, albumId)
         getItemCnt.start()
@@ -255,6 +260,7 @@ class AlbumFeedActivity : AppCompatActivity() {
         // home
         layout_bottom_menu_bar.iv_menu_home.setOnClickListener {
             finish()
+            overridePendingTransition(0, 0)
         }
 
         // add contents
@@ -265,11 +271,14 @@ class AlbumFeedActivity : AppCompatActivity() {
 //            intent.putExtra("color", color)
 //            intent.putExtra("frameType", frameType)
             startActivity(intent)
+            overridePendingTransition(0, 0)
         }
 
         // setting
         layout_bottom_menu_bar.cl_menu_setting.setOnClickListener {
             // start setting activity
+            startActivity(Intent(this, SettingActivity::class.java))
+            overridePendingTransition(0, 0)
         }
 
     }
