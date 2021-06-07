@@ -106,4 +106,14 @@
 <!--    cover frame bottom view stroke  -->
     <color name="cover_frame_bottom_view_stroke">#1AFFFFFF</color>
 
+
+<!--    setting     -->
+    <color name="setting_subtitle_color">#979797</color>
+    <color name="setting_subtitle_line_color">#3D979797</color>
+    <color name="setting_item_color">#222222</color>
+    <color name="setting_next_icon">#979797</color>
+
+
+
+
 </resources>

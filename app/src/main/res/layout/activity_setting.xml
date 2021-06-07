@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="@string/setting_title"
+        android:textSize="18dp"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+<!--    home    -->
+    <include
+        android:id="@+id/setting_home_title"
+        layout="@layout/layout_setting_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="6dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <include
+        android:id="@+id/setting_home_sentence"
+        layout="@layout/layout_setting_item"
+        android:layout_width="0dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="11dp"
+        app:layout_constraintTop_toBottomOf="@id/setting_home_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <include
+        android:id="@+id/setting_home_change_album_order"
+        layout="@layout/layout_setting_item"
+        android:layout_width="0dp"
+        android:layout_height="47dp"
+        app:layout_constraintTop_toBottomOf="@id/setting_home_sentence"
+        app:layout_constraintStart_toStartOf="@id/setting_home_sentence"
+        app:layout_constraintEnd_toEndOf="@id/setting_home_sentence"/>
+
+<!--    premium     -->
+    <include
+        android:id="@+id/setting_premium_title"
+        layout="@layout/layout_setting_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        app:layout_constraintStart_toStartOf="@id/setting_home_title"
+        app:layout_constraintTop_toBottomOf="@id/setting_home_change_album_order"
+        app:layout_constraintEnd_toEndOf="@id/setting_home_title"/>
+
+    <include
+        android:id="@+id/setting_premium"
+        layout="@layout/layout_setting_item"
+        android:layout_width="0dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/setting_premium_title"
+        app:layout_constraintStart_toStartOf="@id/setting_home_sentence"
+        app:layout_constraintEnd_toEndOf="@id/setting_home_sentence"/>
+
+
+<!--    feedback    -->
+    <include
+        android:id="@+id/setting_feedback_title"
+        layout="@layout/layout_setting_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        app:layout_constraintStart_toStartOf="@id/setting_home_title"
+        app:layout_constraintTop_toBottomOf="@id/setting_premium"
+        app:layout_constraintEnd_toEndOf="@id/setting_home_title"/>
+
+    <include
+        android:id="@+id/setting_review"
+        layout="@layout/layout_setting_item"
+        android:layout_width="0dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="11dp"
+        app:layout_constraintTop_toBottomOf="@id/setting_feedback_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <include
+        android:id="@+id/setting_question_feedback"
+        layout="@layout/layout_setting_item"
+        android:layout_width="0dp"
+        android:layout_height="47dp"
+        app:layout_constraintTop_toBottomOf="@id/setting_review"
+        app:layout_constraintStart_toStartOf="@id/setting_home_sentence"
+        app:layout_constraintEnd_toEndOf="@id/setting_home_sentence"/>
+
+
+<!--    info    -->
+    <include
+        android:id="@+id/setting_info_title"
+        layout="@layout/layout_setting_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        app:layout_constraintStart_toStartOf="@id/setting_home_title"
+        app:layout_constraintTop_toBottomOf="@id/setting_question_feedback"
+        app:layout_constraintEnd_toEndOf="@id/setting_home_title"/>
+
+    <include
+        android:id="@+id/setting_info_version"
+        layout="@layout/layout_setting_item"
+        android:layout_width="0dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/setting_info_title"
+        app:layout_constraintStart_toStartOf="@id/setting_home_sentence"
+        app:layout_constraintEnd_toEndOf="@id/setting_home_sentence"/>
+    <include
+        android:id="@+id/setting_info_open_source"
+        layout="@layout/layout_setting_item"
+        android:layout_width="0dp"
+        android:layout_height="47dp"
+        app:layout_constraintTop_toBottomOf="@id/setting_info_version"
+        app:layout_constraintStart_toStartOf="@id/setting_home_sentence"
+        app:layout_constraintEnd_toEndOf="@id/setting_home_sentence"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
