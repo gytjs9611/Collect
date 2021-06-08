@@ -42,6 +42,10 @@ class SettingHomeSentenceBottomSheet(context : Context) : BottomSheetDialogFragm
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val savedSubtitle = MainActivity.sharedPref.getString(MainActivity.HOME_SENTENCE_KEY, null)
+        l_home_sentence_edit.et_title.setText(savedSubtitle)
+
+
         l_home_sentence_edit.et_title.setOnFocusChangeListener { v, hasFocus ->
             if(hasFocus){
                 l_home_sentence_edit.cv_string_length.visibility = View.VISIBLE
@@ -54,13 +58,26 @@ class SettingHomeSentenceBottomSheet(context : Context) : BottomSheetDialogFragm
         }
 
 
+        l_home_sentence_edit.et_title.requestFocus()
+
+
         // 제목 입력된 글자 수 표시
         l_home_sentence_edit.et_title.addTextChangedListener {
             l_home_sentence_edit.tv_length.text = "${it?.length}/${resources.getInteger(R.integer.title_max_length)}"
         }
 
-
+        iv_close.setOnClickListener {
+            dismiss()
+        }
 
     }
+
+    override fun onStop() {
+        val editor = MainActivity.sharedPref.edit()
+        editor.putString(MainActivity.HOME_SENTENCE_KEY, l_home_sentence_edit.et_title.text.toString())
+        editor.commit()
+        super.onStop()
+    }
+
 
 }

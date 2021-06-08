@@ -2,6 +2,7 @@ package com.hschoi.collect
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -36,6 +37,10 @@ class MainActivity : AppCompatActivity() {
         lateinit var addContentsRecyclerAdapter: AddContentsRecyclerAdapter
 
         var isAddFromHome = false
+
+        lateinit var sharedPref : SharedPreferences
+        const val SHARED_PREF_KEY = "com.hschoi.collect.SHARED_PREF_KEY"
+        const val HOME_SENTENCE_KEY = "com.hschoi.collect.HOME_SENTENCE_KEY"
     }
 
 
@@ -47,6 +52,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        sharedPref = getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE)
+
 
         albumList = ArrayList()
 
@@ -164,9 +172,13 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-//        if(albumList.size>1){
-//            defaultAddAlbum.visibility = View.INVISIBLE
-//        }
+        var savedSubtitle = sharedPref.getString(HOME_SENTENCE_KEY, null)
+        if(savedSubtitle==null){
+            val defaultSentence = getString(R.string.app_subtitle)
+            sharedPref.edit().putString(HOME_SENTENCE_KEY, defaultSentence).commit()
+            savedSubtitle = defaultSentence
+        }
+        tv_app_subtitle.text = savedSubtitle
 
 
     }
