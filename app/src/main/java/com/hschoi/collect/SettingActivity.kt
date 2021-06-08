@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import kotlinx.android.synthetic.main.activity_setting.*
 import kotlinx.android.synthetic.main.layout_bottom_menu_bar.view.*
 import kotlinx.android.synthetic.main.layout_setting_item.view.*
@@ -19,9 +20,6 @@ class SettingActivity: AppCompatActivity() {
         initView()
 
         setClickListeners()
-
-
-
     }
 
     override fun onBackPressed() {
@@ -33,6 +31,12 @@ class SettingActivity: AppCompatActivity() {
         layout_bottom_menu_bar.iv_menu_home.setOnClickListener {
             finish()
             overridePendingTransition(0, 0)
+        }
+
+        // 한 줄 소개 수정
+        setting_home_sentence.setOnClickListener {
+            val homeSentenceBottomSheet = SettingHomeSentenceBottomSheet(this)
+            homeSentenceBottomSheet.show(supportFragmentManager, null)
         }
 
     }
