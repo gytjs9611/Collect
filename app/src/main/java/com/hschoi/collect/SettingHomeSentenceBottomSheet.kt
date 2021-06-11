@@ -59,6 +59,8 @@ class SettingHomeSentenceBottomSheet(context : Context) : BottomSheetDialogFragm
 
 
         l_home_sentence_edit.et_title.requestFocus()
+        val savedLength = l_home_sentence_edit.et_title.length()
+        l_home_sentence_edit.tv_length.text = "${savedLength}/${resources.getInteger(R.integer.title_max_length)}"
 
 
         // 제목 입력된 글자 수 표시
