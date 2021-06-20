@@ -4,7 +4,7 @@
     <array name="album_color_array">
         <item name="album_color_pink">@color/album_color_pink</item>
         <item name="album_color_yellow">@color/album_color_yellow</item>
-        <item name="album_color_red">@color/album_color_red</item>
+        <item name="album_color_red">@color/album_color_orange</item>
         <item name="album_color_brown">@color/album_color_brown</item>
         <item name="album_color_light_purple">@color/album_color_light_purple</item>
         <item name="album_color_purple">@color/album_color_purple</item>

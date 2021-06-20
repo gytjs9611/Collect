@@ -20,18 +20,18 @@
     <color name="home_status_bar">#14212121</color>
     <color name="home_status_bar_icon">#000000</color>
 
-    <color name="album_feed_status_bar_pink">#DB7878</color>
-    <color name="album_feed_status_bar_yellow">#E8A82D</color>
-    <color name="album_feed_status_bar_red">#D35834</color>
-    <color name="album_feed_status_bar_brown">#906053</color>
-    <color name="album_feed_status_bar_light_purple">#8F85B9</color>
-    <color name="album_feed_status_bar_purple">#5D4272</color>
+    <color name="album_feed_status_bar_pink">#E08989</color>
+    <color name="album_feed_status_bar_yellow">#E7B75B</color>
+    <color name="album_feed_status_bar_orange">#EDA36C</color>
+    <color name="album_feed_status_bar_brown">#A27366</color>
+    <color name="album_feed_status_bar_light_purple">#968EB8</color>
+    <color name="album_feed_status_bar_purple">#966F94</color>
     <color name="album_feed_status_bar_green">#9CB985</color>
-    <color name="album_feed_status_bar_mint">#66BAAA</color>
-    <color name="album_feed_status_bar_blue">#6AA7C2</color>
+    <color name="album_feed_status_bar_mint">#6EB6A9</color>
+    <color name="album_feed_status_bar_blue">#6FA9C2</color>
     <color name="album_feed_status_bar_navy">#475176</color>
-    <color name="album_feed_status_bar_gray">#626262</color>
-    <color name="album_feed_status_bar_black">#232323</color>
+    <color name="album_feed_status_bar_gray">#797770</color>
+    <color name="album_feed_status_bar_black">#312E2A</color>
 
 
 
@@ -49,6 +49,7 @@
 
 <!--    create new album    -->
     <color name="image_crop_background">#B3000000</color>
+<!--    <color name="image_crop_background">#F19292</color>-->
 
     <color name="album_name_frame_title">#99000000</color>
     <color name="album_name_frame_subtitle">#4D000000</color>
@@ -57,18 +58,18 @@
     <color name="album_color_add_new">#F4F4F4</color>
     <color name="text_color_add_new">#7B7B7B</color>
 
-    <color name="album_color_pink">#EB8080</color>
-    <color name="album_color_yellow">#F9B42E</color>
-    <color name="album_color_red">#E25D36</color>
-    <color name="album_color_brown">#9A6657</color>
-    <color name="album_color_light_purple">#998EC6</color>
-    <color name="album_color_purple">#624579</color>
+    <color name="album_color_pink">#F19292</color>
+    <color name="album_color_yellow">#F8C460</color>
+    <color name="album_color_orange">#FFAE73</color>
+    <color name="album_color_brown">#AD7A6C</color>
+    <color name="album_color_light_purple">#A097C5</color>
+    <color name="album_color_purple">#A0769E</color>
     <color name="album_color_green">#A7C68E</color>
-    <color name="album_color_mint">#6CC7B6</color>
+    <color name="album_color_mint">#75C3B5</color>
     <color name="album_color_blue">#70B3D0</color>
     <color name="album_color_navy">#4A557D</color>
-    <color name="album_color_gray">#686868</color>
-    <color name="album_color_black">#232323</color>
+    <color name="album_color_gray">#817E77</color>
+    <color name="album_color_black">#322F2B</color>
 
 
 

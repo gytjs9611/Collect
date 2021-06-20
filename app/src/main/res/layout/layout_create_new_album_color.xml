@@ -38,10 +38,10 @@
             android:layout_height="38dp"
             app:layout_constraintStart_toEndOf="@id/color_item_pink"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/color_item_red"/>
+            app:layout_constraintEnd_toStartOf="@id/color_item_orange"/>
 
           <com.hschoi.collect.customview.ColorItem
-              android:id="@+id/color_item_red"
+              android:id="@+id/color_item_orange"
               android:layout_width="38dp"
               android:layout_height="38dp"
               app:layout_constraintTop_toTopOf="parent"
@@ -54,7 +54,7 @@
               android:layout_width="38dp"
               android:layout_height="38dp"
               app:layout_constraintTop_toTopOf="parent"
-              app:layout_constraintStart_toEndOf="@+id/color_item_red"
+              app:layout_constraintStart_toEndOf="@+id/color_item_orange"
               app:layout_constraintEnd_toStartOf="@id/color_item_light_purple"/>
 
 

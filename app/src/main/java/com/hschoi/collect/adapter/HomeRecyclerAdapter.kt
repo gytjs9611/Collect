@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.hschoi.collect.*
 import com.hschoi.collect.util.BitmapCropUtils
+import com.hschoi.collect.util.ColorUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import com.hschoi.collect.util.UnitConversion
 import kotlinx.android.synthetic.main.item_album_card.view.*
@@ -156,7 +157,7 @@ class HomeRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<H
 
             index = position
             itemView.tv_album_title.text = albumTitle
-            itemView.cv_album_card.setCardBackgroundColor(albumColor)
+            itemView.cv_album_card.setCardBackgroundColor(ColorUtils.getAlbumColor(mContext,albumColor))
             itemView.iv_album_cover.setImageBitmap(croppedBitmap)
         }
     }

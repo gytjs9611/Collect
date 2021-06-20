@@ -10,8 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.hschoi.collect.customview.AlbumFeedItem
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumItemEntity
-import com.hschoi.collect.util.BitmapCropUtils
-import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekFromDate
+import com.hschoi.collect.util.ColorUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.activity_album_feed.*
 import kotlinx.android.synthetic.main.item_album_feed.view.*
@@ -77,8 +76,8 @@ class AlbumFeedActivity : AppCompatActivity() {
         albumId = intent.getLongExtra("albumId", -1)
         albumTitle = intent.getStringExtra("albumTitle")
 //        frameType = intent.getIntExtra("frameType", BitmapCropUtils.FRAME_TYPE_0)
-        color = intent.getIntExtra("color", getColor(R.color.album_color_pink))
-        val statusBarColor = getStatusBarColor(color)
+        color = intent.getIntExtra("color", ColorUtils.PINK)
+        val statusBarColor = ColorUtils.getStatusBarColor(this, color)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = statusBarColor
@@ -116,7 +115,7 @@ class AlbumFeedActivity : AppCompatActivity() {
         getAsc.start()
         Thread.sleep(100)
 
-        cl_album_feed.setBackgroundColor(color)
+        cl_album_feed.setBackgroundColor(ColorUtils.getAlbumColor(this,color))
         initTitleBar(color, albumTitle)
         initBottomMenuBar(color)
 
@@ -199,27 +198,9 @@ class AlbumFeedActivity : AppCompatActivity() {
         }
     }
 
-    private fun getStatusBarColor(albumColor : Int) : Int{
-        val statusBarColor = when(albumColor){
-            getColor(R.color.album_color_pink)->R.color.album_feed_status_bar_pink
-            getColor(R.color.album_color_yellow)->R.color.album_feed_status_bar_yellow
-            getColor(R.color.album_color_red)->R.color.album_feed_status_bar_red
-            getColor(R.color.album_color_brown)->R.color.album_feed_status_bar_brown
-            getColor(R.color.album_color_light_purple)->R.color.album_feed_status_bar_light_purple
-            getColor(R.color.album_color_purple)->R.color.album_feed_status_bar_purple
-            getColor(R.color.album_color_green)->R.color.album_feed_status_bar_green
-            getColor(R.color.album_color_mint)->R.color.album_feed_status_bar_mint
-            getColor(R.color.album_color_blue)->R.color.album_feed_status_bar_blue
-            getColor(R.color.album_color_navy)->R.color.album_feed_status_bar_navy
-            getColor(R.color.album_color_gray)->R.color.album_feed_status_bar_gray
-            getColor(R.color.album_color_black)->R.color.album_feed_status_bar_black
-            else->R.color.album_feed_status_bar_pink
-        }
-        return getColor(statusBarColor)
-    }
 
     private fun initTitleBar(color : Int, title : String){
-        layout_top_menu_album_feed.setBackgroundColor(color)
+        layout_top_menu_album_feed.setBackgroundColor(ColorUtils.getAlbumColor(this, color))
         layout_top_menu_album_feed.tv_album_name_title.text = title
 
         layout_top_menu_album_feed.cl_icon_left.setOnClickListener {
@@ -249,7 +230,7 @@ class AlbumFeedActivity : AppCompatActivity() {
     }
 
     private fun initBottomMenuBar(color : Int){
-        layout_bottom_menu_bar.setBackgroundColor(color)
+        layout_bottom_menu_bar.setBackgroundColor(ColorUtils.getAlbumColor(this, color))
         layout_bottom_menu_bar.v_bottom_menu.setBackgroundColor(Color.TRANSPARENT)
         layout_bottom_menu_bar.iv_menu_home.setImageDrawable(getDrawable(R.drawable.ic_home_white))
         layout_bottom_menu_bar.iv_menu_add.setImageDrawable(getDrawable(R.drawable.ic_contents_add_white))

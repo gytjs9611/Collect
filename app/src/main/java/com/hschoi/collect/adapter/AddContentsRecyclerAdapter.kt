@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hschoi.collect.*
+import com.hschoi.collect.util.ColorUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.item_album_list.view.*
 
@@ -88,7 +89,7 @@ class AddContentsRecyclerAdapter(var items: ArrayList<Albums>) : RecyclerView.Ad
 
             index = position
             itemView.tv_album_list_title.text = albumTitle
-            itemView.cv_album_list_item.setCardBackgroundColor(albumColor)
+            itemView.cv_album_list_item.setCardBackgroundColor(ColorUtils.getAlbumColor(mContext, albumColor))
             itemView.tv_album_list_title.setTextColor(mContext.getColorStateList(R.color.white))
         }
     }

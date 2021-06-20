@@ -26,10 +26,7 @@ import com.hschoi.collect.customview.ImageCroppingView
 import com.hschoi.collect.customview.ColorItem
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
-import com.hschoi.collect.util.BitmapCropUtils
-import com.hschoi.collect.util.BitmapUtils
-import com.hschoi.collect.util.LayoutParamsUtils
-import com.hschoi.collect.util.PathDataUtils
+import com.hschoi.collect.util.*
 import gun0912.tedimagepicker.builder.TedImagePicker
 import kotlinx.android.synthetic.main.activity_add_contents.*
 import kotlinx.android.synthetic.main.activity_create_new_album.*
@@ -138,7 +135,7 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         selectedFrameButton = layout_button_frame0   // 액티비티 실행 시 프레임 스타일 초기값
         selectedColorButton = color_item_pink       // 액티비티 실행 시 컬러 초기값
 
-        selectedColor = resources.getColor(R.color.album_color_pink)
+        selectedColor = ColorUtils.PINK
         
         setFrameButtonOnClickListener()
         setColorButtonOnClickListener()
@@ -482,59 +479,59 @@ class CreateNewAlbumActivity : AppCompatActivity() {
     private fun setColorButtonOnClickListener(){
         color_item_pink.setOnClickListener {
             setColorButtonFocused(color_item_pink)
-            selectedColor = resources.getColor(R.color.album_color_pink)
+            selectedColor = ColorUtils.PINK
         }
         color_item_yellow.setOnClickListener {
             setColorButtonFocused(color_item_yellow)
-            selectedColor = resources.getColor(R.color.album_color_yellow)
+            selectedColor = ColorUtils.YELLOW
         }
-        color_item_red.setOnClickListener {
-            setColorButtonFocused(color_item_red)
-            selectedColor = resources.getColor(R.color.album_color_red)
+        color_item_orange.setOnClickListener {
+            setColorButtonFocused(color_item_orange)
+            selectedColor = ColorUtils.ORANGE
         }
         color_item_brown.setOnClickListener {
             setColorButtonFocused(color_item_brown)
-            selectedColor = resources.getColor(R.color.album_color_brown)
+            selectedColor = ColorUtils.BROWN
 
         }
         color_item_light_purple.setOnClickListener {
             setColorButtonFocused(color_item_light_purple)
-            selectedColor = resources.getColor(R.color.album_color_light_purple)
+            selectedColor = ColorUtils.LIGHT_PURPLE
 
         }
         color_item_purple.setOnClickListener {
             setColorButtonFocused(color_item_purple)
-            selectedColor = resources.getColor(R.color.album_color_purple)
+            selectedColor = ColorUtils.PURPLE
 
         }
         color_item_green.setOnClickListener {
             setColorButtonFocused(color_item_green)
-            selectedColor = resources.getColor(R.color.album_color_green)
+            selectedColor = ColorUtils.GREEN
 
         }
         color_item_mint.setOnClickListener {
             setColorButtonFocused(color_item_mint)
-            selectedColor = resources.getColor(R.color.album_color_mint)
+            selectedColor = ColorUtils.MINT
 
         }
         color_item_blue.setOnClickListener {
             setColorButtonFocused(color_item_blue)
-            selectedColor = resources.getColor(R.color.album_color_blue)
+            selectedColor = ColorUtils.BLUE
 
         }
         color_item_navy.setOnClickListener {
             setColorButtonFocused(color_item_navy)
-            selectedColor = resources.getColor(R.color.album_color_navy)
+            selectedColor = ColorUtils.NAVY
 
         }
         color_item_gray.setOnClickListener {
             setColorButtonFocused(color_item_gray)
-            selectedColor = resources.getColor(R.color.album_color_gray)
+            selectedColor = ColorUtils.GRAY
 
         }
         color_item_black.setOnClickListener {
             setColorButtonFocused(color_item_black)
-            selectedColor = resources.getColor(R.color.album_color_black)
+            selectedColor = ColorUtils.BLACK
 
         }
     }
@@ -749,7 +746,7 @@ class CreateNewAlbumActivity : AppCompatActivity() {
         color_item_pink.setFocused()    // 초기 선택 값
 
         color_item_yellow.setColor(resources.getColor(R.color.album_color_yellow))
-        color_item_red.setColor(resources.getColor(R.color.album_color_red))
+        color_item_orange.setColor(resources.getColor(R.color.album_color_orange))
         color_item_brown.setColor(resources.getColor(R.color.album_color_brown))
         color_item_light_purple.setColor(resources.getColor(R.color.album_color_light_purple))
         color_item_purple.setColor(resources.getColor(R.color.album_color_purple))
@@ -766,7 +763,7 @@ class CreateNewAlbumActivity : AppCompatActivity() {
     private fun setColorButtonSize(size : Int){
         LayoutParamsUtils.setItemSize(color_item_pink, size, size)
         LayoutParamsUtils.setItemSize(color_item_yellow, size, size)
-        LayoutParamsUtils.setItemSize(color_item_red, size, size)
+        LayoutParamsUtils.setItemSize(color_item_orange, size, size)
         LayoutParamsUtils.setItemSize(color_item_brown, size, size)
         LayoutParamsUtils.setItemSize(color_item_light_purple, size, size)
         LayoutParamsUtils.setItemSize(color_item_purple, size, size)

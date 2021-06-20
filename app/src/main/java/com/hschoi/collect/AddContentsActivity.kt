@@ -25,6 +25,7 @@ import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
 import com.hschoi.collect.database.entity.AlbumItemEntity
 import com.hschoi.collect.util.BitmapUtils
+import com.hschoi.collect.util.ColorUtils
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekString
 import com.hschoi.collect.util.LayoutParamsUtils
 import gun0912.tedimagepicker.builder.TedImagePicker
@@ -406,10 +407,10 @@ class AddContentsActivity : AppCompatActivity() {
 
         // 상단바 타이틀, 배경색
         layout_top_menu_add_contents.tv_album_name_title.text = mAlbumEntity.albumTitle
-        layout_top_menu_add_contents.setBackgroundColor(mAlbumEntity.albumColor)
+        layout_top_menu_add_contents.setBackgroundColor(ColorUtils.getAlbumColor(this,mAlbumEntity.albumColor))
 
         // 상태바 색상 배경색에 따라 설정
-        val statusBarColor = getStatusBarColor(mAlbumEntity.albumColor)
+        val statusBarColor = ColorUtils.getStatusBarColor(this, mAlbumEntity.albumColor)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = statusBarColor
 
@@ -567,24 +568,5 @@ class AddContentsActivity : AppCompatActivity() {
     }
 
 
-
-    private fun getStatusBarColor(albumColor : Int) : Int{
-        val statusBarColor = when(albumColor){
-            getColor(R.color.album_color_pink)->R.color.album_feed_status_bar_pink
-            getColor(R.color.album_color_yellow)->R.color.album_feed_status_bar_yellow
-            getColor(R.color.album_color_red)->R.color.album_feed_status_bar_red
-            getColor(R.color.album_color_brown)->R.color.album_feed_status_bar_brown
-            getColor(R.color.album_color_light_purple)->R.color.album_feed_status_bar_light_purple
-            getColor(R.color.album_color_purple)->R.color.album_feed_status_bar_purple
-            getColor(R.color.album_color_green)->R.color.album_feed_status_bar_green
-            getColor(R.color.album_color_mint)->R.color.album_feed_status_bar_mint
-            getColor(R.color.album_color_blue)->R.color.album_feed_status_bar_blue
-            getColor(R.color.album_color_navy)->R.color.album_feed_status_bar_navy
-            getColor(R.color.album_color_gray)->R.color.album_feed_status_bar_gray
-            getColor(R.color.album_color_black)->R.color.album_feed_status_bar_black
-            else->R.color.album_feed_status_bar_pink
-        }
-        return getColor(statusBarColor)
-    }
 
 }
