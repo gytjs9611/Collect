@@ -63,10 +63,14 @@
             android:screenOrientation="portrait">
         </activity>
 
+<!--        setting     -->
         <activity android:name=".SettingActivity"
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".ModifyAlbumOrderActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
     </application>
 

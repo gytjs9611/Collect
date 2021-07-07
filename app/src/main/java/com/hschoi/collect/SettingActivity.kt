@@ -1,5 +1,6 @@
 package com.hschoi.collect
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -37,6 +38,12 @@ class SettingActivity: AppCompatActivity() {
         setting_home_sentence.setOnClickListener {
             val homeSentenceBottomSheet = SettingHomeSentenceBottomSheet(this)
             homeSentenceBottomSheet.show(supportFragmentManager, null)
+        }
+
+        // 앨범 순서 변경
+        setting_home_change_album_order.setOnClickListener {
+            startActivity(Intent(this, ModifyAlbumOrderActivity::class.java))
+            overridePendingTransition(0, 0)
         }
 
     }

@@ -39,4 +39,9 @@ interface AlbumDao {
     fun getAlbumColor(id: Long): Int
 
 
+    @Query("UPDATE album SET id=:updateId WHERE id=:id")
+    fun updateId(id: Long, updateId: Long)
+
+
+
 }
