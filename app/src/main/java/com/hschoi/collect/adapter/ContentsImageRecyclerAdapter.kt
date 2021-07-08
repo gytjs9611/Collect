@@ -23,10 +23,11 @@ import com.hschoi.collect.AddContentsActivity.Companion.IMAGE_ADD_BUTTON_SIDE_MA
 import com.hschoi.collect.AddContentsActivity.Companion.IMAGE_SIDE_MARGIN
 import com.hschoi.collect.AddContentsActivity.Companion.IMAGE_TOP_MARGIN_RATIO
 import com.hschoi.collect.AddContentsActivity.Companion.IMAGE_WIDTH
-import com.hschoi.collect.AddContentsActivity.Companion.REQ_STORAGE_PERMISSION
 import com.hschoi.collect.CreateNewAlbumActivity
 import com.hschoi.collect.R
 import com.hschoi.collect.util.LayoutParamsUtils
+import com.hschoi.collect.util.PermissionUtils
+import com.hschoi.collect.util.PermissionUtils.Companion.REQ_STORAGE_PERMISSION
 import gun0912.tedimagepicker.builder.TedImagePicker
 import kotlinx.android.synthetic.main.activity_create_new_album.*
 import kotlinx.android.synthetic.main.layout_add_contents_image.view.*
@@ -53,7 +54,7 @@ class ContentsImageRecyclerAdapter(var items: ArrayList<String>): RecyclerView.A
             holder.itemView.setOnClickListener {
                 AddContentsActivity.hideKeyboard()
 
-                if (ContextCompat.checkSelfPermission(mContext,
+                /*if (ContextCompat.checkSelfPermission(mContext,
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                     // Permission is not granted
@@ -71,7 +72,15 @@ class ContentsImageRecyclerAdapter(var items: ArrayList<String>): RecyclerView.A
                 } else {
                     // Permission has already been granted
                     AddContentsActivity.openImagePicker()
+                }*/
+
+                if(PermissionUtils.hasPermission(mContext)){
+                    AddContentsActivity.openImagePicker()
                 }
+                else{
+                    PermissionUtils.requestPermission(mContext as Activity, REQ_STORAGE_PERMISSION)
+                }
+
             }
         }
         else{

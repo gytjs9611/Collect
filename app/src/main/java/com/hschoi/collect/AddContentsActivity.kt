@@ -28,6 +28,8 @@ import com.hschoi.collect.util.BitmapUtils
 import com.hschoi.collect.util.ColorUtils
 import com.hschoi.collect.util.DateUtils.Companion.getDayOfWeekString
 import com.hschoi.collect.util.LayoutParamsUtils
+import com.hschoi.collect.util.PermissionUtils
+import com.hschoi.collect.util.PermissionUtils.Companion.REQ_STORAGE_PERMISSION
 import gun0912.tedimagepicker.builder.TedImagePicker
 import kotlinx.android.synthetic.main.activity_add_contents.*
 import kotlinx.android.synthetic.main.layout_common_title.view.*
@@ -63,7 +65,7 @@ class AddContentsActivity : AppCompatActivity() {
         private const val DOT_TOP_MARGIN = 8f/716f
 
 
-        const val REQ_STORAGE_PERMISSION = 100
+//        const val REQ_STORAGE_PERMISSION = 100
 
         lateinit var activity: Activity
 
@@ -481,7 +483,7 @@ class AddContentsActivity : AppCompatActivity() {
         
         // 이미지 추가 버튼
         iv_add_contents_image.setOnClickListener {
-            // 이미지 갤러리로부터 받아오기
+            /*// 이미지 갤러리로부터 받아오기
             if (ContextCompat.checkSelfPermission(this.applicationContext,
                     Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -499,7 +501,17 @@ class AddContentsActivity : AppCompatActivity() {
             } else {
                 // Permission has already been granted
                 openImagePicker()
+            }*/
+
+            if(PermissionUtils.hasPermission(this)){
+                openImagePicker()
             }
+            else{
+                PermissionUtils.requestPermission(this,
+                    REQ_STORAGE_PERMISSION
+                )
+            }
+
         }
 
         // 날짜 선택 버튼
@@ -549,14 +561,14 @@ class AddContentsActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when(requestCode){
             REQ_STORAGE_PERMISSION->{
-                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    Log.d("GALLERY", "permission granted")
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     // 동의했을 경우 갤러리 실행
                     openImagePicker()
                 }
                 else{
                     // 거부했을 경우
                     // 토스트나 안내 띄워야 함
+                    PermissionUtils.showPermissionAlert(this)
                 }
             }
         }

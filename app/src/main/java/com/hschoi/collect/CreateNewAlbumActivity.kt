@@ -2,12 +2,15 @@ package com.hschoi.collect
 
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -16,6 +19,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.Dimension
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,6 +31,7 @@ import com.hschoi.collect.customview.ColorItem
 import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.database.entity.AlbumEntity
 import com.hschoi.collect.util.*
+import com.hschoi.collect.util.PermissionUtils.Companion.REQ_STORAGE_PERMISSION
 import gun0912.tedimagepicker.builder.TedImagePicker
 import kotlinx.android.synthetic.main.activity_add_contents.*
 import kotlinx.android.synthetic.main.activity_create_new_album.*
@@ -80,8 +85,8 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
 
 //        갤러리 접근
-        const val REQ_STORAGE_PERMISSION = 100
-        const val REQ_GALLERY = 101
+//        const val REQ_STORAGE_PERMISSION = 100
+//        const val REQ_GALLERY = 101
 
         lateinit var activity : CreateNewAlbumActivity
     }
@@ -170,12 +175,11 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
         // 이미지 추가 버튼 누르면 갤러리 실행
         iv_add_icon_default.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(this.applicationContext,
+            /*if (ContextCompat.checkSelfPermission(this.applicationContext,
                     Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
                 // Permission is not granted
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                if (PermissionUtils.hasPermission(this)) {
                     // First time
                     ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQ_STORAGE_PERMISSION)
@@ -186,7 +190,15 @@ class CreateNewAlbumActivity : AppCompatActivity() {
             } else {
                 // Permission has already been granted
                 openImagePicker()
+            }*/
+
+            if(PermissionUtils.hasPermission(this)){
+                openImagePicker()
             }
+            else{
+                PermissionUtils.requestPermission(this, REQ_STORAGE_PERMISSION)
+            }
+
         }
 
 
@@ -324,6 +336,26 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
     }
 
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d("ddd", "request code = ${requestCode}")
+        when(requestCode){
+            REQ_STORAGE_PERMISSION->{
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openImagePicker()
+                }
+                else {   // 하나라도 거부할 경우
+                    PermissionUtils.showPermissionAlert(this)
+                }
+
+            }
+        }
+    }
+
+
+
+
     private fun backButtonEvent(){
         val isTitleModified = layout_title.et_title.text.isNotEmpty()
         val isFrameModified = selectedFrameButton != layout_button_frame0
@@ -388,24 +420,6 @@ class CreateNewAlbumActivity : AppCompatActivity() {
     }
 
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when(requestCode){
-            REQ_STORAGE_PERMISSION->{
-                Log.d("GALLERY", "permission result=${grantResults[0]}, granted=${PackageManager.PERMISSION_GRANTED}")
-
-                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    Log.d("GALLERY", "permission granted")
-                    // 동의했을 경우 갤러리 실행
-                    openImagePicker()
-                }
-                else{
-                    // 거부했을 경우
-                    // 토스트나 안내 띄워야 함
-                }
-            }
-        }
-    }
 
 
     private fun openImagePicker(){

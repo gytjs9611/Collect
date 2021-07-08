@@ -18,6 +18,7 @@ import com.hschoi.collect.AddContentsActivity
 import com.hschoi.collect.AddContentsCoverActivity
 import com.hschoi.collect.R
 import com.hschoi.collect.util.LayoutParamsUtils
+import com.hschoi.collect.util.PermissionUtils
 import kotlinx.android.synthetic.main.item_contents_cover_image.view.*
 
 class CoverImageAdapter(var items: ArrayList<String>) : RecyclerView.Adapter<CoverImageAdapter.Holder>(){
@@ -77,7 +78,7 @@ class CoverImageAdapter(var items: ArrayList<String>) : RecyclerView.Adapter<Cov
                 // + 버튼 이벤트
                 if(pos==itemCount-1){
                     // 이미지 추가 코드 작성 필요
-                    if (ContextCompat.checkSelfPermission(mContext,
+                    /*if (ContextCompat.checkSelfPermission(mContext,
                                     Manifest.permission.READ_EXTERNAL_STORAGE)
                             != PackageManager.PERMISSION_GRANTED) {
                         // Permission is not granted
@@ -97,7 +98,17 @@ class CoverImageAdapter(var items: ArrayList<String>) : RecyclerView.Adapter<Cov
                         AddContentsActivity.openImagePicker()
                         items = AddContentsActivity.imageList
                         notifyDataSetChanged()
+                    }*/
+
+                    if(PermissionUtils.hasPermission(mContext)){
+                        AddContentsActivity.openImagePicker()
+                        items = AddContentsActivity.imageList
+                        notifyDataSetChanged()
                     }
+                    else{
+                        PermissionUtils.requestPermission(mContext as Activity, PermissionUtils.REQ_STORAGE_PERMISSION)
+                    }
+
                 }
                 else if(selectedPosition!=pos){
                     selectedPosition = pos

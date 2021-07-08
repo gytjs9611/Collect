@@ -157,4 +157,9 @@
     <string name="backpressed_finish">앱을 종료하려면 한 번 더 누르세요</string>
 
 
+
+
+    <string name="permission_denied_title">권한 거부됨</string>
+    <string name="permission_denied_msg">권한이 거부되었습니다. 앱 설정에서 권한을 허용하세요.</string>
+
 </resources>
