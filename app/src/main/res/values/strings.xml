@@ -75,7 +75,7 @@
     <string name="setting_title">설정</string>
     <string name="setting_home">홈 화면 설정</string>
     <string name="setting_home_sentence">한 줄 소개 수정</string>
-    <string name="setting_change_album_order">앨범 순서 수정</string>
+    <string name="setting_change_album_order">앨범 순서 변경</string>
 
     <string name="setting_premium_title">구매</string>
     <string name="setting_premium_item">프리미엄 구매</string>

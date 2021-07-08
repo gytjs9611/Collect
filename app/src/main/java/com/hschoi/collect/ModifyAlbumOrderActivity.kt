@@ -39,7 +39,7 @@ class ModifyAlbumOrderActivity: AppCompatActivity() {
     private fun initView(){
         layout_top_menu_modify_album_order.apply {
             setBackgroundColor(getColor(R.color.white))
-            tv_album_name_title.text = "앨범 순서 변경"
+            tv_album_name_title.text = getString(R.string.setting_change_album_order)
             tv_album_name_title.setTextColor(getColor(R.color.setting_item_color))
             iv_icon_left.setImageDrawable(getDrawable(R.drawable.ic_back_black))
             iv_icon_right.visibility = View.INVISIBLE
