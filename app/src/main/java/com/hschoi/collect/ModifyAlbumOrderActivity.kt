@@ -4,6 +4,10 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.hschoi.collect.adapter.SettingAlbumOrderAdapter
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_modify_album_order.*
 import kotlinx.android.synthetic.main.activity_modify_album_order.layout_bottom_menu_bar
 import kotlinx.android.synthetic.main.layout_bottom_menu_bar.view.*
@@ -11,6 +15,7 @@ import kotlinx.android.synthetic.main.layout_top_menu_bar.view.*
 
 class ModifyAlbumOrderActivity: AppCompatActivity() {
 
+    private lateinit var settingAlbumOrderAdapter : SettingAlbumOrderAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +23,15 @@ class ModifyAlbumOrderActivity: AppCompatActivity() {
 
         initView()
         setClickListeners()
+
+
+        // set recycler view
+        settingAlbumOrderAdapter = SettingAlbumOrderAdapter(MainActivity.albumList)
+        rv_setting_album_order.adapter = settingAlbumOrderAdapter
+        rv_setting_album_order.layoutManager = GridLayoutManager(applicationContext, 1, RecyclerView.VERTICAL, false)
+        val decoration = AddContentsRecyclerDecoration(applicationContext)
+        rv_setting_album_order.addItemDecoration(decoration)
+
 
 
 
