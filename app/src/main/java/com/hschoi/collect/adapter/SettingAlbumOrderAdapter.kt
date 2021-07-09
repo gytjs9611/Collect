@@ -52,7 +52,6 @@ class SettingAlbumOrderAdapter(var items: ArrayList<Albums>,
 
             holder.itemView.setOnTouchListener { _, event->
                 if(event.action==MotionEvent.ACTION_DOWN){
-                    Log.d("ddd", "action down")
                     startDragListener.onStartDrag(holder)
                 }
                 return@setOnTouchListener true
@@ -113,6 +112,9 @@ class SettingAlbumOrderAdapter(var items: ArrayList<Albums>,
             itemView.tv_album_list_title.text = albumTitle
             itemView.cv_album_list_item.setCardBackgroundColor(ColorUtils.getAlbumColor(mContext, albumColor))
             itemView.tv_album_list_title.setTextColor(mContext.getColorStateList(R.color.white))
+
+            itemView.iv_move.visibility = View.VISIBLE
+
         }
     }
 

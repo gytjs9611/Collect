@@ -8,16 +8,54 @@
     app:cardElevation="0dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/tv_album_list_title"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Cooking"
-        android:textColor="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:layout_height="match_parent">
+
+
+      <!--  <ImageView
+            android:id="@+id/iv_frame"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="22dp"
+            android:src="@drawable/ic_move"
+            app:layout_constraintHeight_percent="0.65"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>-->
+
+
+        <TextView
+            android:id="@+id/tv_album_list_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Cooking"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+        <ImageView
+            android:id="@+id/iv_move"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8.61dp"
+            android:src="@drawable/ic_move"
+            android:visibility="invisible"
+            app:layout_constraintHeight_percent="0.65"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
 </androidx.cardview.widget.CardView>
