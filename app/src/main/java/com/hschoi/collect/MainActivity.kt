@@ -58,6 +58,12 @@ class MainActivity : AppCompatActivity() {
 
         albumList = ArrayList()
 
+        // 데이터베이스로부터 데이터 받아와 albumList에 적용
+        val getAlbums = GetAlbum(applicationContext)
+        getAlbums.start()
+        Thread.sleep(100)
+
+
         homeRecyclerView = rv_album_card
         homeRecyclerAdapter = HomeRecyclerAdapter(albumList)
         addContentsRecyclerAdapter = AddContentsRecyclerAdapter(albumList)
@@ -77,11 +83,6 @@ class MainActivity : AppCompatActivity() {
         val decoration2 = AddContentsRecyclerDecoration(applicationContext)
         rv_album_list.addItemDecoration(decoration2)
 
-
-        // 데이터베이스로부터 데이터 받아와 albumList에 적용
-        val getAlbums = GetAlbum(applicationContext)
-        getAlbums.start()
-        Thread.sleep(100)
 
 
 
@@ -181,6 +182,9 @@ class MainActivity : AppCompatActivity() {
         tv_app_subtitle.text = savedSubtitle
 
 
+
+
+
     }
 
     override fun onPause() {
@@ -228,16 +232,20 @@ class GetAlbum(val context : Context) : Thread() {
             .albumDao()
             .getAllAlbums()
 
+        MainActivity.albumList.clear()
+
         for(album in items){
             val id = album.id
             val title = album.albumTitle
             val frameType = album.frameType
             val albumColor = album.albumColor
             val coverImagePath = album.coverImageFileName
-            val albumsItem = Albums(id, title, albumColor, coverImagePath, frameType)
+            val order = album.albumOrder
+            val albumsItem = Albums(id, title, albumColor, coverImagePath, frameType, order)
             MainActivity.albumList.add(albumsItem)
         }
-        MainActivity.albumList.add(Albums(-1, "", -1, "", -1))   // dummy
+
+        MainActivity.albumList.add(Albums(-1, "", -1, "", -1, -1))   // dummy
 
     }
 }

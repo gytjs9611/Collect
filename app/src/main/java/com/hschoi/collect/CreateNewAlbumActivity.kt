@@ -305,7 +305,7 @@ class CreateNewAlbumActivity : AppCompatActivity() {
 
 
             // 메인 앨범 리스트에 객체 추가
-            val album = Albums(albumId, title, selectedColor, fileName, selectedFrameType)
+            val album = Albums(albumId, title, selectedColor, fileName, selectedFrameType, albumId)
 
             MainActivity.albumList.add(MainActivity.albumList.size-1, album)
 

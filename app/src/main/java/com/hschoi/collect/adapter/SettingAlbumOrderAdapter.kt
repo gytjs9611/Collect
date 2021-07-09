@@ -1,19 +1,29 @@
 package com.hschoi.collect.adapter
 
 import android.content.Context
-import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.hschoi.collect.*
+import com.hschoi.collect.database.AlbumDatabase
 import com.hschoi.collect.util.ColorUtils
 import com.hschoi.collect.util.LayoutParamsUtils
 import kotlinx.android.synthetic.main.item_album_list.view.*
+import java.util.*
+import kotlin.collections.ArrayList
 
-class SettingAlbumOrderAdapter(var items: ArrayList<Albums>) : RecyclerView.Adapter<SettingAlbumOrderAdapter.SettingAlbumViewHolder>() {
+class SettingAlbumOrderAdapter(var items: ArrayList<Albums>,
+                               var startDragListener : OnStartDragListener,
+                               var db: AlbumDatabase?) : RecyclerView.Adapter<SettingAlbumOrderAdapter.SettingAlbumViewHolder>(),
+                                                                SettingAlbumItemTouchHelperCallback.Listener{
     private lateinit var mContext : Context
 
+    interface OnStartDragListener{
+        fun onStartDrag(holder: SettingAlbumViewHolder)
+    }
 
     // 1. 홀더의 생성
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SettingAlbumViewHolder {
@@ -40,15 +50,18 @@ class SettingAlbumOrderAdapter(var items: ArrayList<Albums>) : RecyclerView.Adap
             val frameType = items[position].frameType
             val color = items[position].color
 
-            holder.itemView.setOnClickListener {
-
+            holder.itemView.setOnTouchListener { _, event->
+                if(event.action==MotionEvent.ACTION_DOWN){
+                    Log.d("ddd", "action down")
+                    startDragListener.onStartDrag(holder)
+                }
+                return@setOnTouchListener true
             }
+
         }
 
-
-
-
     }
+
 
     override fun getItemCount(): Int {
         return items.size
@@ -56,6 +69,38 @@ class SettingAlbumOrderAdapter(var items: ArrayList<Albums>) : RecyclerView.Adap
 
     fun getItem(): ArrayList<Albums>{
         return items
+    }
+
+
+    private fun swapAlbumList(fromPosition: Int, toPosition: Int){
+        Collections.swap(MainActivity.albumList, fromPosition, toPosition)
+        MainActivity.homeRecyclerAdapter.notifyDataSetChanged()
+        MainActivity.addContentsRecyclerAdapter.notifyDataSetChanged()
+    }
+
+    private fun swapDBId(fromPosition: Int, toPosition: Int){
+        val id1 = items[fromPosition].id
+        val id2 = items[toPosition].id
+        val order1 = items[fromPosition].order
+        val order2 = items[toPosition].order
+
+
+        val run = Runnable {
+            db?.albumDao()?.setOrder(id1, order2)
+            db?.albumDao()?.setOrder(id2, order1)
+            Log.d("ddd", "set id${id1} order${order2}, id${id2} order${order1}")
+        }
+
+
+        val thread = Thread(run)
+        thread.start()
+    }
+
+    private fun swapAlbumListId(fromPosition: Int, toPosition: Int){
+        val order1 = items[fromPosition].order
+        val order2 = items[toPosition].order
+        items[fromPosition].order = order2
+        items[toPosition].order = order1
     }
 
 
@@ -70,5 +115,38 @@ class SettingAlbumOrderAdapter(var items: ArrayList<Albums>) : RecyclerView.Adap
             itemView.tv_album_list_title.setTextColor(mContext.getColorStateList(R.color.white))
         }
     }
+
+
+    override fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        if(fromPosition<toPosition){
+            for(i in fromPosition until toPosition){
+                Collections.swap(items, i, i+1)
+            }
+        }
+        else{
+            for(i in fromPosition downTo toPosition+1){
+                Collections.swap(items, i, i-1)
+            }
+        }
+
+        swapAlbumList(fromPosition, toPosition)
+        swapDBId(fromPosition, toPosition)
+        swapAlbumListId(fromPosition, toPosition)
+        notifyItemMoved(fromPosition, toPosition)
+
+    }
+
+    override fun onRowSelected(itemViewHolder: SettingAlbumViewHolder) {
+
+    }
+
+    override fun onRowClear(itemViewHolder: SettingAlbumViewHolder) {
+
+    }
+
+
+
+
+
 
 }

@@ -297,7 +297,7 @@ class ModifyAlbumActivity : AppCompatActivity() {
 
                 if(album.id==albumId){
                     val temp = Albums(albumId, title, mAlbumEntity.albumColor,
-                            mAlbumEntity.coverImageFileName, mAlbumEntity.frameType)
+                            mAlbumEntity.coverImageFileName, mAlbumEntity.frameType, mAlbumEntity.albumOrder)
                     MainActivity.albumList[index] = temp
                     break
                 }

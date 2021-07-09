@@ -6,7 +6,7 @@ import com.hschoi.collect.database.entity.AlbumEntity
 
 @Dao
 interface AlbumDao {
-    @Query("SELECT * FROM album")
+    @Query("SELECT * FROM album ORDER BY albumOrder ASC")
     fun getAllAlbums() : List<AlbumEntity>
 
     @Query("SELECT COUNT(*) FROM album")
@@ -14,7 +14,6 @@ interface AlbumDao {
 
     @Query("SELECT * FROM album WHERE id = :id")
     fun getAlbumEntity(id : Long) : AlbumEntity
-
 
     @Query("UPDATE album SET albumOrder=:order WHERE id=:id")
     fun setOrder(id: Long, order: Long)
@@ -37,11 +36,4 @@ interface AlbumDao {
 
     @Query("SELECT albumColor FROM album WHERE id=:id")
     fun getAlbumColor(id: Long): Int
-
-
-    @Query("UPDATE album SET id=:updateId WHERE id=:id")
-    fun updateId(id: Long, updateId: Long)
-
-
-
 }
